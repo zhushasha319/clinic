@@ -1,0 +1,32 @@
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/theme-toggle";
+
+export default function MenuClient() {
+  return (
+    <>
+      {/*Desktop Nav*/}
+      <nav className="hidden md:flex items-center gap-3">
+        <ThemeToggle />
+
+        <Link
+          href="/"
+          className="text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors px-4"
+        >
+          Home
+        </Link>
+
+        <Button asChild variant="brand" className="w-[164px]">
+          <Link href="/appointment">Book Appointment</Link>
+        </Button>
+
+        <Button asChild variant="secondary" className="w-[97px]">
+          <Link href="/signin">Sign in</Link>
+        </Button>
+      </nav>
+
+      {/*Mobile Nav*/}
+      <nav className="md:hidden"></nav>
+    </>
+  );
+}

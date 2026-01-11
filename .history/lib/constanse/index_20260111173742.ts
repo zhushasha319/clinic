@@ -1,0 +1,1 @@
+export const App_NAME = "Highland Medical Center";

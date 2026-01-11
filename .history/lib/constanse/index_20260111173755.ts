@@ -1,0 +1,1 @@
+export const App_NAME = process.env. "Highland Medical Center";
