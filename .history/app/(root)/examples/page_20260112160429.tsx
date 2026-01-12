@@ -1,0 +1,8 @@
+import { DepartmentCard} from "@/components/molecules/specialty-card";
+export default function () {
+  return(
+    <div>
+     <DepartmentCard></DepartmentCard>
+      </div>
+  )
+}
