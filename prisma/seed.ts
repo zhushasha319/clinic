@@ -1,5 +1,5 @@
 import { PrismaNeonHttp } from "@prisma/adapter-neon";
-import { PrismaClient } from "../lib/generated/prisma";
+import { PrismaClient,Role,AppointmentStatus,PatientType } from "../lib/generated/prisma";
 import {
   users,
   departments,
@@ -103,7 +103,7 @@ async function main() {
           name: user.name,
           password: user.password,
           emailVerified: user.emailVerified,
-          role: user.role,
+          role: user.role as Role,
           isRootAdmin: user.isRootAdmin,
           image: user.image,
           dateofbirth: user.dateofbirth,
@@ -115,7 +115,7 @@ async function main() {
           email: user.email,
           password: user.password,
           emailVerified: user.emailVerified,
-          role: user.role,
+        role: user.role as Role,
           isRootAdmin: user.isRootAdmin,
           image: user.image,
           dateofbirth: user.dateofbirth,
@@ -188,7 +188,11 @@ async function main() {
 
       for (const apt of appointmentsWithRealIds) {
         await prisma.appointment.create({
-          data: apt,
+          data: {
+            ...apt,
+            patientType: apt.patientType as PatientType ,
+            status: apt.status as AppointmentStatus ,
+          },
         });
       }
       console.log(
