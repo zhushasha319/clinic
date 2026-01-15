@@ -64,7 +64,7 @@ export default async function DoctorProfilePage({
             image={doctor.image || ""}
           ></DoctorProfileTopCard>
         </div>
-        <div className="md:hidden"><AppointmentScheduler doctorId={doctor.id}></AppointmentScheduler></div>
+        <div className="md:hidden"><AppointmentScheduler></AppointmentScheduler></div>
         <div>
           <DoctorProfileAbout
             name={doctor.name}
@@ -79,7 +79,7 @@ export default async function DoctorProfilePage({
           ></PatientReviews>
         </div>
       </div>
-      <div className="hidden md:block"><AppointmentScheduler doctorId={doctor.id}></AppointmentScheduler></div>
+      <div className="hidden md:block">Appoint Scheduler</div>
     </div>
   );
 }

@@ -421,12 +421,12 @@ export async function getAvailableDoctorSlots({
     );
 
     // 4.3 Past Slots
-    // Filter out any slots that are in the past relative to the current time.
-    // This handles filtering 'today's' past slots as well as past dates.
-    const nowTime = now.getTime();
-    availableSlots = availableSlots.filter(
-      (slot) => slot.startTimeUTC.getTime() > nowTime
-    );
+    const nowInAppTZ = toZonedTime(now, timeZone);
+    const todayStr = format(nowInAppTZ, "yyyy-MM-dd", { timeZone });
+
+    if (date === todayStr) {
+      availableSlots = availableSlots.filter((slot) => slot.startTimeUTC > now);
+    }
 
     return {
       success: true,
@@ -437,94 +437,6 @@ export async function getAvailableDoctorSlots({
     return {
       success: false,
       message: "Failed to get available slots",
-      error: String(error),
-    };
-  }
-}
-
-interface PendingAppointmentParams {
-  userId: string;
-  doctorId: string;
-}
-
-interface PendingAppointmentData {
-  appointment: {
-    appointmentId: string;
-    date: string;
-    startTime: string;
-    endTime: string;
-    status: string;
-  } | null;
-}
-
-export async function getPendingAppointmentForDoctor({
-  userId,
-  doctorId,
-}: PendingAppointmentParams): Promise<
-  ServerActionResponse<PendingAppointmentData>
-> {
-  try {
-    if (!userId?.trim() || !doctorId?.trim()) {
-      return {
-        success: false,
-        errorType: "VALIDATION_ERROR",
-        error: "Missing userId or doctorId",
-        message: "Invalid request",
-      };
-    }
-
-    const now = new Date();
-    // Find the most recent pending appointment that has not expired
-    const pendingAppt = await prisma.appointment.findFirst({
-      where: {
-        userId,
-        doctorId,
-        status: AppointmentStatus.PAYMENT_PENDING,
-        // Ensure reservation is still valid
-        reservationExpiresAt: {
-          gt: now,
-        },
-      },
-      orderBy: {
-        createdAt: "desc", // Get the latest one if multiple exist (though ideally shouldn't)
-      },
-    });
-
-    if (!pendingAppt) {
-      return {
-        success: true,
-        data: {
-          appointment: null,
-        },
-      };
-    }
-
-    // Convert stored UTC times to App Timezone for display
-    const timeZone = getAppTimeZone();
-    const zonedStart = toZonedTime(pendingAppt.appointmentStartUTC, timeZone);
-    const zonedEnd = toZonedTime(pendingAppt.appointmentEndUTC, timeZone);
-
-    const dateStr = format(zonedStart, "yyyy-MM-dd", { timeZone });
-    const startTimeStr = format(zonedStart, "HH:mm", { timeZone });
-    const endTimeStr = format(zonedEnd, "HH:mm", { timeZone });
-
-    return {
-      success: true,
-      data: {
-        appointment: {
-          appointmentId: pendingAppt.appointmentId,
-          date: dateStr,
-          startTime: startTimeStr,
-          endTime: endTimeStr,
-          status: pendingAppt.status,
-        },
-      },
-    };
-  } catch (error) {
-    console.error("Error fetching pending appointment:", error);
-    return {
-      success: false,
-      message: "Failed to fetch pending appointment",
       error: String(error),
     };
   }

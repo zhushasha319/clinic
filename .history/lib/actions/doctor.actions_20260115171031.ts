@@ -422,11 +422,8 @@ export async function getAvailableDoctorSlots({
 
     // 4.3 Past Slots
     // Filter out any slots that are in the past relative to the current time.
-    // This handles filtering 'today's' past slots as well as past dates.
-    const nowTime = now.getTime();
-    availableSlots = availableSlots.filter(
-      (slot) => slot.startTimeUTC.getTime() > nowTime
-    );
+    // This handles filtering 'today's' past slots and completely empties slots for past dates.
+    availableSlots = availableSlots.filter((slot) => slot.startTimeUTC > now);
 
     return {
       success: true,

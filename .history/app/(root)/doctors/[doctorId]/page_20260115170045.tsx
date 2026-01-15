@@ -4,7 +4,7 @@ import DoctorProfileAbout from "@/components/molecules/doctorFiles/doctorFileAbo
 import DoctorProfileTopCard from "@/components/molecules/doctorFiles/doctorProfileCard";
 import { notFound } from "next/navigation";
 import PatientReviews from "@/components/molecules/doctorFiles/Review/PatientReviews";
-import AppointmentScheduler from "@/components/molecules/doctorFiles/AppointmentScheduler";
+
 interface Params {
   doctorId: string;
 }
@@ -64,7 +64,7 @@ export default async function DoctorProfilePage({
             image={doctor.image || ""}
           ></DoctorProfileTopCard>
         </div>
-        <div className="md:hidden"><AppointmentScheduler doctorId={doctor.id}></AppointmentScheduler></div>
+        <div className="md:hidden">Appoint Scheduler</div>
         <div>
           <DoctorProfileAbout
             name={doctor.name}
@@ -79,7 +79,7 @@ export default async function DoctorProfilePage({
           ></PatientReviews>
         </div>
       </div>
-      <div className="hidden md:block"><AppointmentScheduler doctorId={doctor.id}></AppointmentScheduler></div>
+      <div className="hidden md:block">Appoint Scheduler</div>
     </div>
   );
 }

@@ -79,7 +79,7 @@ export default async function DoctorProfilePage({
           ></PatientReviews>
         </div>
       </div>
-      <div className="hidden md:block"><AppointmentScheduler doctorId={doctor.id}></AppointmentScheduler></div>
+      <div className="hidden md:block">Appoint Scheduler</div>
     </div>
   );
 }
