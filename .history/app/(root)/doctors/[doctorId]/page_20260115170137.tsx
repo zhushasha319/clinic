@@ -49,7 +49,7 @@ export default async function DoctorProfilePage({
   }
   return (
     <div className="w-full flex flex-col md:flex-row justify-between">
-      <div className="flex flex-col gap-6 md:gap-8 md:max-w-227 p-8">
+      <div className="flex flex-col gap-6 md:gap-8 md:max-w-[908px] p-8">
         <div>
           <DoctorProfileTopCard
             brief="Brief about the doctor"

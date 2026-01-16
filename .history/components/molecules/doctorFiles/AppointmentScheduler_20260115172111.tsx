@@ -1,4 +1,4 @@
-"use client";
+"use client"
 
 import { useState, useEffect } from "react";
 import { Calendar } from "@/components/ui/calendar";
@@ -122,12 +122,11 @@ export default function AppointmentScheduler({
           disabled={isDateDisabled}
           month={currentMonth}
           onMonthChange={handleMonthChange}
-          className="rounded-md border shadow-sm dark:border-gray-700"
+          className="rounded-md border shadow-sm"
           classNames={{
             day_selected:
-              "bg-blue-500 text-white hover:bg-blue-600 focus:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700",
-            day_today:
-              "bg-gray-100 text-gray-900 dark:bg-gray-700 dark:text-gray-100",
+              "bg-blue-500 text-white hover:bg-blue-600 focus:bg-blue-600",
+            day_today: "bg-gray-100 text-gray-900",
           }}
         />
       </div>
@@ -162,8 +161,8 @@ export default function AppointmentScheduler({
                   className={cn(
                     "w-full justify-center text-sm font-medium",
                     selectedSlot === slot.startTime
-                      ? "border-blue-500 bg-blue-50 text-blue-700 hover:bg-blue-100 hover:text-blue-800 dark:border-blue-400 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-900/50"
-                      : "text-gray-700 hover:bg-gray-50 hover:text-gray-900 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-gray-100"
+                      ? "border-blue-500 bg-blue-50 text-blue-700 hover:bg-blue-100 hover:text-blue-800"
+                      : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
                   )}
                   onClick={() => setSelectedSlot(slot.startTime)}
                 >
@@ -173,7 +172,7 @@ export default function AppointmentScheduler({
             })}
           </div>
         ) : (
-          <p className="text-center text-sm text-gray-500 py-4 dark:text-gray-400">
+          <p className="text-center text-sm text-gray-500 py-4">
             No slots available for this date.
           </p>
         )}
@@ -181,7 +180,7 @@ export default function AppointmentScheduler({
 
       {/* Action Button */}
       <Button
-        className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold h-11 dark:bg-blue-600 dark:hover:bg-blue-700"
+        className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold h-11"
         onClick={handleReservation}
         disabled={!selectedSlot || isLoading}
       >

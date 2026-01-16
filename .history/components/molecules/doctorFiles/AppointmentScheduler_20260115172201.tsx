@@ -126,8 +126,7 @@ export default function AppointmentScheduler({
           classNames={{
             day_selected:
               "bg-blue-500 text-white hover:bg-blue-600 focus:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700",
-            day_today:
-              "bg-gray-100 text-gray-900 dark:bg-gray-700 dark:text-gray-100",
+            day_today: "bg-gray-100 text-gray-900 dark:bg-gray-700 dark:text-gray-100",
           }}
         />
       </div>
