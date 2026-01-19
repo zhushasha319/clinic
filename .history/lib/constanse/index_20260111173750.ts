@@ -1,1 +1,0 @@
-export const App_NAME = process. "Highland Medical Center";
