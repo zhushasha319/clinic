@@ -1,7 +1,8 @@
 "use client";
 import { PatientProfile } from "@/types";
-import { UploadButton } from "@/lib/uploadthing";
-import { updateProfileImage } from "@/lib/actions/user.actions";
+import { UploadButton } from "@uploadthing/react";
+import { updateProfileImage } from '../../../lib/actions/user.actions';
+import type { OurFileRouter } from '@/app/api/uploadthing/core';
 import React, { useState } from "react";
 import { useSession } from "next-auth/react";
 import toast from "react-hot-toast";
@@ -24,20 +25,6 @@ ProfileHeaderProps) {
   );
   const [isProcessing, setIsProcessing] = useState(false);
  
-  // --- Handlers ---
- 
-  /**
-   * Handles the successful upload of a new image to UploadThing.
-   * It triggers the server action to update the database, preloads the new image,
-   * updates the session, and updates the UI.
-   * @param {Array<{url: string}>} res The response from UploadThing containing the new image URL.
-   */
-  //   const handleUploadComplete =
- 
-  /**
-   * Handles errors during the upload process.
-   * @param {Error} error The error object from UploadThing.
-   */
   const handleUploadError = (error: Error) => {
     toast.error(`Upload failed: ${error.message}`);
     setIsProcessing(false);
@@ -67,10 +54,9 @@ ProfileHeaderProps) {
           <div className="absolute inset-0 bg-background-4 bg-opacity-50 opacity-0 group-hover:opacity-100 rounded-full flex items-center justify-center transition-opacity duration-300">
             <Camera className="h-8 w-8 text-white " />
           </div>
- 
           {/* Invisible UploadThing Button */}
           <div className="absolute inset-0 opacity-0">
-            <UploadButton
+            <UploadButton<OurFileRouter, "imageUploader">
               endpoint="imageUploader"
               onUploadBegin={() => setIsProcessing(true)}
               onClientUploadComplete={async (res) => {
@@ -117,12 +103,6 @@ ProfileHeaderProps) {
                 }
               }}
               onUploadError={handleUploadError}
-              //   appearance={{
-              //     // Style the button to be completely invisible
-              //     button: "h-full w-full ut-hidden",
-              //     container: "h-full w-full",
-              //     allowedContent: "ut-hidden",
-              //   }}
               className="w-full h-full rounded-full"
             />
           </div>

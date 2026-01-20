@@ -1,5 +1,6 @@
 import { Department, BannerImage } from "../lib/generated/prisma";
-
+import {patientProfileUpdateSchema, reviewFormSchema} from "@/lib/validations/auth";
+import { z } from "zod";
 export interface ServerActionResponse<T = any> {
   success: boolean;
   message?: string;
@@ -71,3 +72,6 @@ export interface Appointment {
   reasonForVisit?: string;
   isReviewed?: boolean;
 }
+export type ProfileUpdateInput = z.infer<typeof patientProfileUpdateSchema>;
+
+export type ReviewFormValues = z.infer<typeof reviewFormSchema>;

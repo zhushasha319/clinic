@@ -4,6 +4,10 @@ import prisma from "@/db/prisma";
 import type { ServerActionResponse, DoctorReview } from "@/types";
 import { format, toZonedTime } from "date-fns-tz";
 import { getAppTimeZone } from "@/lib/config";
+import { auth } from "@/auth";
+import { fullReviewDataSchema } from "../validations/auth";
+import { AppointmentStatus } from "../generated/prisma";
+import { revalidatePath } from "next/cache";
 
 interface DoctorReviewsPaginatedData {
   reviews: DoctorReview[];
@@ -15,7 +19,7 @@ interface DoctorReviewsPaginatedData {
 export async function getDoctorReviewsPaginated(
   doctorId: string,
   page: number = 1,
-  pageSize: number = 10
+  pageSize: number = 10,
 ): Promise<ServerActionResponse<DoctorReviewsPaginatedData>> {
   try {
     if (!doctorId?.trim()) {
@@ -105,7 +109,7 @@ export async function getDoctorReviewsPaginated(
 }
 
 export async function getDoctorReviewStats(
-  doctorId: string
+  doctorId: string,
 ): Promise<
   ServerActionResponse<{ totalReviews: number; averageRating: number }>
 > {
@@ -143,6 +147,133 @@ export async function getDoctorReviewStats(
       errorType: "SERVER_ERROR",
       error: message,
       message: "Failed to fetch doctor review stats",
+    };
+  }
+}
+
+export async function submitPatientReview(clientData: {
+  appointmentId: string;
+  doctorId: string;
+  rating: number;
+  reviewText: string;
+}): Promise<ServerActionResponse> {
+  // 1. 验证用户身份
+  const session = await auth();
+  if (!session?.user?.id) {
+    return {
+      success: false,
+      message: "Authentication required. Please log in to submit a review.",
+      errorType: "Unauthorized",
+    };
+  }
+  const patientId = session.user.id;
+
+  // 2.通过zod验证输入数据
+  const fullData = { ...clientData, patientId };
+  const validationResult = fullReviewDataSchema.safeParse(fullData);
+
+  if (!validationResult.success) {
+    return {
+      success: false,
+      message: "Invalid data provided. Please check your input.",
+      fieldErrors: validationResult.error.flatten().fieldErrors,
+      errorType: "Validation Error",
+    };
+  }
+
+  const { appointmentId, doctorId, rating, reviewText } = validationResult.data;
+
+  try {
+    // 3. Sequential operations (HTTP mode doesn't support transactions)
+    // 3a. Find the appointment and verify its status and ownership
+    const appointment = await prisma.appointment.findUnique({
+      where: { appointmentId },
+      include: { testimonial: true }, // Check if a testimonial already exists
+    });
+
+    if (!appointment) {
+      return {
+        success: false,
+        message: "Appointment not found.",
+        error: "Appointment not found.",
+        errorType: "NOT_FOUND",
+      };
+    }
+    if (appointment.status !== AppointmentStatus.COMPLETED) {
+      return {
+        success: false,
+        message: "Reviews can only be submitted for completed appointments.",
+        error: "Invalid appointment status.",
+        errorType: "VALIDATION_ERROR",
+      };
+    }
+    if (appointment.userId !== patientId) {
+      return {
+        success: false,
+        message: "You are not authorized to review this appointment.",
+        error: "Unauthorized access.",
+        errorType: "UNAUTHORIZED",
+      };
+    }
+    if (appointment.testimonial) {
+      return {
+        success: false,
+        message: "A review has already been submitted for this appointment.",
+        error: "Duplicate review.",
+        errorType: "CONFLICT",
+      };
+    }
+
+    // 3b. 创建新的评价
+    await prisma.doctorTestimonial.create({
+      data: {
+        appointmentId,
+        doctorId,
+        patientId,
+        rating,
+        testimonialText: reviewText,
+      },
+    });
+
+    // 3c. 计算医生的新平均评分和评价数量
+    const stats = await prisma.doctorTestimonial.aggregate({
+      where: { doctorId },
+      _avg: {
+        rating: true,
+      },
+      _count: {
+        testimonialId: true,
+      },
+    });
+
+    const reviewCount = stats._count.testimonialId;
+    const averageRating = stats._avg.rating || 0;
+
+    // 3d. 更新医生的资料
+    await prisma.doctorProfile.update({
+      where: { userId: doctorId },
+      data: {
+        reviewCount,
+        rating: parseFloat(averageRating.toFixed(1)), // 存储为1位小数
+      },
+    });
+
+    // 4. 重新验证路径以更新UI
+    revalidatePath(`/user/profile`); // 重新验证
+
+    return {
+      success: true,
+      message: "Your review has been submitted successfully!",
+    };
+  } catch (error) {
+    const errorMessage =
+      error instanceof Error ? error.message : "An unknown error occurred.";
+    console.error("Error submitting patient review:", error);
+    return {
+      success: false,
+      message: errorMessage,
+      error: errorMessage,
+      errorType: "SERVER_ERROR",
     };
   }
 }
