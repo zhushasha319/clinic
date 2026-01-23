@@ -12,6 +12,7 @@ import { getAppTimeZone } from "@/lib/config";
 import { addMinutes } from "date-fns";
 import { fromZonedTime, toZonedTime, format } from "date-fns-tz";
 
+/** 获取所有活跃医生的概要信息（头像、专长、评分统计）。 */
 export async function getOurDoctors(): Promise<
   ServerActionResponse<DoctorSummary[]>
 > {
@@ -76,7 +77,7 @@ export async function getOurDoctors(): Promise<
           averageRating: Number(stat._avg?.rating ?? 0),
           totalReviews: Number(stat._count?.testimonialId ?? 0),
         },
-      ])
+      ]),
     );
 
     // Map the fetched data to the DoctorSummary structure.
@@ -113,8 +114,9 @@ export async function getOurDoctors(): Promise<
   }
 }
 
+/** 拉取指定医生的评价列表并转为应用时区格式。 */
 export async function getDoctorTestimonials(
-  doctorId: string
+  doctorId: string,
 ): Promise<ServerActionResponse<DoctorReview[]>> {
   try {
     const { format, toZonedTime } = await import("date-fns-tz");
@@ -165,7 +167,7 @@ export async function getDoctorTestimonials(
           patientName: testimonial.patient.name ?? "Anonymous",
           patientImage: testimonial.patient.image,
         };
-      }
+      },
     );
 
     return {
@@ -184,8 +186,9 @@ export async function getDoctorTestimonials(
   }
 }
 
+/** 获取单个医生的详细资料并校验角色与活跃状态。 */
 export async function getDoctorDetails(
-  doctorId: string
+  doctorId: string,
 ): Promise<ServerActionResponse<DoctorDetails>> {
   try {
     if (!doctorId?.trim()) {
@@ -294,6 +297,9 @@ interface GetAvailableSlotsParams {
   currentUserId?: string;
 }
 
+/**
+ * 计算医生在给定日期的可用时间段：生成全部slot→扣除请假/已占用/过期→过滤过去时间。
+ */
 export async function getAvailableDoctorSlots({
   doctorId,
   date,
@@ -317,7 +323,7 @@ export async function getAvailableDoctorSlots({
     // Now determine start and end times for slots in UTC relative to that day
     const workDayStartUTC = fromZonedTime(
       `${date} ${startTimeConfig}`,
-      timeZone
+      timeZone,
     );
     const workDayEndUTC = fromZonedTime(`${date} ${endTimeConfig}`, timeZone);
 
@@ -365,14 +371,14 @@ export async function getAvailableDoctorSlots({
       if (doctorLeave.leaveType === LeaveType.MORNING) {
         // Remove slots before 13:00
         const filtered = allSlots.filter(
-          (slot) => slot.startTimeUTC >= splitTimeUTC
+          (slot) => slot.startTimeUTC >= splitTimeUTC,
         );
         allSlots.length = 0;
         allSlots.push(...filtered);
       } else if (doctorLeave.leaveType === LeaveType.AFTERNOON) {
         // Remove slots after or at 13:00
         const filtered = allSlots.filter(
-          (slot) => slot.startTimeUTC < splitTimeUTC
+          (slot) => slot.startTimeUTC < splitTimeUTC,
         );
         allSlots.length = 0;
         allSlots.push(...filtered);
@@ -417,7 +423,7 @@ export async function getAvailableDoctorSlots({
     });
 
     let availableSlots = allSlots.filter(
-      (slot) => !takenStartTimes.has(slot.startTimeUTC.getTime())
+      (slot) => !takenStartTimes.has(slot.startTimeUTC.getTime()),
     );
 
     // 4.3 Past Slots
@@ -425,7 +431,7 @@ export async function getAvailableDoctorSlots({
     // This handles filtering 'today's' past slots as well as past dates.
     const nowTime = now.getTime();
     availableSlots = availableSlots.filter(
-      (slot) => slot.startTimeUTC.getTime() > nowTime
+      (slot) => slot.startTimeUTC.getTime() > nowTime,
     );
 
     return {
@@ -457,6 +463,9 @@ interface PendingAppointmentData {
   } | null;
 }
 
+/**
+ * 查询用户在指定医生下最新且未过期的待支付预约，并返回本地化时间。
+ */
 export async function getPendingAppointmentForDoctor({
   userId,
   doctorId,

@@ -1,29 +1,43 @@
 import { PatientProfile } from "@/types";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Edit } from "lucide-react";
+import { Edit, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface PersonalInformationProps {
   patientData: PatientProfile;
   onEdit: () => void;
+  onBackToAppointment?: () => void;
 }
 
 export default function PersonalInformation({
   patientData,
   onEdit,
+  onBackToAppointment,
 }: PersonalInformationProps) {
   return (
     <Card className="w-full border border-border bg-background rounded-lg shadow-none mb-8 md:mb-10 p-0">
       <CardHeader className="flex flex-row items-center justify-between px-6 py-7">
         <h3 className="text-text-title">Personal Information</h3>
-        <Button
-          variant="ghost"
-          onClick={onEdit}
-          className="text-text-primary hover:text-text-primary/80 h-auto flex gap-4 items-center px-3"
-        >
-          <Edit size={14} />
-          <div className="body-small-bold text-text-primary">Edit</div>
-        </Button>
+        <div className="flex items-center gap-2">
+          {onBackToAppointment && (
+            <Button
+              variant="ghost"
+              onClick={onBackToAppointment}
+              className="text-text-primary hover:text-text-primary/80 h-auto flex gap-2 items-center px-3"
+            >
+              <Pencil size={14} />
+              <div className="body-small-bold text-text-primary">返回预约页面</div>
+            </Button>
+          )}
+          <Button
+            variant="ghost"
+            onClick={onEdit}
+            className="text-text-primary hover:text-text-primary/80 h-auto flex gap-4 items-center px-3"
+          >
+            <Edit size={14} />
+            <div className="body-small-bold text-text-primary">Edit</div>
+          </Button>
+        </div>
       </CardHeader>
       <CardContent className="px-6 pb-6 pt-0">
         <div className="grid md:grid-cols-2 gap-y-6 gap-x-6">

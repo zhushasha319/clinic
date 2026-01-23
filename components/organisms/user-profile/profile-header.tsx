@@ -1,19 +1,19 @@
 "use client";
 import { PatientProfile } from "@/types";
 import { UploadButton } from "@uploadthing/react";
-import { updateProfileImage } from '../../../lib/actions/user.actions';
-import type { OurFileRouter } from '@/app/api/uploadthing/core';
+import { updateProfileImage } from "../../../lib/actions/user.actions";
+import type { OurFileRouter } from "@/app/api/uploadthing/core";
 import React, { useState } from "react";
 import { useSession } from "next-auth/react";
 import toast from "react-hot-toast";
 import { Camera, Loader2 } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
- 
+
 interface ProfileHeaderProps {
   patientData: PatientProfile;
   appointmentId?: string;
 }
- 
+
 export default function ProfileHeader({
   patientData,
 }: // appointmentId,
@@ -21,31 +21,38 @@ ProfileHeaderProps) {
   // --- State and Hooks ---
   const { data: session, update: updateSession } = useSession();
   const [currentImage, setCurrentImage] = useState<string | undefined>(
-    patientData.image
+    patientData.image,
   );
   const [isProcessing, setIsProcessing] = useState(false);
- 
+
+  // Debug log
+  React.useEffect(() => {
+    console.log("Patient image URL:", patientData.image);
+    console.log("Current image URL:", currentImage);
+  }, [patientData.image, currentImage]);
+
   const handleUploadError = (error: Error) => {
     toast.error(`Upload failed: ${error.message}`);
     setIsProcessing(false);
   };
- 
+
   // --- Render ---
   return (
     <div className="flex items-center gap-6 mb-10 md:mb-12">
       {/* Avatar and Upload Button Container */}
       <div className="relative group">
-        <Avatar className="w-24 h-24 text-3xl ">
-          <AvatarImage
-            src={currentImage}
-            alt={patientData.name || "Profile"}
-            className="object-cover"
-          />
-          <AvatarFallback>
+        <Avatar className="w-24 h-24 text-3xl">
+          {currentImage ? (
+            <AvatarImage
+              src={currentImage}
+              alt={patientData.name || "Profile"}
+            />
+          ) : null}
+          <AvatarFallback className="bg-blue-100 text-blue-600">
             {patientData.name?.charAt(0).toUpperCase() || "U"}
           </AvatarFallback>
         </Avatar>
- 
+
         <div
           className={`aboslute inset-0 rounded-full ${
             isProcessing ? "pointer-events-none" : "cursor-pointer"
@@ -65,11 +72,11 @@ ProfileHeaderProps) {
                   setIsProcessing(false);
                   return;
                 }
-                const newImageUrl = res[0].ufsUrl;
- 
+                const newImageUrl = res[0].url;
+
                 // Call the server action to update the user's profile image in the database
                 const response = await updateProfileImage(newImageUrl);
- 
+
                 if (response.success) {
                   // Preload the new image to prevent flickering
                   const img = new window.Image();
@@ -77,26 +84,26 @@ ProfileHeaderProps) {
                   img.onload = async () => {
                     // Update the local state to display the new image
                     setCurrentImage(newImageUrl);
- 
+
                     // Update the NextAuth session to reflect the change across the app
                     await updateSession({
                       ...session,
                       user: { ...session?.user, image: newImageUrl },
                     });
- 
+
                     toast.success("Profile image updated successfully!");
                     setIsProcessing(false);
                   };
                   img.onerror = () => {
                     toast.error(
-                      "Failed to upload the image. Please try again."
+                      "Failed to upload the image. Please try again.",
                     );
                     setIsProcessing(false);
                   };
                 } else {
                   toast.error(
                     response.message ||
-                      "Failed to update image. Please try again."
+                      "Failed to update image. Please try again.",
                   );
                   setIsProcessing(false);
                   return;
@@ -107,7 +114,7 @@ ProfileHeaderProps) {
             />
           </div>
         </div>
- 
+
         {/* Loading Spinner Overlay */}
         {isProcessing && (
           <div className="absolute inset-0 bg-black bg-opacity-60 rounded-full flex items-center justify-center">
@@ -115,10 +122,9 @@ ProfileHeaderProps) {
           </div>
         )}
       </div>
- 
+
       {/* User Name */}
       <h2 className="text-text-title">{patientData.name}</h2>
     </div>
   );
 }
-

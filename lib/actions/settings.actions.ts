@@ -6,6 +6,7 @@ interface GetDepartmentData {
   departments: DepartmentData[];
 }
 
+/** 获取全部科室并按创建时间排序，返回标准响应。 */
 export async function getDepartments(): Promise<
   ServerActionResponse<GetDepartmentData>
 > {
@@ -45,6 +46,7 @@ interface BannerResponse {
   banners: BannerImageData[];
 }
 
+/** 拉取 Banner 列表并按排序字段升序返回。 */
 export async function getBanners(): Promise<
   ServerActionResponse<BannerResponse>
 > {

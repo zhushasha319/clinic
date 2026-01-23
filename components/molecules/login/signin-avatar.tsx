@@ -28,6 +28,9 @@ export default async function SigninOrAvatar() {
   const role = session.user.role;
   const firstInitial = userName.charAt(0).toUpperCase();
 
+  // Debug log
+  console.log("SigninAvatar - userImage:", userImage);
+
   const isPatient = role === "PATIENT";
   const isAdmin = role === "ADMIN";
 
@@ -45,7 +48,8 @@ export default async function SigninOrAvatar() {
               alt={`${userName} avatar`}
               width={40}
               height={40}
-              className="h-10 w-10 object-cover"
+              className="h-10 w-10 object-cover rounded-full"
+              unoptimized
               priority={false}
             />
           ) : (

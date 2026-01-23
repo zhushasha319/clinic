@@ -8,19 +8,21 @@ import EditProfileModal from "@/components/molecules/userFiles/edit-patient-prof
 import AppointmentsSection from "@/components/organisms/user-profile/appointments-sections";
 import CancellationDialogs from "@/components/molecules/userFiles/cancel-dialogs";
 import { cancelCashAppointment } from "@/lib/actions/shared.actions";
- 
+
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 
 import { ReviewFormValues } from "@/types";
 import { submitPatientReview } from "@/lib/actions/review.action";
 import ReviewDialog from "@/components/molecules/userFiles/review-dialog";
- 
+
 export default function PatientProfileClient({
   patientData,
   appointments,
   totalPages,
   currentPage,
   appointmentsError,
+  appointmentId,
+  returnTo,
 }: {
   patientData: PatientProfile;
   appointments: Appointment[];
@@ -28,33 +30,37 @@ export default function PatientProfileClient({
   totalPages: number;
   currentPage: number;
   appointmentsError?: string | null;
+  returnTo?: string;
 }) {
   const router = useRouter();
   const pathname = usePathname();
- 
+
   //https://examples.com/dashboard/users?page=1
   //pathname = /dashboard/users
- 
+
   const searchParams = useSearchParams();
+  const returnToParam = returnTo ?? searchParams.get("returnTo") ?? undefined;
+  const appointmentIdParam =
+    appointmentId ?? searchParams.get("appointmentId") ?? undefined;
   //https://examples.com/dashboard/users?page=1
   //searchParams = page=1
- 
+
   const [isPending, startTransition] = useTransition();
- 
+
   // State variables for Modals / Dialogs
   const [isEditProfileModalOpen, setEditProfileModalOpen] = useState(false);
   const [isCancelInfoDialogOpen, setIsCancelInfoDialogOpen] = useState(false);
   const [isConfirmCancelCashDialogOpen, setIsConfirmCancelCashDialogOpen] =
     useState(false);
   const [isReviewDialogOpen, setIsReviewDialogOpen] = useState(false);
- 
+
   //State for selected items
   const [appointToCacel, setAppointmentToCancel] = useState<Appointment | null>(
-    null
+    null,
   );
   const [selectedAppointmentForReview, setSelectedAppointmentForReview] =
     useState<Appointment | null>(null);
- 
+
   useEffect(() => {
     if (appointmentsError) {
       toast.error("Appointments could not be loaded. Please again later");
@@ -62,10 +68,9 @@ export default function PatientProfileClient({
     }
   }, [appointmentsError]);
 
- 
   const handlePageChange = (page: number) => {
     const currentParams = new URLSearchParams(
-      Array.from(searchParams.entries())
+      Array.from(searchParams.entries()),
     );
     //https://example.com/products?sort=price&category=electronics
     // ['sort','price'], ['category','electronics']
@@ -73,7 +78,7 @@ export default function PatientProfileClient({
     const newUrl = `${pathname}?${currentParams.toString()}`;
     router.push(newUrl, { scroll: false });
   };
- 
+
   const handleConfirmCancelCash = () => {
     if (!appointToCacel) {
       return;
@@ -91,7 +96,7 @@ export default function PatientProfileClient({
       setAppointmentToCancel(null);
     });
   };
- 
+
   const handleReviewSubmit = (formData: ReviewFormValues) => {
     if (!selectedAppointmentForReview) {
       toast.error("No appointment selected for review");
@@ -116,13 +121,28 @@ export default function PatientProfileClient({
       }
     });
   };
- 
+
   return (
     <div className="min-h-screen bg-background-1 max-w-[1440px] mx-auto p-6 md:p-8">
       <ProfileHeader patientData={patientData} />
       <PersonalInformation
         patientData={patientData}
         onEdit={() => setEditProfileModalOpen(true)}
+        onBackToAppointment={
+          returnToParam || appointmentIdParam
+            ? () => {
+                if (returnToParam) {
+                  router.push(returnToParam);
+                  return;
+                }
+                if (appointmentIdParam) {
+                  router.push(
+                    `/appointments/patient-details?appointmentId=${appointmentIdParam}`,
+                  );
+                }
+              }
+            : undefined
+        }
       />
       <AppointmentsSection
         appointments={appointments}
@@ -140,7 +160,7 @@ export default function PatientProfileClient({
         }}
         isPending={isPending}
       />
- 
+
       {/* Models*/}
       <EditProfileModal
         isOpen={isEditProfileModalOpen}

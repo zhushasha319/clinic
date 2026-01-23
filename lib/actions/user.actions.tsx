@@ -6,6 +6,7 @@ import type {
   ServerActionResponse,
   PatientProfile,
   Appointment as AppointmentDTO,
+  UserAppointmentsData,
 } from "@/types";
 import { auth } from "@/auth";
 import { signOut } from "@/auth";
@@ -17,18 +18,11 @@ import { utapi } from "../uploadthing";
 import { getAppTimeZone } from "@/lib/config";
 import { toZonedTime, format } from "date-fns-tz";
 import { revalidatePath as nextRevalidatePath } from "next/cache";
-// ---- Types for this action ----
-interface UserAppointmentsData {
-  appointments: AppointmentDTO[];
-  totalAppointments: number;
-  totalPages: number;
-  currentPage: number;
-}
 
-// ---- Helpers ----
 const DEFAULT_PAGE = 1;
 const DEFAULT_LIMIT = 10;
 
+/** 判断错误是否为 Next.js 重定向错误，便于向上抛出。 */
 const isNextRedirectError = (error: unknown) => {
   return (
     error instanceof Error &&
@@ -36,6 +30,9 @@ const isNextRedirectError = (error: unknown) => {
     (error as unknown as { digest: string }).digest.startsWith("NEXT_REDIRECT")
   );
 };
+/**
+ * 账号密码登录：Zod 校验→调用 Auth.js 登录（无自动跳转）→手动重定向到 callbackUrl。
+ */
 export async function signInWithCredentials(
   formData: FormData,
 ): Promise<ServerActionResponse> {
@@ -93,6 +90,7 @@ export async function signInWithCredentials(
   }
 }
 
+/** 服务器侧登出当前用户，使用 Auth.js signOut 并返回结果。 */
 export async function signOutUser(): Promise<ServerActionResponse> {
   try {
     // Auth.js / NextAuth v5 server-side signOut
@@ -111,6 +109,9 @@ export async function signOutUser(): Promise<ServerActionResponse> {
     };
   }
 }
+/**
+ * 用户注册：校验表单→检测重复邮箱→创建用户→自动登录并重定向。
+ */
 export async function signUp(
   _prevState: ServerActionResponse,
   formData: FormData,
@@ -185,6 +186,7 @@ export async function signUp(
 //sign up逻辑：验证表单格式→检查用户是否存在→哈希密码→创建用户→自动登录
 
 //完成user file,包括个人信息和预约
+/** 获取当前登录用户的基础资料并映射为 PatientProfile。 */
 export async function getUserDetails(): Promise<
   ServerActionResponse<PatientProfile>
 > {
@@ -256,12 +258,18 @@ export async function getUserDetails(): Promise<
   }
 }
 
+/**
+ * 将任意输入收敛为限定区间内的整数，用于分页等安全数值处理。
+ */
 function clampInt(value: unknown, fallback: number, min: number, max: number) {
   const n = typeof value === "number" ? value : Number(value);
   if (!Number.isFinite(n)) return fallback;
   return Math.min(max, Math.max(min, Math.trunc(n)));
 }
 
+/**
+ * 将数据库预约状态映射为前端展示用的文案，过滤待支付状态。
+ */
 function mapAppointmentStatus(status: string): AppointmentDTO["status"] | null {
   //如果是待支付，就忽略
   if (status === "PAYMENT_PENDING") return null;
@@ -282,6 +290,7 @@ function mapAppointmentStatus(status: string): AppointmentDTO["status"] | null {
   }
 }
 
+/** 按应用时区格式化 UTC 时间，返回日期和时间字符串。 */
 function formatInAppTZ(dateUTC: Date, timeZone: string) {
   const zoned = toZonedTime(dateUTC, timeZone);
   return {
@@ -290,6 +299,9 @@ function formatInAppTZ(dateUTC: Date, timeZone: string) {
   };
 }
 
+/**
+ * 分页获取当前用户的预约列表（排除待支付），并转换为展示 DTO。
+ */
 export async function getUserAppointments(params?: {
   page?: number;
   limit?: number;
@@ -411,6 +423,7 @@ export async function getUserAppointments(params?: {
 }
 
 //处理上传头像
+/** 更新用户头像：保存新图、尝试删除旧图，并重新验证个人资料页面。 */
 export async function updateProfileImage(
   imageUrl: string,
 ): Promise<ServerActionResponse> {
@@ -481,6 +494,7 @@ export async function updateProfileImage(
   }
 }
 
+/** 包装 next/cache 的 revalidatePath，保护性校验路径字符串。 */
 function revalidatePath(path: string) {
   if (typeof path !== "string" || !path.trim()) return;
   nextRevalidatePath(path);
@@ -492,6 +506,9 @@ import { patientProfileUpdateSchema } from "@/lib/validations/auth";
 import type { ProfileUpdateInput } from "@/types";
 import { z } from "zod";
 
+/**
+ * 更新用户个人资料：鉴权→Zod 校验→组装可选字段→更新数据库并刷新页面。
+ */
 export async function updateUserProfile(
   data: ProfileUpdateInput,
 ): Promise<ServerActionResponse<{ id: string }>> {
@@ -531,26 +548,19 @@ export async function updateUserProfile(
     const updateData: {
       name: string;
       address?: string | null;
-      phoneNumber?: string | null;
+      phoneNumber: string;
       dateofbirth?: Date | null;
     } = {
       name,
-      phoneNumber: phoneNumber ?? null, // schema requires phoneNumber, but keep safe
+      phoneNumber,
+      address: address?.trim() || null,
+      dateofbirth: dateOfBirth ? new Date(dateOfBirth) : null,
     };
-
-    if (typeof address !== "undefined") {
-      updateData.address = address?.trim() ? address.trim() : null;
-    }
-
-    if (typeof dateOfBirth !== "undefined") {
-      updateData.dateofbirth = dateOfBirth ? new Date(dateOfBirth) : null;
-    }
 
     // 4) Update user
     await prisma.user.update({
       where: { id: userId },
       data: updateData,
-      select: { id: true },
     });
 
     // 5) Revalidate the profile page to show updated data
@@ -561,9 +571,14 @@ export async function updateUserProfile(
       message: "Profile updated successfully.",
       data: { id: userId },
     };
-  } catch (err: any) {
+  } catch (err: unknown) {
     // Helpful Prisma-specific handling
-    if (err?.code === "P2025") {
+    if (
+      err &&
+      typeof err === "object" &&
+      "code" in err &&
+      err.code === "P2025"
+    ) {
       return {
         success: false,
         errorType: "NOT_FOUND",

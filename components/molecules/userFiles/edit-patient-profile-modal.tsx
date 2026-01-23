@@ -4,6 +4,7 @@ import * as React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { toast } from "react-hot-toast";
 
 import type { PatientProfile } from "@/types";
@@ -46,6 +47,7 @@ export default function EditProfileModal({
   patientData,
 }: EditProfileModalProps) {
   const router = useRouter();
+  const { update: updateSession } = useSession();
   const [serverError, setServerError] = React.useState<string | null>(null);
 
   const form = useForm<ProfileUpdateInput>({
@@ -99,10 +101,16 @@ export default function EditProfileModal({
       return;
     }
 
-    // Success: show toast, close modal, and refresh to get updated data
+    // Success: update session with new name, show toast, close modal, and refresh to get updated data
+    await updateSession({
+      user: {
+        name: payload.name,
+      },
+    });
+
     toast.success("Profile updated successfully!");
     onClose();
-    router.refresh();//刷新页面数据
+    router.refresh(); //刷新页面数据
   };
 
   const handleCancel = () => {

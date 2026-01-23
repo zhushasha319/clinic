@@ -1,4 +1,3 @@
-
 import { redirect } from "next/navigation";
 
 import {
@@ -24,17 +23,24 @@ function redirectToErrorPage(errorType?: string, errorMessage?: string) {
 export default async function PatientProfilePage({
   searchParams,
 }: {
-  searchParams?: { page?: string };
+  searchParams: Promise<{
+    page?: string;
+    appointmentId?: string;
+    returnTo?: string;
+  }>;
 }) {
+  const params = await searchParams;
+
   // 1) Get page number from URL
-  const currentPage = Math.max(1, Number(searchParams?.page ?? "1") || 1);
+  const currentPage = Math.max(1, Number(params?.page ?? "1") || 1);
 
   // 2) Get patient data
-  const userRes = await getUserDetails();//自己定义错误处理逻辑
+  const userRes = await getUserDetails(); //自己定义错误处理逻辑
 
   if (!userRes.success || !userRes.data) {
     const errorType = userRes.errorType?.toLowerCase();
-    const errorMsg = userRes.error ?? userRes.message ?? "Failed to fetch user details.";
+    const errorMsg =
+      userRes.error ?? userRes.message ?? "Failed to fetch user details.";
 
     // Authentication -> /sign-in
     if (errorType === "authentication" || errorType === "unauthorized") {
@@ -42,7 +48,11 @@ export default async function PatientProfilePage({
     }
 
     // Not found -> not-found page
-    if (errorType === "notfound" || errorType === "not_found" || errorType === "not-found") {
+    if (
+      errorType === "notfound" ||
+      errorType === "not_found" ||
+      errorType === "not-found"
+    ) {
       redirect("/not-found");
     }
 
@@ -58,19 +68,21 @@ export default async function PatientProfilePage({
     limit: PAGE_SIZE,
   });
 
-  const appointments: Appointment[] = apptRes.success && apptRes.data
-    ? apptRes.data.appointments
-    : [];
+  const appointments: Appointment[] =
+    apptRes.success && apptRes.data ? apptRes.data.appointments : [];
 
-  const totalPages = apptRes.success && apptRes.data ? apptRes.data.totalPages : 1;
+  const totalPages =
+    apptRes.success && apptRes.data ? apptRes.data.totalPages : 1;
 
   // Per requirement: if appointments error, just pass it to client
-  const appointmentsError =
-    apptRes.success ? undefined : (apptRes.error ?? apptRes.message ?? "Failed to fetch appointments.");
+  const appointmentsError = apptRes.success
+    ? undefined
+    : (apptRes.error ?? apptRes.message ?? "Failed to fetch appointments.");
 
   // Optional: your client prop requires this, but we don't have an appointmentId here.
   // Keeping it as undefined unless your client expects something else.
-  const appointmentId = undefined as unknown as string | undefined;
+  const appointmentId = params?.appointmentId;
+  const returnTo = params?.returnTo;
 
   return (
     <div className="w-full">
@@ -78,6 +90,7 @@ export default async function PatientProfilePage({
         patientData={patientData}
         appointments={appointments}
         appointmentId={appointmentId}
+        returnTo={returnTo}
         totalPages={totalPages || 1}
         currentPage={currentPage || 1}
         appointmentsError={appointmentsError}

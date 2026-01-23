@@ -1,6 +1,10 @@
 import { Department, BannerImage } from "../lib/generated/prisma";
-import {patientProfileUpdateSchema, reviewFormSchema} from "@/lib/validations/auth";
+import {
+  patientProfileUpdateSchema,
+  reviewFormSchema,
+} from "@/lib/validations/auth";
 import { z } from "zod";
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export interface ServerActionResponse<T = any> {
   success: boolean;
   message?: string;
@@ -10,7 +14,7 @@ export interface ServerActionResponse<T = any> {
   fieldErrors?: FieldErrors;
 }
 
-export interface DepartmentData extends Department {}
+export type DepartmentData = Department;
 
 export type DoctorSummary = {
   id: string;
@@ -30,7 +34,7 @@ export interface DoctorReview {
   patientImage: string | null;
 }
 
-export interface BannerImageData extends BannerImage {}
+export type BannerImageData = BannerImage;
 
 export interface DoctorDetails {
   id: string;
@@ -75,3 +79,68 @@ export interface Appointment {
 export type ProfileUpdateInput = z.infer<typeof patientProfileUpdateSchema>;
 
 export type ReviewFormValues = z.infer<typeof reviewFormSchema>;
+
+export interface GuestAppointmentParams {
+  doctorId: string;
+  date: string;
+  startTime: string;
+  endTime: string;
+}
+export interface GuestAppointmentSuccessData {
+  appointmentId: string;
+  guestIdentifier: string;
+}
+export interface UserAppointmentsData {
+  appointments: Appointment[];
+  totalAppointments: number;
+  totalPages: number;
+  currentPage: number;
+}
+export interface AppointmentReservationParams {
+  doctorId: string;
+  userId: string;
+  date: string;
+  startTime: string;
+  endTime: string;
+}
+export interface ReservationSuccessData {
+  appointmentId: string;
+}
+import type { Prisma } from "@/lib/generated/prisma";
+export type AppoitmentWithRelations = Prisma.AppointmentGetPayload<{
+  include: {
+    doctor: {
+      include: {
+        doctorProfile: true;
+      };
+    };
+  };
+}>;
+export interface AppointmentData {
+appointmentId: string;
+doctorId: string;
+doctorName: string;
+doctorSpecilaity: string;
+doctorImage?: string | null;
+date: string;
+timeSlot: string;
+endTime: string;
+patientType?: "MYSELF" | "SOMEONE_ELSE";
+patientName?: string;
+patientdateofbirth?: Date | null;
+phoneNumber?: string | null;
+reasonForVisit?: string | null;
+additionalNotes?: string | null;
+relationship?: string | null;
+}
+ 
+ 
+export interface PatientData {
+name: string;
+email: string;
+phoneNumber: string;
+dateOfBirth: string;
+}
+import {PatientDetailsFormSchema} from "@/lib/validations/auth";
+export type PatientDetailsFormValues = z.infer<typeof PatientDetailsFormSchema>;
+ 

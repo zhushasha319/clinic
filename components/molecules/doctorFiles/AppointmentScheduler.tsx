@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
 import { useAppointmentSlots } from "@/hooks/useAppointmentSlots";
+import { useAppointmentReservation } from "@/hooks/useAppointmentReservation";
 import {
   addMonths,
   startOfMonth,
@@ -19,13 +20,11 @@ import { cn } from "@/lib/utils";
 interface AppointmentSchedulerProps {
   doctorId: string;
   userId?: string;
-  userRole?: string;
 }
 
 export default function AppointmentScheduler({
   doctorId,
   userId,
-  userRole,
 }: AppointmentSchedulerProps) {
   const {
     date,
@@ -37,9 +36,21 @@ export default function AppointmentScheduler({
   } = useAppointmentSlots(doctorId, userId);
 
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
-
-  // Track the currently displayed month in the calendar to handle month navigation
   const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
+
+  const { mutate: reserveAppointment, isPending } = useAppointmentReservation({
+    userId,
+    onConflict: () => {
+      setSelectedSlot(null);
+      if (date) fetchSlotsForDate(date);
+    },
+  });
+  const formatDateYYYYMMDD = (d: Date) => {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${y}-${m}-${day}`;
+  };
 
   // Initialize selected slot when initialTimeSlot is available
   useEffect(() => {
@@ -59,9 +70,17 @@ export default function AppointmentScheduler({
 
   const handleReservation = () => {
     if (!date || !selectedSlot) return;
-    alert(
-      `Reservation requested for ${date.toDateString()} at ${selectedSlot}`
-    );
+
+    const slot = timeSlots.find((s) => s.startTime === selectedSlot);
+    if (!slot) return; // slots 可能刷新过，兜底一下
+
+    reserveAppointment({
+      doctorId,
+      date: formatDateYYYYMMDD(date),
+      startTime: slot.startTime,
+      endTime: slot.endTime,
+      // 如果 payload 里未来要带 doctorName/doctorSpecialty，这里也可以加
+    });
   };
 
   const today = startOfDay(new Date());
@@ -71,7 +90,7 @@ export default function AppointmentScheduler({
   const isDateDisabled = (day: Date) => {
     return isSunday(day) || isBefore(day, today) || isAfter(day, maxDate);
   };
-
+  //如果是新选择的日期，更新日期并获取该日期的时间段
   const handleDateSelect = (newDate: Date | undefined) => {
     if (newDate) {
       setDate(newDate);
@@ -83,11 +102,11 @@ export default function AppointmentScheduler({
   const handleMonthChange = (month: Date) => {
     setCurrentMonth(month);
 
-    // When navigating to a differnt month, select the first available day by default
-    // Find the first selectable day in the new month
+    // 当导航到不同的月份时，默认选择第一个可用的日期
+    // 找到新月份中第一个可选择的日期
     let firstSelectableDay = startOfMonth(month);
 
-    // If the month is the current month, we shouldn't select a past date
+    // 如果月份是当前月份，则不应选择过去的日期
     if (isBefore(firstSelectableDay, today)) {
       firstSelectableDay = today;
     }
@@ -95,11 +114,11 @@ export default function AppointmentScheduler({
     // If it's a Sunday, move to Monday
     while (isSunday(firstSelectableDay)) {
       firstSelectableDay = new Date(
-        firstSelectableDay.setDate(firstSelectableDay.getDate() + 1)
+        firstSelectableDay.setDate(firstSelectableDay.getDate() + 1),
       );
     }
 
-    // Update date and fetch slots
+    // 更新日期并获取该日期的时间段
     if (!isAfter(firstSelectableDay, maxDate)) {
       setDate(firstSelectableDay);
       fetchSlotsForDate(firstSelectableDay);
@@ -145,8 +164,6 @@ export default function AppointmentScheduler({
         ) : timeSlots.length > 0 ? (
           <div className="grid grid-cols-2 gap-3">
             {timeSlots.map((slot) => {
-              // Assuming slot.startTime is "HH:mm" (24h) and we want "09:00 AM" format
-              // Simple formatter for 12h display
               const [hours, minutes] = slot.startTime.split(":");
               const h = parseInt(hours, 10);
               const ampm = h >= 12 ? "PM" : "AM";
@@ -163,7 +180,7 @@ export default function AppointmentScheduler({
                     "w-full justify-center text-sm font-medium",
                     selectedSlot === slot.startTime
                       ? "border-blue-500 bg-blue-50 text-blue-700 hover:bg-blue-100 hover:text-blue-800 dark:border-blue-400 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-900/50"
-                      : "text-gray-700 hover:bg-gray-50 hover:text-gray-900 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-gray-100"
+                      : "text-gray-700 hover:bg-gray-50 hover:text-gray-900 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-gray-100",
                   )}
                   onClick={() => setSelectedSlot(slot.startTime)}
                 >
@@ -179,13 +196,19 @@ export default function AppointmentScheduler({
         )}
       </div>
 
-      {/* Action Button */}
       <Button
         className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold h-11 dark:bg-blue-600 dark:hover:bg-blue-700"
         onClick={handleReservation}
-        disabled={!selectedSlot || isLoading}
+        disabled={!selectedSlot || isLoading || isPending}
       >
-        Continue to Next Step
+        {isPending ? (
+          <span className="flex items-center justify-center gap-2">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            Reserving...
+          </span>
+        ) : (
+          "Continue to Next Step"
+        )}
       </Button>
     </div>
   );

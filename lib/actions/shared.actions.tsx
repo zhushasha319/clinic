@@ -1,12 +1,15 @@
 "use server";
- 
+
 import { ServerActionResponse } from "@/types";
-import prisma  from "@/db/prisma";
+import prisma from "@/db/prisma";
 import { AppointmentStatus } from "@/lib/generated/prisma";
 import { revalidatePath } from "next/cache";
- 
+
+/**
+ * 取消现金支付的预约：校验ID→确认状态为CASH→标记为取消并刷新用户资料页。
+ */
 export async function cancelCashAppointment(
-  appointmentId: string
+  appointmentId: string,
 ): Promise<ServerActionResponse> {
   if (!appointmentId) {
     return {
@@ -20,7 +23,7 @@ export async function cancelCashAppointment(
     const appointment = await prisma.appointment.findUnique({
       where: { appointmentId },
     });
- 
+
     // Step 2: Handle case where appointment is not found
     if (!appointment) {
       return {
@@ -29,7 +32,7 @@ export async function cancelCashAppointment(
         errorType: "notFound",
       };
     }
- 
+
     // Step 3: Check if the appointment status is 'CASH'
     if (appointment.status !== AppointmentStatus.CASH) {
       return {
@@ -39,7 +42,7 @@ export async function cancelCashAppointment(
         errorType: "InvalidStatus",
       };
     }
- 
+
     // Step 4: Update the appointment status to 'CANCELLED'
     const updatedAppointment = await prisma.appointment.update({
       where: { appointmentId },
@@ -47,10 +50,10 @@ export async function cancelCashAppointment(
         status: AppointmentStatus.CANCELLED,
       },
     });
- 
-    revalidatePath(`/user/profile`);//刷新用户个人资料页面
+
+    revalidatePath(`/user/profile`); //刷新用户个人资料页面
     // revalidatePath("/admin/appointments");
- 
+
     // Step 6: Return a success response
     return {
       success: true,

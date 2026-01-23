@@ -16,6 +16,9 @@ interface DoctorReviewsPaginatedData {
   currentPage: number;
 }
 
+/**
+ * 分页获取医生评价列表，带总数与页码，并将时间转为应用时区。
+ */
 export async function getDoctorReviewsPaginated(
   doctorId: string,
   page: number = 1,
@@ -108,6 +111,7 @@ export async function getDoctorReviewsPaginated(
   }
 }
 
+/** 聚合医生评价数量与平均分，校验 doctorId。 */
 export async function getDoctorReviewStats(
   doctorId: string,
 ): Promise<
@@ -151,6 +155,9 @@ export async function getDoctorReviewStats(
   }
 }
 
+/**
+ * 提交患者评价：鉴权→校验输入→检查预约状态与归属→创建评价并刷新医生评分。
+ */
 export async function submitPatientReview(clientData: {
   appointmentId: string;
   doctorId: string;
