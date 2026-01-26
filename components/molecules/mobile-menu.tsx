@@ -1,9 +1,13 @@
+"use client";
+
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { LanguageToggle } from "@/components/language-toggle";
 import MobileUserSignOrAvatar from "./login/mobile-user-signinoravatar";
 import { Menu } from "lucide-react";
 import { Session } from "next-auth";
+import { useTranslations } from "@/hooks/useTranslations";
 
 import {
   Sheet,
@@ -18,6 +22,8 @@ interface MenuClientProps {
 }
 
 export default function MenuClient({ session }: MenuClientProps) {
+  const t = useTranslations("common");
+
   return (
     <>
       {/*Mobile Nav*/}
@@ -26,28 +32,31 @@ export default function MenuClient({ session }: MenuClientProps) {
           <SheetTrigger asChild>
             <Button variant="ghost" size="icon">
               <Menu className="h-6 w-6" />
-              <span className="sr-only">Open menu</span>
+              <span className="sr-only">{t("openMenu")}</span>
             </Button>
           </SheetTrigger>
           <SheetContent>
             <SheetHeader>
-              <SheetTitle className="text-left">Menu</SheetTitle>
+              <SheetTitle className="text-left">{t("menu")}</SheetTitle>
             </SheetHeader>
             <div className="flex flex-col gap-6 mt-8">
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">Theme</span>
-                <ThemeToggle />
+                <span className="text-sm font-medium">{t("theme")}</span>
+                <div className="flex gap-2">
+                  <LanguageToggle />
+                  <ThemeToggle />
+                </div>
               </div>
 
               <Link
                 href="/"
                 className="text-lg font-medium text-gray-700 hover:text-gray-900 transition-colors"
               >
-                Home
+                {t("home")}
               </Link>
 
               <Button asChild variant="default" className="w-full">
-                <Link href="/#our-doctors">Book Appointment</Link>
+                <Link href="/#our-doctors">{t("bookAppointment")}</Link>
               </Button>
 
               <MobileUserSignOrAvatar session={session} />

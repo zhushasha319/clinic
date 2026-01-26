@@ -1,6 +1,7 @@
 import { DepartmentCard } from "@/components/molecules/departmentCard";
 import { getDepartments } from "@/lib/actions/settings.actions";
 import { DepartmentData } from "@/types";
+import { getTranslations } from "next-intl/server";
 
 interface DepartmentsSectionProps {
   className?: string;
@@ -9,6 +10,7 @@ interface DepartmentsSectionProps {
 export async function DepartmentsSection({
   className,
 }: DepartmentsSectionProps) {
+  const t = await getTranslations("common");
   let departments: DepartmentData[] = [];
   let fetchError: string | null = null;
   try {
@@ -29,7 +31,9 @@ export async function DepartmentsSection({
     <section className={className}>
       <div className="container mx-auto px-4 py-12">
         {/* Section Title */}
-        <h2 className="text-2xl font-bold text-center mb-8">Our Departments</h2>
+        <h2 className="text-2xl font-bold text-center mb-8">
+          {t("ourDepartments")}
+        </h2>
 
         {/* Departments Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">

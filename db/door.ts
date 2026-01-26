@@ -10,12 +10,12 @@ export const bannerImageData = [
 // Data for the Departments Section
 // -----------------------------------------------------------------------------
 export const departmentData = [
-  { id: "dept-cardiology", name: "Cardiology", iconName: "Heart" },
-  { id: "dept-neurology", name: "Neurology", iconName: "Brain" },
-  { id: "dept-pediatrics", name: "Pediatrics", iconName: "Baby" },
-  { id: "dept-orthopedics", name: "Orthopedics", iconName: "Bone" },
-  { id: "dept-dermatology", name: "Dermatology", iconName: "Sparkles" },
-  { id: "dept-ophthalmology", name: "Ophthalmology", iconName: "Eye" },
+  { id: "dept-cardiology", name: "心脏科", iconName: "Heart" },
+  { id: "dept-neurology", name: "神经科", iconName: "Brain" },
+  { id: "dept-pediatrics", name: "儿科", iconName: "Baby" },
+  { id: "dept-orthopedics", name: "骨科", iconName: "Bone" },
+  { id: "dept-dermatology", name: "皮肤科", iconName: "Sparkles" },
+  { id: "dept-ophthalmology", name: "眼科", iconName: "Eye" },
 ];
 
 // -----------------------------------------------------------------------------
@@ -26,7 +26,7 @@ export const doctorData = [
   {
     id: "doc-1",
     name: "Dr. Evelyn Reed",
-    specialty: "Cardiology",
+    specialty: "心脏科",
     rating: 4.8,
     reviewCount: 156,
     imageUrl:
@@ -35,7 +35,7 @@ export const doctorData = [
   {
     id: "doc-2",
     name: "Dr. Marcus Thorne",
-    specialty: "Neurology",
+    specialty: "神经科",
     rating: 4.9,
     reviewCount: 212,
     imageUrl:
@@ -44,7 +44,7 @@ export const doctorData = [
   {
     id: "doc-3",
     name: "Dr. Lena Petrova",
-    specialty: "Pediatrics",
+    specialty: "儿科",
     rating: 4.7,
     reviewCount: 189,
     imageUrl:

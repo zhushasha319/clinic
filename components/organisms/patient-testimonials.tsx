@@ -1,17 +1,21 @@
+"use client";
+
 import Review from "@/components/molecules/review";
 import { testimonialData } from "@/db/door";
+import { useTranslations } from "@/hooks/useTranslations";
 
 interface PatientTestimonialsProps {
   className?: string;
 }
 
 export function PatientTestimonials({ className }: PatientTestimonialsProps) {
+  const t = useTranslations("common");
   return (
     <section className={className}>
       <div className="container mx-auto px-4 py-12">
         {/* Section Title */}
         <h2 className="text-2xl font-bold text-center mb-8">
-          Patient Testimonials
+          {t("patientTestimonials")}
         </h2>
 
         {/* Testimonials Grid */}

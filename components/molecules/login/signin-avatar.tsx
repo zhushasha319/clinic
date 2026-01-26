@@ -6,7 +6,7 @@ import Link from "next/link";
 import { auth } from "@/auth";
 import { InteractiveSignInButton } from "./interactive-sign-in-button";
 import SignOutButton from "./sign-out-button";
-
+import {getTranslations }from "next-intl/server";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -28,12 +28,9 @@ export default async function SigninOrAvatar() {
   const role = session.user.role;
   const firstInitial = userName.charAt(0).toUpperCase();
 
-  // Debug log
-  console.log("SigninAvatar - userImage:", userImage);
-
   const isPatient = role === "PATIENT";
   const isAdmin = role === "ADMIN";
-
+  const t = await getTranslations();
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -72,13 +69,13 @@ export default async function SigninOrAvatar() {
 
         {isPatient ? (
           <DropdownMenuItem asChild>
-            <Link href="/user/profile">User Profile</Link>
+            <Link href="/user/profile">{t('User Profile')}</Link>
           </DropdownMenuItem>
         ) : null}
 
         {isAdmin ? (
           <DropdownMenuItem asChild>
-            <Link href="/admin/dashboard">Admin Dashboard</Link>
+            <Link href="/admin/dashboard">{t('Admin Dashboard')}</Link>
           </DropdownMenuItem>
         ) : null}
 

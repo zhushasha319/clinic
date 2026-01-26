@@ -120,13 +120,37 @@ export const config: NextAuthConfig = {
       //把 token 映射到 session（给前端用）
       if (token.sub) {
         session.user.id = token.sub;
+
+        // 每次都从数据库获取最新的用户信息
+        try {
+          const user = await prisma.user.findUnique({
+            where: { id: token.sub },
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              image: true,
+              role: true,
+            },
+          });
+
+          if (user) {
+            session.user.name = user.name;
+            session.user.email = user.email;
+            session.user.image = user.image;
+            session.user.role = user.role as Role;
+          }
+        } catch (error) {
+          console.error("Failed to fetch user data:", error);
+          // 如果数据库查询失败，使用 token 中的数据作为备用
+          if (token.role) {
+            session.user.role = token.role as Role;
+          }
+          session.user.name = token.name;
+          session.user.email = token.email as string;
+          session.user.image = token.picture;
+        }
       }
-      if (token.role) {
-        session.user.role = token.role as Role;
-      }
-      session.user.name = token.name;
-      session.user.email = token.email as string;
-      session.user.image = token.picture;
 
       return session;
     },

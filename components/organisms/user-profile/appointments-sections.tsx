@@ -1,9 +1,12 @@
+"use client";
+
 import { Appointment } from "@/types";
 import AppointmentCard from "../user-profile/appointment-card";
-import PaginationControls from "@/components/molecules/pagination-controls";
+import PaginationControls from "../../molecules/PaginationControls";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
- 
+import { useTranslations } from "@/hooks/useTranslations";
+
 interface AppointmentsSectionProps {
   appointments: Appointment[];
   totalPages: number;
@@ -14,7 +17,7 @@ interface AppointmentsSectionProps {
   onReview: (appointment: Appointment) => void;
   isPending: boolean;
 }
- 
+
 export default function AppointmentsSection({
   appointments,
   totalPages,
@@ -25,14 +28,20 @@ export default function AppointmentsSection({
   onReview,
   isPending,
 }: AppointmentsSectionProps) {
+  const t = useTranslations("appointments");
+
   return (
     <div>
-      <h3 className="text-text-title mb-6">Appointments</h3>
+      <h3 className="text-text-title mb-6">{t("title")}</h3>
       {appointments.length === 0 ? (
         <div className="p-6 text-center bg-background rounded-lg shadow-sm border border-border-2">
-          <p className="text-text-body-subtle">No appointments found.</p>
-          <Button asChild variant="default" className="text-text-caption-2 mt-4">
-            <Link href="/#our-doctors">Book an Appointment</Link>
+          <p className="text-text-body-subtle">{t("noAppointments")}</p>
+          <Button
+            asChild
+            variant="default"
+            className="text-text-caption-2 mt-4"
+          >
+            <Link href="/#our-doctors">{t("bookNow")}</Link>
           </Button>
         </div>
       ) : (
@@ -66,4 +75,3 @@ export default function AppointmentsSection({
     </div>
   );
 }
- 

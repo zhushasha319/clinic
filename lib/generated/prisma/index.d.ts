@@ -9907,6 +9907,11 @@ export namespace Prisma {
     patientdateofbirth: Date | null
     reservationExpiresAt: Date | null
     status: $Enums.AppointmentStatus | null
+    paymentStatus: string | null
+    paymentOrderNo: string | null
+    paymentChargeId: string | null
+    paymentTransactionId: string | null
+    paymentCompletedAt: Date | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -9929,6 +9934,11 @@ export namespace Prisma {
     patientdateofbirth: Date | null
     reservationExpiresAt: Date | null
     status: $Enums.AppointmentStatus | null
+    paymentStatus: string | null
+    paymentOrderNo: string | null
+    paymentChargeId: string | null
+    paymentTransactionId: string | null
+    paymentCompletedAt: Date | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -9952,6 +9962,11 @@ export namespace Prisma {
     patientdateofbirth: number
     reservationExpiresAt: number
     status: number
+    paymentStatus: number
+    paymentOrderNo: number
+    paymentChargeId: number
+    paymentTransactionId: number
+    paymentCompletedAt: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -9976,6 +9991,11 @@ export namespace Prisma {
     patientdateofbirth?: true
     reservationExpiresAt?: true
     status?: true
+    paymentStatus?: true
+    paymentOrderNo?: true
+    paymentChargeId?: true
+    paymentTransactionId?: true
+    paymentCompletedAt?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -9998,6 +10018,11 @@ export namespace Prisma {
     patientdateofbirth?: true
     reservationExpiresAt?: true
     status?: true
+    paymentStatus?: true
+    paymentOrderNo?: true
+    paymentChargeId?: true
+    paymentTransactionId?: true
+    paymentCompletedAt?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -10021,6 +10046,11 @@ export namespace Prisma {
     patientdateofbirth?: true
     reservationExpiresAt?: true
     status?: true
+    paymentStatus?: true
+    paymentOrderNo?: true
+    paymentChargeId?: true
+    paymentTransactionId?: true
+    paymentCompletedAt?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -10117,6 +10147,11 @@ export namespace Prisma {
     patientdateofbirth: Date | null
     reservationExpiresAt: Date | null
     status: $Enums.AppointmentStatus
+    paymentStatus: string | null
+    paymentOrderNo: string | null
+    paymentChargeId: string | null
+    paymentTransactionId: string | null
+    paymentCompletedAt: Date | null
     createdAt: Date
     updatedAt: Date
     _count: AppointmentCountAggregateOutputType | null
@@ -10157,6 +10192,11 @@ export namespace Prisma {
     patientdateofbirth?: boolean
     reservationExpiresAt?: boolean
     status?: boolean
+    paymentStatus?: boolean
+    paymentOrderNo?: boolean
+    paymentChargeId?: boolean
+    paymentTransactionId?: boolean
+    paymentCompletedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     doctor?: boolean | UserDefaultArgs<ExtArgs>
@@ -10185,6 +10225,11 @@ export namespace Prisma {
     patientdateofbirth?: boolean
     reservationExpiresAt?: boolean
     status?: boolean
+    paymentStatus?: boolean
+    paymentOrderNo?: boolean
+    paymentChargeId?: boolean
+    paymentTransactionId?: boolean
+    paymentCompletedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     doctor?: boolean | UserDefaultArgs<ExtArgs>
@@ -10210,6 +10255,11 @@ export namespace Prisma {
     patientdateofbirth?: boolean
     reservationExpiresAt?: boolean
     status?: boolean
+    paymentStatus?: boolean
+    paymentOrderNo?: boolean
+    paymentChargeId?: boolean
+    paymentTransactionId?: boolean
+    paymentCompletedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     doctor?: boolean | UserDefaultArgs<ExtArgs>
@@ -10235,11 +10285,16 @@ export namespace Prisma {
     patientdateofbirth?: boolean
     reservationExpiresAt?: boolean
     status?: boolean
+    paymentStatus?: boolean
+    paymentOrderNo?: boolean
+    paymentChargeId?: boolean
+    paymentTransactionId?: boolean
+    paymentCompletedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type AppointmentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"appointmentId" | "doctorId" | "userId" | "guestIdentifier" | "patientType" | "patientRelation" | "patientName" | "paymentMethod" | "paymentResult" | "paidAt" | "appointmentStartUTC" | "appointmentEndUTC" | "phoneNumber" | "reasonForVisit" | "additionalNotes" | "patientdateofbirth" | "reservationExpiresAt" | "status" | "createdAt" | "updatedAt", ExtArgs["result"]["appointment"]>
+  export type AppointmentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"appointmentId" | "doctorId" | "userId" | "guestIdentifier" | "patientType" | "patientRelation" | "patientName" | "paymentMethod" | "paymentResult" | "paidAt" | "appointmentStartUTC" | "appointmentEndUTC" | "phoneNumber" | "reasonForVisit" | "additionalNotes" | "patientdateofbirth" | "reservationExpiresAt" | "status" | "paymentStatus" | "paymentOrderNo" | "paymentChargeId" | "paymentTransactionId" | "paymentCompletedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["appointment"]>
   export type AppointmentInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     doctor?: boolean | UserDefaultArgs<ExtArgs>
     user?: boolean | Appointment$userArgs<ExtArgs>
@@ -10283,6 +10338,11 @@ export namespace Prisma {
       patientdateofbirth: Date | null
       reservationExpiresAt: Date | null
       status: $Enums.AppointmentStatus
+      paymentStatus: string | null
+      paymentOrderNo: string | null
+      paymentChargeId: string | null
+      paymentTransactionId: string | null
+      paymentCompletedAt: Date | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["appointment"]>
@@ -10730,6 +10790,11 @@ export namespace Prisma {
     readonly patientdateofbirth: FieldRef<"Appointment", 'DateTime'>
     readonly reservationExpiresAt: FieldRef<"Appointment", 'DateTime'>
     readonly status: FieldRef<"Appointment", 'AppointmentStatus'>
+    readonly paymentStatus: FieldRef<"Appointment", 'String'>
+    readonly paymentOrderNo: FieldRef<"Appointment", 'String'>
+    readonly paymentChargeId: FieldRef<"Appointment", 'String'>
+    readonly paymentTransactionId: FieldRef<"Appointment", 'String'>
+    readonly paymentCompletedAt: FieldRef<"Appointment", 'DateTime'>
     readonly createdAt: FieldRef<"Appointment", 'DateTime'>
     readonly updatedAt: FieldRef<"Appointment", 'DateTime'>
   }
@@ -15710,6 +15775,11 @@ export namespace Prisma {
     patientdateofbirth: 'patientdateofbirth',
     reservationExpiresAt: 'reservationExpiresAt',
     status: 'status',
+    paymentStatus: 'paymentStatus',
+    paymentOrderNo: 'paymentOrderNo',
+    paymentChargeId: 'paymentChargeId',
+    paymentTransactionId: 'paymentTransactionId',
+    paymentCompletedAt: 'paymentCompletedAt',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -16503,6 +16573,11 @@ export namespace Prisma {
     patientdateofbirth?: DateTimeNullableFilter<"Appointment"> | Date | string | null
     reservationExpiresAt?: DateTimeNullableFilter<"Appointment"> | Date | string | null
     status?: EnumAppointmentStatusFilter<"Appointment"> | $Enums.AppointmentStatus
+    paymentStatus?: StringNullableFilter<"Appointment"> | string | null
+    paymentOrderNo?: StringNullableFilter<"Appointment"> | string | null
+    paymentChargeId?: StringNullableFilter<"Appointment"> | string | null
+    paymentTransactionId?: StringNullableFilter<"Appointment"> | string | null
+    paymentCompletedAt?: DateTimeNullableFilter<"Appointment"> | Date | string | null
     createdAt?: DateTimeFilter<"Appointment"> | Date | string
     updatedAt?: DateTimeFilter<"Appointment"> | Date | string
     doctor?: XOR<UserScalarRelationFilter, UserWhereInput>
@@ -16530,6 +16605,11 @@ export namespace Prisma {
     patientdateofbirth?: SortOrderInput | SortOrder
     reservationExpiresAt?: SortOrderInput | SortOrder
     status?: SortOrder
+    paymentStatus?: SortOrderInput | SortOrder
+    paymentOrderNo?: SortOrderInput | SortOrder
+    paymentChargeId?: SortOrderInput | SortOrder
+    paymentTransactionId?: SortOrderInput | SortOrder
+    paymentCompletedAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     doctor?: UserOrderByWithRelationInput
@@ -16560,6 +16640,11 @@ export namespace Prisma {
     patientdateofbirth?: DateTimeNullableFilter<"Appointment"> | Date | string | null
     reservationExpiresAt?: DateTimeNullableFilter<"Appointment"> | Date | string | null
     status?: EnumAppointmentStatusFilter<"Appointment"> | $Enums.AppointmentStatus
+    paymentStatus?: StringNullableFilter<"Appointment"> | string | null
+    paymentOrderNo?: StringNullableFilter<"Appointment"> | string | null
+    paymentChargeId?: StringNullableFilter<"Appointment"> | string | null
+    paymentTransactionId?: StringNullableFilter<"Appointment"> | string | null
+    paymentCompletedAt?: DateTimeNullableFilter<"Appointment"> | Date | string | null
     createdAt?: DateTimeFilter<"Appointment"> | Date | string
     updatedAt?: DateTimeFilter<"Appointment"> | Date | string
     doctor?: XOR<UserScalarRelationFilter, UserWhereInput>
@@ -16587,6 +16672,11 @@ export namespace Prisma {
     patientdateofbirth?: SortOrderInput | SortOrder
     reservationExpiresAt?: SortOrderInput | SortOrder
     status?: SortOrder
+    paymentStatus?: SortOrderInput | SortOrder
+    paymentOrderNo?: SortOrderInput | SortOrder
+    paymentChargeId?: SortOrderInput | SortOrder
+    paymentTransactionId?: SortOrderInput | SortOrder
+    paymentCompletedAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: AppointmentCountOrderByAggregateInput
@@ -16616,6 +16706,11 @@ export namespace Prisma {
     patientdateofbirth?: DateTimeNullableWithAggregatesFilter<"Appointment"> | Date | string | null
     reservationExpiresAt?: DateTimeNullableWithAggregatesFilter<"Appointment"> | Date | string | null
     status?: EnumAppointmentStatusWithAggregatesFilter<"Appointment"> | $Enums.AppointmentStatus
+    paymentStatus?: StringNullableWithAggregatesFilter<"Appointment"> | string | null
+    paymentOrderNo?: StringNullableWithAggregatesFilter<"Appointment"> | string | null
+    paymentChargeId?: StringNullableWithAggregatesFilter<"Appointment"> | string | null
+    paymentTransactionId?: StringNullableWithAggregatesFilter<"Appointment"> | string | null
+    paymentCompletedAt?: DateTimeNullableWithAggregatesFilter<"Appointment"> | Date | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Appointment"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Appointment"> | Date | string
   }
@@ -17489,6 +17584,11 @@ export namespace Prisma {
     patientdateofbirth?: Date | string | null
     reservationExpiresAt?: Date | string | null
     status?: $Enums.AppointmentStatus
+    paymentStatus?: string | null
+    paymentOrderNo?: string | null
+    paymentChargeId?: string | null
+    paymentTransactionId?: string | null
+    paymentCompletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     doctor: UserCreateNestedOneWithoutDoctorAppointmentsInput
@@ -17516,6 +17616,11 @@ export namespace Prisma {
     patientdateofbirth?: Date | string | null
     reservationExpiresAt?: Date | string | null
     status?: $Enums.AppointmentStatus
+    paymentStatus?: string | null
+    paymentOrderNo?: string | null
+    paymentChargeId?: string | null
+    paymentTransactionId?: string | null
+    paymentCompletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     testimonial?: DoctorTestimonialUncheckedCreateNestedOneWithoutAppointmentInput
@@ -17539,6 +17644,11 @@ export namespace Prisma {
     patientdateofbirth?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     reservationExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: EnumAppointmentStatusFieldUpdateOperationsInput | $Enums.AppointmentStatus
+    paymentStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentOrderNo?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentChargeId?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentTransactionId?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     doctor?: UserUpdateOneRequiredWithoutDoctorAppointmentsNestedInput
@@ -17566,6 +17676,11 @@ export namespace Prisma {
     patientdateofbirth?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     reservationExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: EnumAppointmentStatusFieldUpdateOperationsInput | $Enums.AppointmentStatus
+    paymentStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentOrderNo?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentChargeId?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentTransactionId?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     testimonial?: DoctorTestimonialUncheckedUpdateOneWithoutAppointmentNestedInput
@@ -17591,6 +17706,11 @@ export namespace Prisma {
     patientdateofbirth?: Date | string | null
     reservationExpiresAt?: Date | string | null
     status?: $Enums.AppointmentStatus
+    paymentStatus?: string | null
+    paymentOrderNo?: string | null
+    paymentChargeId?: string | null
+    paymentTransactionId?: string | null
+    paymentCompletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -17612,6 +17732,11 @@ export namespace Prisma {
     patientdateofbirth?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     reservationExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: EnumAppointmentStatusFieldUpdateOperationsInput | $Enums.AppointmentStatus
+    paymentStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentOrderNo?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentChargeId?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentTransactionId?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -17635,6 +17760,11 @@ export namespace Prisma {
     patientdateofbirth?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     reservationExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: EnumAppointmentStatusFieldUpdateOperationsInput | $Enums.AppointmentStatus
+    paymentStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentOrderNo?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentChargeId?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentTransactionId?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -18648,6 +18778,11 @@ export namespace Prisma {
     patientdateofbirth?: SortOrder
     reservationExpiresAt?: SortOrder
     status?: SortOrder
+    paymentStatus?: SortOrder
+    paymentOrderNo?: SortOrder
+    paymentChargeId?: SortOrder
+    paymentTransactionId?: SortOrder
+    paymentCompletedAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -18670,6 +18805,11 @@ export namespace Prisma {
     patientdateofbirth?: SortOrder
     reservationExpiresAt?: SortOrder
     status?: SortOrder
+    paymentStatus?: SortOrder
+    paymentOrderNo?: SortOrder
+    paymentChargeId?: SortOrder
+    paymentTransactionId?: SortOrder
+    paymentCompletedAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -18692,6 +18832,11 @@ export namespace Prisma {
     patientdateofbirth?: SortOrder
     reservationExpiresAt?: SortOrder
     status?: SortOrder
+    paymentStatus?: SortOrder
+    paymentOrderNo?: SortOrder
+    paymentChargeId?: SortOrder
+    paymentTransactionId?: SortOrder
+    paymentCompletedAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -20115,6 +20260,11 @@ export namespace Prisma {
     patientdateofbirth?: Date | string | null
     reservationExpiresAt?: Date | string | null
     status?: $Enums.AppointmentStatus
+    paymentStatus?: string | null
+    paymentOrderNo?: string | null
+    paymentChargeId?: string | null
+    paymentTransactionId?: string | null
+    paymentCompletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     user?: UserCreateNestedOneWithoutUserAppointmentsInput
@@ -20140,6 +20290,11 @@ export namespace Prisma {
     patientdateofbirth?: Date | string | null
     reservationExpiresAt?: Date | string | null
     status?: $Enums.AppointmentStatus
+    paymentStatus?: string | null
+    paymentOrderNo?: string | null
+    paymentChargeId?: string | null
+    paymentTransactionId?: string | null
+    paymentCompletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     testimonial?: DoctorTestimonialUncheckedCreateNestedOneWithoutAppointmentInput
@@ -20173,6 +20328,11 @@ export namespace Prisma {
     patientdateofbirth?: Date | string | null
     reservationExpiresAt?: Date | string | null
     status?: $Enums.AppointmentStatus
+    paymentStatus?: string | null
+    paymentOrderNo?: string | null
+    paymentChargeId?: string | null
+    paymentTransactionId?: string | null
+    paymentCompletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     doctor: UserCreateNestedOneWithoutDoctorAppointmentsInput
@@ -20198,6 +20358,11 @@ export namespace Prisma {
     patientdateofbirth?: Date | string | null
     reservationExpiresAt?: Date | string | null
     status?: $Enums.AppointmentStatus
+    paymentStatus?: string | null
+    paymentOrderNo?: string | null
+    paymentChargeId?: string | null
+    paymentTransactionId?: string | null
+    paymentCompletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     testimonial?: DoctorTestimonialUncheckedCreateNestedOneWithoutAppointmentInput
@@ -20451,6 +20616,11 @@ export namespace Prisma {
     patientdateofbirth?: DateTimeNullableFilter<"Appointment"> | Date | string | null
     reservationExpiresAt?: DateTimeNullableFilter<"Appointment"> | Date | string | null
     status?: EnumAppointmentStatusFilter<"Appointment"> | $Enums.AppointmentStatus
+    paymentStatus?: StringNullableFilter<"Appointment"> | string | null
+    paymentOrderNo?: StringNullableFilter<"Appointment"> | string | null
+    paymentChargeId?: StringNullableFilter<"Appointment"> | string | null
+    paymentTransactionId?: StringNullableFilter<"Appointment"> | string | null
+    paymentCompletedAt?: DateTimeNullableFilter<"Appointment"> | Date | string | null
     createdAt?: DateTimeFilter<"Appointment"> | Date | string
     updatedAt?: DateTimeFilter<"Appointment"> | Date | string
   }
@@ -21215,6 +21385,11 @@ export namespace Prisma {
     patientdateofbirth?: Date | string | null
     reservationExpiresAt?: Date | string | null
     status?: $Enums.AppointmentStatus
+    paymentStatus?: string | null
+    paymentOrderNo?: string | null
+    paymentChargeId?: string | null
+    paymentTransactionId?: string | null
+    paymentCompletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     doctor: UserCreateNestedOneWithoutDoctorAppointmentsInput
@@ -21241,6 +21416,11 @@ export namespace Prisma {
     patientdateofbirth?: Date | string | null
     reservationExpiresAt?: Date | string | null
     status?: $Enums.AppointmentStatus
+    paymentStatus?: string | null
+    paymentOrderNo?: string | null
+    paymentChargeId?: string | null
+    paymentTransactionId?: string | null
+    paymentCompletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     transactions?: TransactionUncheckedCreateNestedManyWithoutAppointmentInput
@@ -21381,6 +21561,11 @@ export namespace Prisma {
     patientdateofbirth?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     reservationExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: EnumAppointmentStatusFieldUpdateOperationsInput | $Enums.AppointmentStatus
+    paymentStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentOrderNo?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentChargeId?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentTransactionId?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     doctor?: UserUpdateOneRequiredWithoutDoctorAppointmentsNestedInput
@@ -21407,6 +21592,11 @@ export namespace Prisma {
     patientdateofbirth?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     reservationExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: EnumAppointmentStatusFieldUpdateOperationsInput | $Enums.AppointmentStatus
+    paymentStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentOrderNo?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentChargeId?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentTransactionId?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     transactions?: TransactionUncheckedUpdateManyWithoutAppointmentNestedInput
@@ -21543,6 +21733,11 @@ export namespace Prisma {
     patientdateofbirth?: Date | string | null
     reservationExpiresAt?: Date | string | null
     status?: $Enums.AppointmentStatus
+    paymentStatus?: string | null
+    paymentOrderNo?: string | null
+    paymentChargeId?: string | null
+    paymentTransactionId?: string | null
+    paymentCompletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     doctor: UserCreateNestedOneWithoutDoctorAppointmentsInput
@@ -21569,6 +21764,11 @@ export namespace Prisma {
     patientdateofbirth?: Date | string | null
     reservationExpiresAt?: Date | string | null
     status?: $Enums.AppointmentStatus
+    paymentStatus?: string | null
+    paymentOrderNo?: string | null
+    paymentChargeId?: string | null
+    paymentTransactionId?: string | null
+    paymentCompletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     testimonial?: DoctorTestimonialUncheckedCreateNestedOneWithoutAppointmentInput
@@ -21658,6 +21858,11 @@ export namespace Prisma {
     patientdateofbirth?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     reservationExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: EnumAppointmentStatusFieldUpdateOperationsInput | $Enums.AppointmentStatus
+    paymentStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentOrderNo?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentChargeId?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentTransactionId?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     doctor?: UserUpdateOneRequiredWithoutDoctorAppointmentsNestedInput
@@ -21684,6 +21889,11 @@ export namespace Prisma {
     patientdateofbirth?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     reservationExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: EnumAppointmentStatusFieldUpdateOperationsInput | $Enums.AppointmentStatus
+    paymentStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentOrderNo?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentChargeId?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentTransactionId?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     testimonial?: DoctorTestimonialUncheckedUpdateOneWithoutAppointmentNestedInput
@@ -21788,6 +21998,11 @@ export namespace Prisma {
     patientdateofbirth?: Date | string | null
     reservationExpiresAt?: Date | string | null
     status?: $Enums.AppointmentStatus
+    paymentStatus?: string | null
+    paymentOrderNo?: string | null
+    paymentChargeId?: string | null
+    paymentTransactionId?: string | null
+    paymentCompletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -21810,6 +22025,11 @@ export namespace Prisma {
     patientdateofbirth?: Date | string | null
     reservationExpiresAt?: Date | string | null
     status?: $Enums.AppointmentStatus
+    paymentStatus?: string | null
+    paymentOrderNo?: string | null
+    paymentChargeId?: string | null
+    paymentTransactionId?: string | null
+    paymentCompletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -21936,6 +22156,11 @@ export namespace Prisma {
     patientdateofbirth?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     reservationExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: EnumAppointmentStatusFieldUpdateOperationsInput | $Enums.AppointmentStatus
+    paymentStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentOrderNo?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentChargeId?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentTransactionId?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneWithoutUserAppointmentsNestedInput
@@ -21961,6 +22186,11 @@ export namespace Prisma {
     patientdateofbirth?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     reservationExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: EnumAppointmentStatusFieldUpdateOperationsInput | $Enums.AppointmentStatus
+    paymentStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentOrderNo?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentChargeId?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentTransactionId?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     testimonial?: DoctorTestimonialUncheckedUpdateOneWithoutAppointmentNestedInput
@@ -21985,6 +22215,11 @@ export namespace Prisma {
     patientdateofbirth?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     reservationExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: EnumAppointmentStatusFieldUpdateOperationsInput | $Enums.AppointmentStatus
+    paymentStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentOrderNo?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentChargeId?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentTransactionId?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -22006,6 +22241,11 @@ export namespace Prisma {
     patientdateofbirth?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     reservationExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: EnumAppointmentStatusFieldUpdateOperationsInput | $Enums.AppointmentStatus
+    paymentStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentOrderNo?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentChargeId?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentTransactionId?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     doctor?: UserUpdateOneRequiredWithoutDoctorAppointmentsNestedInput
@@ -22031,6 +22271,11 @@ export namespace Prisma {
     patientdateofbirth?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     reservationExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: EnumAppointmentStatusFieldUpdateOperationsInput | $Enums.AppointmentStatus
+    paymentStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentOrderNo?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentChargeId?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentTransactionId?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     testimonial?: DoctorTestimonialUncheckedUpdateOneWithoutAppointmentNestedInput
@@ -22055,6 +22300,11 @@ export namespace Prisma {
     patientdateofbirth?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     reservationExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: EnumAppointmentStatusFieldUpdateOperationsInput | $Enums.AppointmentStatus
+    paymentStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentOrderNo?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentChargeId?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentTransactionId?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

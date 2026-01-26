@@ -1,7 +1,10 @@
+"use client";
+
 import Image from "next/image";
 import { DoctorDetails } from "@/types";
 import { Card, CardContent } from "@/components/ui/card";
-import RatingStars from "../RatingStars"; // adjust path to wherever you placed it
+import RatingStars from "../RatingStars";
+import { useTranslations } from "@/hooks/useTranslations";
 
 export default function DoctorProfileTopCard({
   name,
@@ -13,6 +16,7 @@ export default function DoctorProfileTopCard({
   reviewCount,
   image,
 }: DoctorDetails) {
+  const t = useTranslations("doctors");
   const languagesText = languages?.length ? languages.join(", ") : "—";
   const specializationsText = specializations?.length
     ? specializations.join(", ")
@@ -60,13 +64,15 @@ export default function DoctorProfileTopCard({
                 {Number.isFinite(rating) ? rating.toFixed(1) : "0.0"}
               </span>
               <span className="text-sm text-gray-500">
-                ({reviewCount} reviews)
+                ({reviewCount} {t("reviews")})
               </span>
             </div>
 
             <div className="mt-4 space-y-3">
               <div className="rounded-xl border border-gray-200 bg-white px-4 py-3 shadow-sm">
-                <p className="text-xs font-semibold text-gray-500">Languages</p>
+                <p className="text-xs font-semibold text-gray-500">
+                  {t("languages")}
+                </p>
                 <p className="mt-1 text-sm font-medium text-gray-900">
                   {languagesText}
                 </p>
@@ -74,7 +80,7 @@ export default function DoctorProfileTopCard({
 
               <div className="rounded-xl border border-gray-200 bg-white px-4 py-3 shadow-sm">
                 <p className="text-xs font-semibold text-gray-500">
-                  Specialisation
+                  {t("specialisation")}
                 </p>
                 <p className="mt-1 text-sm font-medium text-gray-900">
                   {specializationsText}

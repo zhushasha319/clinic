@@ -202,6 +202,14 @@ model Appointment {
   patientdateofbirth   DateTime?
   reservationExpiresAt DateTime?
   status               AppointmentStatus @default(PAYMENT_PENDING)
+  
+  // Ping++ 支付相关字段
+  paymentStatus        String?           @default("PENDING") // PENDING, PAID, FAILED
+  paymentOrderNo       String?           // 订单号
+  paymentChargeId      String?           // Ping++ Charge ID
+  paymentTransactionId String?           // 支付平台交易ID
+  paymentCompletedAt   DateTime?         // 支付完成时间
+  
   createdAt            DateTime          @default(now())
   updatedAt            DateTime          @updatedAt
  

@@ -4,13 +4,14 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
-
+import { useTranslations } from "@/hooks/useTranslations";
 interface ViewProfileButtonProps {
   doctorId: string;
 }
 
 export function ViewProfileButton({ doctorId }: ViewProfileButtonProps) {
   const router = useRouter();
+  const t = useTranslations("doctors");
   const [isLoading, setIsLoading] = useState(false);
 
   const handleClick = () => {
@@ -27,10 +28,10 @@ export function ViewProfileButton({ doctorId }: ViewProfileButtonProps) {
       {isLoading ? (
         <>
           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          Loading...
+          {t("loading")}
         </>
       ) : (
-        "View Profile"
+        t("viewProfile")
       )}
     </Button>
   );

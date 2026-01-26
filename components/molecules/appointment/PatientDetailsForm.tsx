@@ -4,6 +4,7 @@ import { useEffect, useMemo } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
+import { useTranslations } from "@/hooks/useTranslations";
 
 import type {
   AppointmentData,
@@ -54,6 +55,7 @@ export default function PatientDetailsForm({
   patientDetails,
 }: PatientDetailsFormProps) {
   const router = useRouter();
+  const t = useTranslations("appointments");
 
   const defaultPatientType = appointmentData.patientType ?? ("MYSELF" as const);
 
@@ -159,9 +161,8 @@ export default function PatientDetailsForm({
                 : "border-gray-200 bg-white text-gray-700 hover:bg-gray-50",
             )}
           >
-            自己
-          </button>
-
+            {t("myself")}
+          </button>{" "}
           <button
             type="button"
             onClick={() =>
@@ -185,7 +186,7 @@ export default function PatientDetailsForm({
           {/* Relationship */}
           <div>
             <label className="mb-2 block text-xs font-semibold text-gray-700">
-              与患者的关系
+              {t("relationship")}
             </label>
             <div className="relative">
               <select
@@ -197,7 +198,7 @@ export default function PatientDetailsForm({
                 defaultValue={defaultValues.relationship ?? ""}
               >
                 <option value="" disabled>
-                  选择关系
+                  {t("selectRelationship")}
                 </option>
                 {RELATIONSHIP_OPTIONS.map((r) => (
                   <option key={r} value={r}>
@@ -211,7 +212,7 @@ export default function PatientDetailsForm({
 
           <div>
             <label className="mb-2 block text-xs font-semibold text-gray-700">
-              患者全名
+              {t("patientFullName")}
             </label>
             <input
               {...register("fullName")}
@@ -219,7 +220,7 @@ export default function PatientDetailsForm({
                 "h-10 w-full rounded-md border px-3 text-sm outline-none",
                 errors.fullName ? "border-red-500" : "border-gray-200",
               )}
-              placeholder="输入全名"
+              placeholder={t("enterFullName")}
             />
             <FieldError message={errors.fullName?.message} />
           </div>
@@ -227,7 +228,7 @@ export default function PatientDetailsForm({
           {/* Date of Birth of Patient */}
           <div>
             <label className="mb-2 block text-xs font-semibold text-gray-700">
-              Date of Birth of Patient
+              {t("dateOfBirthPatient")}
             </label>
             <div className="rounded-md border border-gray-200 p-3">
               <Controller
@@ -439,7 +440,7 @@ export default function PatientDetailsForm({
           className="h-10 rounded-md bg-blue-600 px-5 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-60"
           disabled={isSubmitting}
         >
-          继续预约
+          {t("continueToPayment")}
         </button>
       </div>
     </form>

@@ -134,7 +134,25 @@ additionalNotes?: string | null;
 relationship?: string | null;
 }
  
- 
+export interface paymentData {
+  appointmentId: string;
+doctorId: string;
+doctorName: string;
+doctorSpecilaity: string;
+doctorImage?: string | null;
+date: string;
+timeSlot: string;
+endTime: string;
+patientType?: "MYSELF" | "SOMEONE_ELSE";
+patientName?: string;
+patientdateofbirth?: Date | null;
+phoneNumber?: string | null;
+reasonForVisit?: string | null;
+additionalNotes?: string | null;
+relationship?: string | null;
+fee: number;
+patientEmail?: string;
+}
 export interface PatientData {
 name: string;
 email: string;

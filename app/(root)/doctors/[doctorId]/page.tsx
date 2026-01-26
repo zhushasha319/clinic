@@ -5,6 +5,8 @@ import DoctorProfileTopCard from "@/components/molecules/doctorFiles/doctorProfi
 import { notFound } from "next/navigation";
 import PatientReviews from "@/components/molecules/doctorFiles/Review/PatientReviews";
 import AppointmentScheduler from "@/components/molecules/doctorFiles/AppointmentScheduler";
+import { getTranslations } from "next-intl/server";
+
 interface Params {
   doctorId: string;
 }
@@ -14,6 +16,7 @@ export default async function DoctorProfilePage({
 }: {
   params: Promise<Params>;
 }) {
+  const t = await getTranslations("doctors");
   const { doctorId } = await params;
 
   let doctorDetailsResponse;
@@ -23,11 +26,8 @@ export default async function DoctorProfilePage({
     console.error("Error fetching doctor details:", error);
     return (
       <div className="p-6 text-center text-red-500">
-        <p>
-          We&apos;re sorry , but something went wrong while trying to load the
-          doctor&apos;s profile.
-        </p>
-        <p>Please try refreshing the page or check back later</p>
+        <p>{t("errorLoadingProfile")}</p>
+        <p>{t("tryRefresh")}</p>
       </div>
     );
   }
@@ -64,7 +64,9 @@ export default async function DoctorProfilePage({
             image={doctor.image || ""}
           ></DoctorProfileTopCard>
         </div>
-        <div className="md:hidden"><AppointmentScheduler doctorId={doctor.id}></AppointmentScheduler></div>
+        <div className="md:hidden">
+          <AppointmentScheduler doctorId={doctor.id}></AppointmentScheduler>
+        </div>
         <div>
           <DoctorProfileAbout
             name={doctor.name}
@@ -79,7 +81,9 @@ export default async function DoctorProfilePage({
           ></PatientReviews>
         </div>
       </div>
-      <div className="hidden md:block"><AppointmentScheduler doctorId={doctor.id}></AppointmentScheduler></div>
+      <div className="hidden md:block">
+        <AppointmentScheduler doctorId={doctor.id}></AppointmentScheduler>
+      </div>
     </div>
   );
 }

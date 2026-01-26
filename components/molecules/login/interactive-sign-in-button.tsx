@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useTranslations } from "@/hooks/useTranslations";
 
 interface InteractiveSignInButtonProps {
   className?: string;
@@ -13,11 +14,14 @@ interface InteractiveSignInButtonProps {
 
 export function InteractiveSignInButton({
   className,
-  text = "Sign in",
+  text,
   onNavigateStart,
 }: InteractiveSignInButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const t = useTranslations("common");
+
+  const displayText = text || t("signIn");
 
   const handleSignIn = async () => {
     setIsLoading(true);
@@ -35,7 +39,7 @@ export function InteractiveSignInButton({
       disabled={isLoading}
       className={className}
     >
-      {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : text}
+      {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : displayText}
     </Button>
   );
 }

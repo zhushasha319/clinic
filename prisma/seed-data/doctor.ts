@@ -1,4 +1,3 @@
-
 import "dotenv/config";
 import {
   LeaveType,
@@ -22,33 +21,33 @@ async function main() {
       name: "Dr. Li Wei",
       email: "li.wei@clinic.test",
       image: "https://i.pravatar.cc/150?img=11",
-      specialty: "Cardiology",
+      specialty: "心脏科",
       credentials: "MD, FACC",
-      brief: "Experienced cardiologist focused on preventive care.",
-      languages: ["Chinese", "English"],
-      specializations: ["Heart Failure", "Hypertension"],
+      brief: "经验丰富的心脏科医生，专注于预防保健。",
+      languages: ["中文", "英文"],
+      specializations: ["心力衰竭", "高血压"],
     },
     {
       id: doctorIds[1],
       name: "Dr. Chen Yu",
       email: "chen.yu@clinic.test",
       image: "https://i.pravatar.cc/150?img=32",
-      specialty: "Dermatology",
+      specialty: "皮肤科",
       credentials: "MD, FAAD",
-      brief: "Dermatologist specializing in clinical and cosmetic care.",
-      languages: ["Chinese", "English"],
-      specializations: ["Acne", "Skin Allergies"],
+      brief: "皮肤科专家，擅长临床和美容皮肤护理。",
+      languages: ["中文", "英文"],
+      specializations: ["痤疮", "皮肤过敏"],
     },
     {
       id: doctorIds[2],
       name: "Dr. Wang Lin",
       email: "wang.lin@clinic.test",
       image: "https://i.pravatar.cc/150?img=44",
-      specialty: "Pediatrics",
+      specialty: "儿科",
       credentials: "MD, FAAP",
-      brief: "Pediatrician with a focus on child wellness and development.",
-      languages: ["Chinese", "English"],
-      specializations: ["Child Nutrition", "Immunization"],
+      brief: "儿科医生，专注于儿童健康和发育。",
+      languages: ["中文", "英文"],
+      specializations: ["儿童营养", "预防接种"],
     },
   ];
 
@@ -266,7 +265,7 @@ async function main() {
   console.log(
     `Set FULL_DAY leave for doctor ${
       doctorIds[0]
-    } on ${leaveDate.toDateString()}`
+    } on ${leaveDate.toDateString()}`,
   );
 
   // --- Set MORNING Leave ---
@@ -291,7 +290,7 @@ async function main() {
   console.log(
     `Set MORNING leave for doctor ${
       doctorIds[1]
-    } on ${leaveDate.toDateString()}`
+    } on ${leaveDate.toDateString()}`,
   );
 
   // --- Set AFTERNOON Leave ---
@@ -316,7 +315,7 @@ async function main() {
   console.log(
     `Set AFTERNOON leave for doctor ${
       doctorIds[2]
-    } on ${leaveDate.toDateString()}`
+    } on ${leaveDate.toDateString()}`,
   );
 
   console.log("Leave setting finished.");

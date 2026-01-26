@@ -5,6 +5,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
 import { useAppointmentSlots } from "@/hooks/useAppointmentSlots";
 import { useAppointmentReservation } from "@/hooks/useAppointmentReservation";
+import { useTranslations } from "@/hooks/useTranslations";
 import {
   addMonths,
   startOfMonth,
@@ -26,6 +27,7 @@ export default function AppointmentScheduler({
   doctorId,
   userId,
 }: AppointmentSchedulerProps) {
+  const t = useTranslations("doctors");
   const {
     date,
     setDate,
@@ -129,7 +131,7 @@ export default function AppointmentScheduler({
   return (
     <div className="w-full max-w-sm rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
       <h2 className="mb-6 text-lg font-bold text-gray-900 dark:text-gray-100">
-        Schedule Appointment
+        {t("scheduleAppointment")}
       </h2>
 
       {/* Calendar */}
@@ -154,7 +156,7 @@ export default function AppointmentScheduler({
       {/* Slots Section */}
       <div className="mb-6">
         <h3 className="mb-3 text-sm font-semibold text-gray-900 dark:text-gray-100">
-          Available Time Slots
+          {t("availableTimeSlots")}
         </h3>
 
         {isLoading ? (
@@ -191,7 +193,7 @@ export default function AppointmentScheduler({
           </div>
         ) : (
           <p className="text-center text-sm text-gray-500 py-4 dark:text-gray-400">
-            No slots available for this date.
+            {t("noSlotsAvailable")}
           </p>
         )}
       </div>
@@ -204,10 +206,10 @@ export default function AppointmentScheduler({
         {isPending ? (
           <span className="flex items-center justify-center gap-2">
             <Loader2 className="h-4 w-4 animate-spin" />
-            Reserving...
+            {t("reserving")}
           </span>
         ) : (
-          "Continue to Next Step"
+          t("continueToNextStep")
         )}
       </Button>
     </div>

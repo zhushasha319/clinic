@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation";
 import { AppointmentData, PatientData } from "@/types";
 import BookingSteps from "@/components/molecules/appointment/BookingSteps";
 import PatientDetailsForm from "@/components/molecules/appointment/PatientDetailsForm";
+import { useTranslations } from "@/hooks/useTranslations";
+
 interface PatientDetailsClientProps {
   initialAppointmentData: AppointmentData;
   initialPatientDetails: PatientData;
@@ -16,6 +18,7 @@ export default function PatientDetailsClient({
   initialPatientDetails,
 }: PatientDetailsClientProps) {
   const router = useRouter();
+  const t = useTranslations("appointments");
 
   const { doctorName, doctorSpecilaity, doctorImage, date, timeSlot } =
     initialAppointmentData;
@@ -34,11 +37,13 @@ export default function PatientDetailsClient({
           onClick={() => router.replace("/doctors")}
           className="text-sm text-gray-500 hover:text-gray-700"
         >
-          ← 返回医生页面
+          ← {t("backToDoctors")}
         </button>
 
         <div className="text-sm text-gray-600">
-          <span className="block text-xs text-gray-400">预约中</span>
+          <span className="block text-xs text-gray-400">
+            {t("bookingInProgress")}
+          </span>
           <span className="font-medium text-gray-900">
             {date} - {timeSlot}
           </span>

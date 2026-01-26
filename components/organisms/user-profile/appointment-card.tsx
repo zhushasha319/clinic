@@ -4,7 +4,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Dot, Star } from "lucide-react";
- 
+import { useTranslations } from "@/hooks/useTranslations";
+
 interface AppointmentCardProps {
   appointment: Appointment;
   onCancelInfo: () => void;
@@ -12,7 +13,7 @@ interface AppointmentCardProps {
   onReview: (appointment: Appointment) => void;
   isPending: boolean;
 }
- 
+
 const getStatusBadgeClasses = (status: Appointment["status"]) => {
   switch (status) {
     case "upcoming":
@@ -29,7 +30,7 @@ const getStatusBadgeClasses = (status: Appointment["status"]) => {
       return "bg-gray-200 text-gray-700";
   }
 };
- 
+
 export default function AppointmentCard({
   appointment,
   onCancelInfo,
@@ -38,7 +39,8 @@ export default function AppointmentCard({
   isPending,
 }: AppointmentCardProps) {
   const { doctorName, date, time, status, isReviewed } = appointment;
- 
+  const t = useTranslations("appointments");
+
   /**
    * Renders the action button(s) for the appointment card based on its status.
    */
@@ -53,7 +55,7 @@ export default function AppointmentCard({
             className="text-alert-1 border-alert-2 hover:bg-red-50 hover:text-alert-1"
             disabled={isPending}
           >
-            Cancel
+            {t("cancelAppointment")}
           </Button>
         );
       case "cash payment":
@@ -65,7 +67,7 @@ export default function AppointmentCard({
             className="text-alert-1 border-alert-2 hover:bg-red-50 hover:text-alert-1"
             disabled={isPending}
           >
-            Cancel
+            {t("cancelAppointment")}
           </Button>
         );
       case "completed":
@@ -78,7 +80,7 @@ export default function AppointmentCard({
               className="text-grey-500 border-gray-300"
             >
               <Star className="mr-2 h-4 w-4 fill-[#FACC15] text-[#FACC15]" />
-              Reviewed
+              {t("reviewed")}
             </Button>
           );
         }
@@ -91,7 +93,7 @@ export default function AppointmentCard({
             disabled={isPending}
           >
             <Star className="mr-2 h-4 w-4" />
-            Leave Review
+            {t("leaveReview")}
           </Button>
         );
       case "cancelled":
@@ -100,7 +102,7 @@ export default function AppointmentCard({
         return null; // No button for these statuses
     }
   };
- 
+
   return (
     <Card
       key={appointment.id}
@@ -128,4 +130,3 @@ export default function AppointmentCard({
     </Card>
   );
 }
- 

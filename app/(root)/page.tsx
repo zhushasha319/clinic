@@ -2,7 +2,11 @@ import { DynamicBanner } from "@/components/organisms/dynamic-banner";
 import { DepartmentsSection } from "@/components/organisms/departments-section";
 import { OurDoctors } from "@/components/organisms/our-doctors";
 import { PatientTestimonials } from "@/components/organisms/patient-testimonials";
-export default function Home() {
+import { getTranslations } from "next-intl/server";
+
+export default async function Home() {
+  const t = await getTranslations("common");
+
   return (
     <div>
       <DynamicBanner></DynamicBanner>
@@ -10,11 +14,7 @@ export default function Home() {
         <div>
           {" "}
           <p className="mt-4 mb-12 body-regular text-text-body-subtle max-w-3xl mx-auto text-center">
-            Welcome to Highland Medical Center, your premier destination for
-            specialized healthcare consultation. Our facility brings together
-            exceptional physicians across all major medical departments,
-            offering expert diagnosis and personalized treatment planning in one
-            convenient location.
+            {t("welcome")}
           </p>
           <DepartmentsSection></DepartmentsSection>
         </div>

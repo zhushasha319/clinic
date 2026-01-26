@@ -2,6 +2,7 @@
 
 import { signOut } from "next-auth/react";
 import { Button } from "@/components/ui/button";
+import { useTranslations } from "@/hooks/useTranslations";
 
 interface SignOutButtonProps {
   className?: string;
@@ -14,6 +15,7 @@ export default function SignOutButton({
   variant = "ghost",
   onSignedOut,
 }: SignOutButtonProps) {
+  const t = useTranslations("common");
   return (
     <Button
       variant={variant}
@@ -23,7 +25,7 @@ export default function SignOutButton({
         await signOut({ callbackUrl: "/" });
       }}
     >
-      Sign out
+      {t('signOut')}
     </Button>
   );
 }

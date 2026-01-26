@@ -1,8 +1,11 @@
+"use client";
+
 import { Card, CardContent } from "@/components/ui/card";
 import { Star } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ViewProfileButton } from "./view-profile-button";
 import Image from "next/image";
+import { useTranslations } from "@/hooks/useTranslations";
 
 interface DoctorCardProps {
   id: string;
@@ -23,6 +26,8 @@ export function DoctorCard({
   image,
   className,
 }: DoctorCardProps) {
+  const t = useTranslations("doctors");
+
   return (
     <Card className={cn("w-[384px] p-6", className)}>
       <CardContent className="p-0">
@@ -56,7 +61,7 @@ export function DoctorCard({
                 {rating}
               </span>
               <span className="text-sm text-gray-500 dark:text-gray-400">
-                ({reviewCount} reviews)
+                ({reviewCount} {t("reviews")})
               </span>
             </div>
           </div>

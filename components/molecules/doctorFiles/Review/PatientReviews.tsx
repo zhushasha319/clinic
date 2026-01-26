@@ -4,8 +4,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { usePaginatedReviews } from "@/hooks/usePaginatedReviews";
 import { PAGE_SIZE } from "@/lib/constants";
 import ReviewList from "./ReviewList";
-import PaginationControls from "./PaginationControls";
+import PaginationControls from "../../PaginationControls";
 import RatingStars from "../../RatingStars";
+import { useTranslations } from "@/hooks/useTranslations";
 
 interface PatientReviewsProps {
   doctorId: string;
@@ -18,6 +19,7 @@ export default function PatientReviews({
   avgRating,
   totalReviews: totalReviewsFromServer,
 }: PatientReviewsProps) {
+  const t = useTranslations("doctors");
   const {
     currentPage,
     reviews,
@@ -48,7 +50,7 @@ export default function PatientReviews({
     <Card className="w-full rounded-2xl border border-gray-200 shadow-sm">
       <CardHeader className="flex flex-row items-start justify-between gap-4 pb-2">
         <CardTitle className="text-base font-semibold text-gray-900">
-          Patient Reviews
+          {t("patientReviews")}
         </CardTitle>
 
         {/* Top-right rating summary */}
@@ -64,7 +66,7 @@ export default function PatientReviews({
               size={16}
             />
             <span className="mt-1 text-xs text-gray-500">
-              {totalReviewsToDisplay} reviews
+              {totalReviewsToDisplay} {t("reviews")}
             </span>
           </div>
         </div>

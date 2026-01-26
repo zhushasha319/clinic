@@ -48,7 +48,7 @@ export const users = [
     email: "jane.smith@example.com",
     password: "hashed_password_placeholder_123",
     emailVerified: new Date(),
-    role:"PATIENT",
+    role: "PATIENT",
     isRootAdmin: false,
     image: "https://i.pravatar.cc/150?u=jane.smith",
     dateofbirth: new Date("1992-08-15T00:00:00Z"),
@@ -130,39 +130,29 @@ export const users = [
 export const doctorProfiles = [
   {
     userId: doctor1Id,
-    specialty: "Cardiology",
-    brief:
-      "Dr. Williams is a board-certified cardiologist with over 15 years of experience...",
+    specialty: "心脏科",
+    brief: "Williams医生是一名认证心脏科医生，拥有15年以上的临床经验...",
     credentials: "M.D., F.A.C.C.",
-    languages: ["English", "Spanish"],
-    specializations: [
-      "Interventional Cardiology",
-      "Echocardiography",
-      "Heart Failure Management",
-    ],
+    languages: ["英文", "西班牙文"],
+    specializations: ["介入心脏病学", "超声心动图", "心力衰竭管理"],
     isActive: true,
   },
   {
     userId: doctor2Id,
-    specialty: "Dermatology",
-    brief: "Dr. Brown specializes in medical and cosmetic dermatology...",
+    specialty: "皮肤科",
+    brief: "Brown医生擅长医学和美容皮肤科...",
     credentials: "M.D., F.A.A.D.",
-    languages: ["English"],
-    specializations: [
-      "Acne Treatment",
-      "Skin Cancer Screening",
-      "Botox & Fillers",
-    ],
+    languages: ["英文"],
+    specializations: ["痤疮治疗", "皮肤癌筛查", "肉毒和填充剂"],
     isActive: true,
   },
   {
     userId: doctor3Id,
-    specialty: "Pediatrics",
-    brief:
-      "Dr. Davis provides expert care for infants, children, and adolescents...",
+    specialty: "儿科",
+    brief: "Davis医生为婴儿、儿童和青少年提供专业护理...",
     credentials: "M.D., F.A.A.P.",
-    languages: ["English", "French"],
-    specializations: ["General Pediatrics", "Vaccinations"],
+    languages: ["英文", "法文"],
+    specializations: ["全科儿科", "预防接种"],
     isActive: true,
   },
 ];
@@ -425,12 +415,12 @@ export const appSettings = {
 };
 
 export const departments = [
-  { name: "Cardiology", iconName: "Heart" },
-  { name: "Neurology", iconName: "Brain" },
-  { name: "Pediatrics", iconName: "Baby" },
-  { name: "Orthopedics", iconName: "Bone" },
-  { name: "Dermatology", iconName: "Sparkles" },
-  { name: "Ophthalmology", iconName: "Eye" },
+  { name: "心脏科", iconName: "Heart" },
+  { name: "神经科", iconName: "Brain" },
+  { name: "儿科", iconName: "Baby" },
+  { name: "骨科", iconName: "Bone" },
+  { name: "皮肤科", iconName: "Sparkles" },
+  { name: "眼科", iconName: "Eye" },
 ];
 
 export const bannerImages = [

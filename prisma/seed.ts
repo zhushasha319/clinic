@@ -53,17 +53,17 @@ async function main() {
   await prisma.doctorProfile.upsert({
     where: { userId: doctor.id },
     update: {
-      specialty: "General Practice",
-      brief: "Experienced practitioner",
+      specialty: "全科",
+      brief: "经验丰富的全科医生",
       credentials: "MD, MBBS",
     },
     create: {
       userId: doctor.id,
-      specialty: "General Practice",
-      brief: "Experienced general practitioner with 10 years of practice",
+      specialty: "全科",
+      brief: "拥有10年临床经验的资深全科医生",
       credentials: "MD, MBBS",
-      languages: ["English", "Chinese"],
-      specializations: ["General Medicine", "Preventive Care"],
+      languages: ["中文", "英文"],
+      specializations: ["全科医学", "预防保健"],
     },
   });
 
@@ -73,27 +73,27 @@ async function main() {
     {
       status: AppointmentStatus.BOOKING_CONFIRMED,
       days: 7,
-      reason: "Regular checkup - Upcoming",
+      reason: "常规体检",
     },
     {
       status: AppointmentStatus.COMPLETED,
       days: -7,
-      reason: "Follow-up consultation - Completed",
+      reason: "复诊咨询",
     },
     {
       status: AppointmentStatus.CANCELLED,
       days: 3,
-      reason: "Initial consultation - Cancelled",
+      reason: "初诊咨询",
     },
     {
       status: AppointmentStatus.NO_SHOW,
       days: -3,
-      reason: "Vaccination appointment - No Show",
+      reason: "疫苗接种",
     },
     {
       status: AppointmentStatus.CASH,
       days: 14,
-      reason: "Health screening - Cash Payment",
+      reason: "健康筛查",
     },
   ];
 
@@ -116,7 +116,7 @@ async function main() {
         appointmentEndUTC: endDate,
         status: apt.status,
         reasonForVisit: apt.reason,
-        additionalNotes: `Test appointment with status: ${apt.status}`,
+        additionalNotes: `测试预约 - 状态: ${apt.status}`,
         paidAt:
           apt.status === AppointmentStatus.COMPLETED ||
           apt.status === AppointmentStatus.CASH
