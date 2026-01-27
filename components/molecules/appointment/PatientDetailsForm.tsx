@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useMemo } from "react";
 import { useForm, Controller } from "react-hook-form";
@@ -26,23 +26,23 @@ interface PatientDetailsFormProps {
 }
 
 const REASON_OPTIONS = [
-  "General Consultation",
-  "Follow-up Visit",
-  "Prescription Refill",
-  "Lab Results",
-  "Cardiology Consultation",
-  "Other",
+  "普通咨询",
+  "复诊",
+  "处方续开",
+  "化验结果",
+  "心内科咨询",
+  "其他",
 ];
 
 const RELATIONSHIP_OPTIONS = [
-  "Parent",
-  "Child",
-  "Spouse",
-  "Sibling",
-  "Relative",
-  "Friend",
-  "Caregiver",
-  "Other",
+  "父母",
+  "子女",
+  "配偶",
+  "兄弟姐妹",
+  "亲属",
+  "朋友",
+  "照护者",
+  "其他",
 ];
 
 function FieldError({ message }: { message?: string }) {
@@ -60,7 +60,7 @@ export default function PatientDetailsForm({
   const defaultPatientType = appointmentData.patientType ?? ("MYSELF" as const);
 
   const defaultValues = useMemo<PatientDetailsFormValues>(() => {
-    // Schema expects date strings DD/MM/YYYY
+    // 规则要求日期字符串格式 DD/MM/YYYY
     const dobFromAppointment =
       appointmentData.patientdateofbirth instanceof Date
         ? `${String(appointmentData.patientdateofbirth.getDate()).padStart(
@@ -74,8 +74,8 @@ export default function PatientDetailsForm({
           )}/${appointmentData.patientdateofbirth.getFullYear()}`
         : undefined;
 
-    // For MYSELF: always use latest patientDetails.name
-    // For SOMEONE_ELSE: use appointmentData.patientName (the "someone else"'s name)
+    // 对于 MYSELF：始终使用最新的 patientDetails.name
+    // 对于 SOMEONE_ELSE：使用 appointmentData.patientName（“他人”的名字）
     const fullName =
       defaultPatientType === "MYSELF"
         ? (patientDetails.name ?? "")
@@ -90,7 +90,7 @@ export default function PatientDetailsForm({
       reason: appointmentData.reasonForVisit ?? "",
       notes: appointmentData.additionalNotes ?? "",
       relationship: appointmentData.relationship ?? undefined,
-      dateOfBirth: dobFromAppointment, // only used/required for SOMEONE_ELSE
+      dateOfBirth: dobFromAppointment, // 仅在 SOMEONE_ELSE 时使用/必填
     } as PatientDetailsFormValues;
   }, [appointmentData, patientDetails, defaultPatientType]);
 
@@ -108,7 +108,7 @@ export default function PatientDetailsForm({
     mode: "onBlur",
   });
 
-  // If appointmentData changes (rare, but possible), keep form in sync
+  // 若 appointmentData 变化（少见但可能），同步表单
   useEffect(() => {
     reset(defaultValues);
   }, [defaultValues, reset]);
@@ -135,13 +135,13 @@ export default function PatientDetailsForm({
     if (res.success) {
       const appointmentId = res.data?.appointmentId;
       if (!appointmentId) {
-        toast.error("Missing appointmentId from server response.");
+        toast.error("服务端返回缺少 appointmentId。");
         return;
       }
-      toast.success(res.message || "Appointment details saved.");
+      toast.success(res.message || "预约信息已保存。");
       router.replace(`/appointments/payment?appointmentId=${appointmentId}`);
     } else {
-      toast.error(res.message || "Failed to save appointment details.");
+      toast.error(res.message || "保存预约信息失败。");
     }
   };
 
@@ -175,20 +175,20 @@ export default function PatientDetailsForm({
                 : "border-gray-200 bg-white text-gray-700 hover:bg-gray-50",
             )}
           >
-            他人
+            浠栦汉
           </button>
         </div>
       </div>
 
-      {/* SOMEONE_ELSE extra fields */}
+      {/* SOMEONE_ELSE 额外字段 */}
       {patientType === "SOMEONE_ELSE" && (
         <div className="mb-4 space-y-4">
-          {/* Relationship */}
+          {/* 关系 */}
           <div>
             <label className="mb-2 block text-xs font-semibold text-gray-700">
               {t("relationship")}
             </label>
-            <div className="relative">
+            <div className="亲属">
               <select
                 {...register("relationship")}
                 className={cn(
@@ -225,7 +225,7 @@ export default function PatientDetailsForm({
             <FieldError message={errors.fullName?.message} />
           </div>
 
-          {/* Date of Birth of Patient */}
+          {/* 患者生日 */}
           <div>
             <label className="mb-2 block text-xs font-semibold text-gray-700">
               {t("dateOfBirthPatient")}
@@ -278,21 +278,21 @@ export default function PatientDetailsForm({
                 }}
               />
             </div>
-            <p className="mt-1 text-xs text-gray-500">生日</p>
+            <p className="mt-1 text-xs text-gray-500">鐢熸棩</p>
             <FieldError message={errors.dateOfBirth?.message} />
           </div>
         </div>
       )}
 
-      {/* MYSELF fields */}
+      {/* MYSELF 字段 */}
       {patientType === "MYSELF" && (
         <div className="mb-4 space-y-4">
-          {/* Full Name */}
+          {/* 全名 */}
           <div>
             <label className="mb-2 block text-xs font-semibold text-gray-700">
-              全名
+              鍏ㄥ悕
             </label>
-            <div className="relative">
+            <div className="亲属">
               <input
                 {...register("fullName")}
                 className={cn(
@@ -313,23 +313,23 @@ export default function PatientDetailsForm({
                   router.push(`/user/profile?${url.toString()}`);
                 }}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                aria-label="Edit profile"
+                aria-label="编辑资料"
               >
                 <Pencil className="h-4 w-4" />
               </button>
             </div>
             <p className="mt-1 text-xs text-gray-500">
-              如需更新您的姓名，请访问您的个人资料。
+              濡傞渶鏇存柊鎮ㄧ殑濮撳悕锛岃璁块棶鎮ㄧ殑涓汉璧勬枡銆?
             </p>
             <FieldError message={errors.fullName?.message} />
           </div>
         </div>
       )}
 
-      {/* Email Address (readonly) */}
+      {/* 邮箱地址（只读） */}
       <div className="mb-4">
         <label className="mb-2 block text-xs font-semibold text-gray-700">
-          电子邮件地址
+          鐢靛瓙閭欢鍦板潃
         </label>
         <input
           {...register("email")}
@@ -342,13 +342,13 @@ export default function PatientDetailsForm({
         <FieldError message={errors.email?.message} />
       </div>
 
-      {/* Primary Phone Number (readonly-ish + toggle) */}
+      {/* 主手机号（只读 + 可切换） */}
       <div className="mb-4">
         <label className="mb-2 block text-xs font-semibold text-gray-700">
-          主要电话号码
+          涓昏鐢佃瘽鍙风爜
         </label>
 
-        <div className="relative">
+        <div className="亲属">
           <input
             className="h-10 w-full rounded-md border border-gray-200 bg-blue-50 px-3 pr-10 text-sm outline-none"
             value={patientDetails.phoneNumber}
@@ -365,7 +365,7 @@ export default function PatientDetailsForm({
             {...register("useAlternatePhone")}
             className="h-4 w-4 rounded border-gray-300"
           />
-          <span>为此次预约使用不同的电话号码</span>
+          <span>涓烘娆￠绾︿娇鐢ㄤ笉鍚岀殑鐢佃瘽鍙风爜</span>
         </label>
 
         {useAlternatePhone && (
@@ -376,17 +376,17 @@ export default function PatientDetailsForm({
                 "h-10 w-full rounded-md border px-3 text-sm outline-none",
                 errors.phone ? "border-red-500" : "border-gray-200",
               )}
-              placeholder="Enter alternate phone number"
+              placeholder="请输入备用手机号"
             />
             <FieldError message={errors.phone?.message} />
           </div>
         )}
       </div>
 
-      {/* Reason for Visit */}
+      {/* 就诊原因 */}
       <div className="mb-4">
         <label className="mb-2 block text-xs font-semibold text-gray-700">
-          访问原因
+          璁块棶鍘熷洜
         </label>
         <select
           {...register("reason")}
@@ -397,7 +397,7 @@ export default function PatientDetailsForm({
           defaultValue={defaultValues.reason || ""}
         >
           <option value="" disabled>
-            选择理由
+            閫夋嫨鐞嗙敱
           </option>
           {REASON_OPTIONS.map((r) => (
             <option key={r} value={r}>
@@ -408,10 +408,10 @@ export default function PatientDetailsForm({
         <FieldError message={errors.reason?.message} />
       </div>
 
-      {/* Additional Notes */}
+      {/* 额外备注 */}
       <div className="mb-6">
         <label className="mb-2 block text-xs font-semibold text-gray-700">
-          额外备注
+          棰濆澶囨敞
         </label>
         <textarea
           {...register("notes")}
@@ -419,12 +419,12 @@ export default function PatientDetailsForm({
             "min-h-[120px] w-full resize-none rounded-md border px-3 py-2 text-sm outline-none",
             errors.notes ? "border-red-500" : "border-gray-200",
           )}
-          placeholder="添加有关您访问的任何其他信息"
+          placeholder="娣诲姞鏈夊叧鎮ㄨ闂殑浠讳綍鍏朵粬淇℃伅"
         />
         <FieldError message={errors.notes?.message} />
       </div>
 
-      {/* Footer buttons */}
+      {/* 底部按钮 */}
       <div className="flex items-center justify-end gap-3 border-t pt-4">
         <button
           type="button"
@@ -432,7 +432,7 @@ export default function PatientDetailsForm({
           onClick={() => reset(defaultValues)}
           disabled={isSubmitting}
         >
-          取消
+          鍙栨秷
         </button>
 
         <button
@@ -446,3 +446,4 @@ export default function PatientDetailsForm({
     </form>
   );
 }
+

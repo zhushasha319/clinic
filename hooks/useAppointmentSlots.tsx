@@ -9,7 +9,7 @@ import { TimeSlot } from "@/types";
 import { toast } from "react-hot-toast";
 
 export const useAppointmentSlots = (doctorId: string, userId?: string) => {
-  // State
+  // 状态
   const [date, setDate] = useState<Date | undefined>(undefined);
   const [timeSlots, setTimeSlots] = useState<TimeSlot[]>([]);
   const [initialTimeSlot, setInitialTimeSlot] = useState<string | null>(null);
@@ -17,11 +17,11 @@ export const useAppointmentSlots = (doctorId: string, userId?: string) => {
 
   const timeZone = getAppTimeZone();
 
-  // Helper to get formatted date string for API in app timezone
+  // 根据应用时区生成给 API 用的日期字符串
   const getFormattedDate = (d: Date) =>
     formatInTimeZone(d, timeZone, "yyyy-MM-dd");
 
-  // Fetch slots function
+  // 拉取号源的函数
   const fetchSlotsForDate = useCallback(
     async (targetDate: Date) => {
       setIsLoading(true);
@@ -36,12 +36,12 @@ export const useAppointmentSlots = (doctorId: string, userId?: string) => {
         if (response.success && response.data) {
           setTimeSlots(response.data);
         } else {
-          toast.error(response.message || "Failed to load time slots");
+          toast.error(response.message || "加载号源失败");
           setTimeSlots([]);
         }
       } catch (error) {
-        console.error("Error fetching slots:", error);
-        toast.error("An error occurred while loading slots");
+        console.error("拉取号源出错:", error);
+        toast.error("加载号源时发生错误");
         setTimeSlots([]);
       } finally {
         setIsLoading(false);
@@ -50,7 +50,7 @@ export const useAppointmentSlots = (doctorId: string, userId?: string) => {
     [doctorId, userId]
   );
 
-  // Initial load effect
+  // 初始加载 effect
   useEffect(() => {
     let isMounted = true;
 
@@ -58,15 +58,15 @@ export const useAppointmentSlots = (doctorId: string, userId?: string) => {
       setIsLoading(true);
 
       try {
-        let effectiveDate = new Date(); // Default roughly to now/local
-        // Ideally convert "now" to app timezone to be precise about "today"
+        let effectiveDate = new Date(); // 默认取本地当前时间
+        // 最好把“现在”转换为应用时区，确保“今天”的判断准确
         const nowZoned = toZonedTime(new Date(), timeZone);
         effectiveDate = nowZoned;
 
         let pendingSlotTime: string | null = null;
         let pendingDate: Date | null = null;
 
-        // 1. Check for pending appointment if user exists
+        // 1. 有用户时检查是否有待支付预约
         if (userId) {
           const pendingRes = await getPendingAppointmentForDoctor({
             userId,
@@ -81,8 +81,8 @@ export const useAppointmentSlots = (doctorId: string, userId?: string) => {
             const { date: pendingDateString, startTime } =
               pendingRes.data.appointment;
 
-            // Parse the date string (YYYY-MM-DD) back to a Date object
-            // We can just use new Date(pendingDateString) if it's strictly YYYY-MM-DD
+            // 将日期字符串(YYYY-MM-DD)解析回 Date
+            // 如果严格是 YYYY-MM-DD，可直接 new Date(pendingDateString)
             pendingDate = new Date(pendingDateString);
             pendingSlotTime = startTime;
           }
@@ -90,7 +90,7 @@ export const useAppointmentSlots = (doctorId: string, userId?: string) => {
 
         if (!isMounted) return;
 
-        // 2. Determine effective date and initial slot
+        // 2. 确定最终日期和初始时间段
         if (pendingDate && pendingSlotTime) {
           effectiveDate = pendingDate;
           setInitialTimeSlot(pendingSlotTime);
@@ -98,11 +98,11 @@ export const useAppointmentSlots = (doctorId: string, userId?: string) => {
           setInitialTimeSlot(null);
         }
 
-        // 3. Set the date state and fetch slots
+        // 3. 设置日期状态并拉取号源
         setDate(effectiveDate);
         await fetchSlotsForDate(effectiveDate);
       } catch (error) {
-        console.error("Initialization error:", error);
+        console.error("初始化出错:", error);
       } finally {
         if (isMounted) setIsLoading(false);
       }
@@ -123,4 +123,4 @@ export const useAppointmentSlots = (doctorId: string, userId?: string) => {
     isLoading,
     fetchSlotsForDate,
   };
-};
+};

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+﻿import { useCallback, useEffect, useMemo, useState } from "react";
 import { PAGE_SIZE } from "@/lib/constants";
 import type { DoctorReview, ServerActionResponse } from "@/types";
 import { getDoctorReviewsPaginated } from "@/lib/actions/review.action";
@@ -32,7 +32,7 @@ export const usePaginatedReviews = (
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Reset when doctorId changes
+  // doctorId 变化时重置
   useEffect(() => {
     setCurrentPage(Math.max(1, initialPage));
     setReviews([]);
@@ -49,7 +49,7 @@ export const usePaginatedReviews = (
         setReviews([]);
         setTotalReviews(0);
         setTotalPages(1);
-        setError("Doctor id is missing.");
+        setError("缺少医生 ID。");
         return;
       }
 
@@ -61,7 +61,7 @@ export const usePaginatedReviews = (
           await getDoctorReviewsPaginated(safeDoctorId, page, reviewsPerPage);
 
         if (!res.success || !res.data) {
-          setError(res.error || res.message || "Failed to load reviews.");
+          setError(res.error || res.message || "加载评价失败。");
           setReviews([]);
           setTotalReviews(0);
           setTotalPages(1);
@@ -72,12 +72,12 @@ export const usePaginatedReviews = (
         setTotalReviews(res.data.totalReviews);
         setTotalPages(res.data.totalPages);
 
-        // Server might clamp currentPage; keep client in sync.
+        // 服务端可能会夹断 currentPage，保持客户端同步
         if (res.data.currentPage !== page) {
           setCurrentPage(res.data.currentPage);
         }
       } catch (e: unknown) {
-        setError(e instanceof Error ? e.message : "Something went wrong.");
+        setError(e instanceof Error ? e.message : "出现错误。");
       } finally {
         setLoading(false);
       }
@@ -86,7 +86,7 @@ export const usePaginatedReviews = (
   );
 
   useEffect(() => {
-    // Only fetch when we have a doctor id
+    // 仅在有医生 ID 时才请求
     if (!safeDoctorId) return;
     fetchPage(currentPage);
   }, [safeDoctorId, currentPage, fetchPage]);
@@ -94,7 +94,7 @@ export const usePaginatedReviews = (
   const handlePageChange = useCallback(
     (page: number) => {
       const next = Math.max(1, Math.floor(page));
-      // (Optional) clamp to totalPages if we already know it
+      //（可选）若已知 totalPages，则夹断到范围内
       const clamped = totalPages ? Math.min(next, totalPages) : next;
       setCurrentPage(clamped);
     },
@@ -111,3 +111,4 @@ export const usePaginatedReviews = (
     handlePageChange,
   };
 };
+

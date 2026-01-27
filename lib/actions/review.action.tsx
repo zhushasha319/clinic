@@ -1,4 +1,4 @@
-"use server";
+﻿"use server";
 
 import prisma from "@/db/prisma";
 import type { ServerActionResponse, DoctorReview } from "@/types";
@@ -29,8 +29,8 @@ export async function getDoctorReviewsPaginated(
       return {
         success: false,
         errorType: "VALIDATION_ERROR",
-        error: "doctorId is required",
-        message: "Invalid request",
+        error: "需要 doctorId",
+        message: "请求无效",
       };
     }
 
@@ -42,7 +42,7 @@ export async function getDoctorReviewsPaginated(
     const skip = (safePage - 1) * safePageSize;
     const timeZone = getAppTimeZone();
 
-    // Count + page query in a single transaction for consistency
+    // 统计与分页查询放在一次事务里，保证一致性
     const [totalReviews, testimonials] = await Promise.all([
       prisma.doctorTestimonial.count({
         where: { doctorId },
@@ -70,8 +70,8 @@ export async function getDoctorReviewsPaginated(
     const totalPages = Math.max(1, Math.ceil(totalReviews / safePageSize));
     const currentPage = Math.min(safePage, totalPages);
 
-    // If the requested page is beyond totalPages, return empty list but corrected currentPage
-    // (alternatively you can re-run the query with the corrected page; this keeps it simple)
+    // 若请求页超出 totalPages，则返回空列表并修正 currentPage
+    //（也可以用修正后的页码重查；这里用简单方式）
     const reviews: DoctorReview[] =
       safePage > totalPages
         ? []
@@ -84,14 +84,14 @@ export async function getDoctorReviewsPaginated(
               rating: t.rating ?? null,
               reviewDate,
               testimonialText: t.testimonialText,
-              patientName: t.patient?.name ?? "Anonymous",
+              patientName: t.patient?.name ?? "匿名",
               patientImage: t.patient?.image ?? null,
             };
           });
 
     return {
       success: true,
-      message: "Doctor reviews fetched successfully",
+      message: "医生评价获取成功",
       data: {
         reviews,
         totalReviews,
@@ -101,12 +101,12 @@ export async function getDoctorReviewsPaginated(
     };
   } catch (err: unknown) {
     const message =
-      err instanceof Error ? err.message : "Unknown error occurred";
+      err instanceof Error ? err.message : "发生未知错误";
     return {
       success: false,
       errorType: "SERVER_ERROR",
       error: message,
-      message: "Failed to fetch doctor reviews",
+      message: "获取医生评价失败",
     };
   }
 }
@@ -122,8 +122,8 @@ export async function getDoctorReviewStats(
       return {
         success: false,
         errorType: "VALIDATION_ERROR",
-        error: "doctorId is required",
-        message: "Invalid request",
+        error: "需要 doctorId",
+        message: "请求无效",
       };
     }
 
@@ -145,12 +145,12 @@ export async function getDoctorReviewStats(
     };
   } catch (err: unknown) {
     const message =
-      err instanceof Error ? err.message : "Unknown error occurred";
+      err instanceof Error ? err.message : "发生未知错误";
     return {
       success: false,
       errorType: "SERVER_ERROR",
       error: message,
-      message: "Failed to fetch doctor review stats",
+      message: "获取医生评价统计失败",
     };
   }
 }
@@ -169,7 +169,7 @@ export async function submitPatientReview(clientData: {
   if (!session?.user?.id) {
     return {
       success: false,
-      message: "Authentication required. Please log in to submit a review.",
+      message: "需要登录后才能提交评价。",
       errorType: "Unauthorized",
     };
   }
@@ -182,7 +182,7 @@ export async function submitPatientReview(clientData: {
   if (!validationResult.success) {
     return {
       success: false,
-      message: "Invalid data provided. Please check your input.",
+      message: "提交数据无效，请检查输入。",
       fieldErrors: validationResult.error.flatten().fieldErrors,
       errorType: "Validation Error",
     };
@@ -191,42 +191,42 @@ export async function submitPatientReview(clientData: {
   const { appointmentId, doctorId, rating, reviewText } = validationResult.data;
 
   try {
-    // 3. Sequential operations (HTTP mode doesn't support transactions)
-    // 3a. Find the appointment and verify its status and ownership
+    // 3. 顺序执行（HTTP 模式不支持事务）
+    // 3a. 查找预约并校验状态与归属
     const appointment = await prisma.appointment.findUnique({
       where: { appointmentId },
-      include: { testimonial: true }, // Check if a testimonial already exists
+      include: { testimonial: true }, // 检查是否已存在评价
     });
 
     if (!appointment) {
       return {
         success: false,
-        message: "Appointment not found.",
-        error: "Appointment not found.",
+        message: "未找到预约。",
+        error: "未找到预约。",
         errorType: "NOT_FOUND",
       };
     }
     if (appointment.status !== AppointmentStatus.COMPLETED) {
       return {
         success: false,
-        message: "Reviews can only be submitted for completed appointments.",
-        error: "Invalid appointment status.",
+        message: "只能评价已完成的预约。",
+        error: "预约状态无效。",
         errorType: "VALIDATION_ERROR",
       };
     }
     if (appointment.userId !== patientId) {
       return {
         success: false,
-        message: "You are not authorized to review this appointment.",
-        error: "Unauthorized access.",
+        message: "无权评价该预约。",
+        error: "无权限访问。",
         errorType: "UNAUTHORIZED",
       };
     }
     if (appointment.testimonial) {
       return {
         success: false,
-        message: "A review has already been submitted for this appointment.",
-        error: "Duplicate review.",
+        message: "该预约已提交过评价。",
+        error: "重复评价。",
         errorType: "CONFLICT",
       };
     }
@@ -261,7 +261,7 @@ export async function submitPatientReview(clientData: {
       where: { userId: doctorId },
       data: {
         reviewCount,
-        rating: parseFloat(averageRating.toFixed(1)), // 存储为1位小数
+        rating: parseFloat(averageRating.toFixed(1)), // ??????
       },
     });
 
@@ -270,12 +270,12 @@ export async function submitPatientReview(clientData: {
 
     return {
       success: true,
-      message: "Your review has been submitted successfully!",
+      message: "评价提交成功！",
     };
   } catch (error) {
     const errorMessage =
-      error instanceof Error ? error.message : "An unknown error occurred.";
-    console.error("Error submitting patient review:", error);
+      error instanceof Error ? error.message : "???????"
+    console.error("提交评价出错：", error);
     return {
       success: false,
       message: errorMessage,
@@ -284,3 +284,4 @@ export async function submitPatientReview(clientData: {
     };
   }
 }
+

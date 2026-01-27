@@ -11,24 +11,25 @@ const isProtectedPath = (path: string) => {
 };
 
 export const authConfig: NextAuthConfig = {
-  providers: [], // Providers are defined in the main auth.ts
+  providers: [], // Providers 在主 auth.ts 中定义
   callbacks: {
     authorized({ auth, request: { nextUrl } }) {
-      const isLoggedIn = !!auth?.user; //true or false
+      const isLoggedIn = !!auth?.user; // true / false
       const isTryingToAccessProtectedPath = isProtectedPath(nextUrl.pathname);
 
       if (!isLoggedIn && isTryingToAccessProtectedPath) {
-        // Build the redirect URL with a callback
+        // 构建带 callback 的重定向 URL
         const callbackUrl = nextUrl.pathname + nextUrl.search;
         const redirectUrl = new URL("/sign-in", nextUrl.origin);
-        // Let URLSearchParams handle encoding. encodeURI would keep '&' and break the query string.
+        // 让 URLSearchParams 处理编码；encodeURI 会保留 "&" 导致查询串错误。
         redirectUrl.searchParams.set("callbackUrl", callbackUrl);
 
         return NextResponse.redirect(redirectUrl);
       }
 
-      // If logged in or the path is not protected, allow access
+      // 已登录或非受保护路径则放行
       return true;
     },
   },
 };
+

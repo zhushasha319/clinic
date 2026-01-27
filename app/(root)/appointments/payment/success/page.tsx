@@ -70,7 +70,7 @@ export default async function PaymentSuccessPage({ searchParams }: PageProps) {
 
   // 测试模式: 模拟支付成功,更新数据库
   if (params.test === "true" && appointment.paymentStatus !== "PAID") {
-    appointment = await db.appointment.update({
+    await db.appointment.update({
       where: { appointmentId: appointmentId },
       data: {
         paymentStatus: "PAID",
@@ -79,10 +79,19 @@ export default async function PaymentSuccessPage({ searchParams }: PageProps) {
         status: AppointmentStatus.BOOKING_CONFIRMED,
         reservationExpiresAt: null,
       },
+    });
+
+    // HTTP 模式不支持事务；单独查询一次获取完整数据。
+    appointment = await db.appointment.findUnique({
+      where: { appointmentId: appointmentId },
       include: {
         doctor: true,
       },
     });
+
+    if (!appointment) {
+      redirect("/");
+    }
   }
 
   // 格式化日期和时间

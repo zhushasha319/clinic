@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
 
     // 验证预约是否存在且属于当前用户
     const appointment = await db.appointment.findUnique({
-      where: { id: appointmentId },
+      where: { appointmentId: appointmentId },
       include: { user: true, doctor: true },
     });
 
@@ -54,7 +54,7 @@ export async function POST(req: NextRequest) {
       client_ip: clientIp || req.headers.get("x-forwarded-for") || "127.0.0.1",
       currency: "cny",
       subject: `诊所预约 - ${appointment.doctor.name}`,
-      body: `预约日期: ${appointment.date}, 时间: ${appointment.timeSlot}`,
+      body: `预约日期: ${appointment.appointmentDate}, 时间: ${appointment.timeSlot}`,
       extra: {
         ...(channel === "alipay_wap" && {
           success_url: `${process.env.NEXT_PUBLIC_APP_URL}/appointments/payment/success?appointmentId=${appointmentId}`,
@@ -71,7 +71,7 @@ export async function POST(req: NextRequest) {
 
     // 更新预约的支付信息
     await db.appointment.update({
-      where: { id: appointmentId },
+      where: { appointmentId: appointmentId },
       data: {
         paymentStatus: "PENDING",
         paymentOrderNo: orderNo,
@@ -83,6 +83,7 @@ export async function POST(req: NextRequest) {
       success: true,
       charge: charge,
     });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     console.error("创建支付订单失败:", error);
     return NextResponse.json(

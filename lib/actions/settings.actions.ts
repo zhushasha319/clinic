@@ -1,4 +1,4 @@
-"use server";
+﻿"use server";
 import { ServerActionResponse, DepartmentData, BannerImageData } from "@/types";
 import prisma from "@/db/prisma";
 
@@ -11,32 +11,32 @@ export async function getDepartments(): Promise<
   ServerActionResponse<GetDepartmentData>
 > {
   try {
-    // Attempt to retrieve all departments from the database
-    // The results are ordered by the 'createdAt' field in ascending order
+    // 尝试从数据库获取所有科室
+    // 结果按 createdAt 升序排列
     const departments = await prisma.department.findMany({
       orderBy: {
         createdAt: "asc",
       },
     });
 
-    // If the query is successful, return a success response with the data
+    // 查询成功后返回成功响应
     return {
       success: true,
       data: { departments },
-      message: "Departments fetched successfully.",
+      message: "科室获取成功。",
     };
   } catch (error) {
-    // Log the error to the console for debugging purposes
-    console.error("Error fetching departments:", error);
+    // 记录错误以便排查
+    console.error("获取科室出错：", error);
 
     // If an error occurs, return a failure response
     return {
       success: false,
-      message: "failed to fetch departments",
+      message: "获取科室失败",
       error:
         error instanceof Error
           ? error.message
-          : "Unknown error fetching departments",
+          : "获取科室时发生未知错误",
       errorType: "SERVER_ERROR",
     };
   }
@@ -51,35 +51,36 @@ export async function getBanners(): Promise<
   ServerActionResponse<BannerResponse>
 > {
   try {
-    // Fetch all records from the BannerImage table.
-    // The 'orderBy' clause ensures that the banners are returned in the sequence
-    // specified by the 'order' field, from lowest to highest.
+    // 获取 BannerImage 表的所有记录。
+    // orderBy 确保按顺序返回 Banner
+    // 按 order 字段从小到大排序。
     const banners = await prisma.bannerImage.findMany({
       orderBy: {
         order: "asc",
       },
     });
 
-    // Return a standardized success response object containing the fetched data.
+    // 返回包含数据的标准成功响应。
     return {
       success: true,
       data: { banners },
-      message: "Banner images fetched successfully.",
+      message: "Banner 图片获取成功。",
     };
   } catch (error) {
-    // Log the actual error to the server console for debugging purposes.
-    console.error("Error fetching banners:", error);
+    // 将具体错误写入服务端日志以便排查。
+    console.error("获取 Banner 出错：", error);
 
-    // Determine the error message to return to the client.
+    // 生成返回给客户端的错误信息。
     const errorMessage =
-      error instanceof Error ? error.message : "An unexpected error occurred.";
+      error instanceof Error ? error.message : "发生意外错误。";
 
-    // Return a standardized error response object.
+    // 返回标准错误响应。
     return {
       success: false,
-      message: "Could not fetch banner images. Please try again later.",
+      message: "获取 Banner 图片失败，请稍后再试。",
       error: errorMessage,
       errorType: "SERVER_ERROR",
     };
   }
 }
+

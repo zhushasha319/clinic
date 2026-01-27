@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+﻿import { useMemo } from "react";
 
 export const DOTS = "...";
 
@@ -7,7 +7,7 @@ type PaginationItem = number | typeof DOTS;
 type UsePaginationParams = {
   totalPages: number;
   currentPage: number;
-  siblingCount?: number; // default 1
+  siblingCount?: number; // 默认 1
 };
 
 const range = (start: number, end: number): number[] => {
@@ -27,10 +27,10 @@ export function usePagination({
       ? Math.min(Math.max(1, Math.floor(currentPage)), safeTotalPages)
       : 1;
 
-    // As requested
+    // 按需求固定数量
     const totalPageNumbers = 6;
 
-    // If we can show all pages (no dots needed)
+    // 若页数不多则直接展示全部（无需省略号）
     if (totalPageNumbers >= safeTotalPages) {
       return range(1, safeTotalPages);
     }
@@ -43,28 +43,29 @@ export function usePagination({
 
     const paginationRange: PaginationItem[] = [];
 
-    // Always include first page
+    // 始终包含第一页
     paginationRange.push(1);
 
-    // Left dots
+    // 左侧省略号
     if (shouldShowLeftDots) {
       paginationRange.push(DOTS);
     }
 
-    // Middle range
+    // 中间区间
     const middleStart = shouldShowLeftDots ? leftSiblingIndex : 2;
     const middleEnd = shouldShowRightDots ? rightSiblingIndex : safeTotalPages - 1;
 
     paginationRange.push(...range(middleStart, middleEnd));
 
-    // Right dots
+    // 右侧省略号
     if (shouldShowRightDots) {
       paginationRange.push(DOTS);
     }
 
-    // Always include last page
+    // 始终包含最后一页
     paginationRange.push(safeTotalPages);
 
     return paginationRange;
   }, [totalPages, currentPage, siblingCount]);
 }
+

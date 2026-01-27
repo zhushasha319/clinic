@@ -1,4 +1,4 @@
-export const bannerImageData = [
+﻿export const bannerImageData = [
   {
     id: "banner-1",
     name: "Main Welcome Banner",
@@ -7,7 +7,7 @@ export const bannerImageData = [
 ];
 
 // -----------------------------------------------------------------------------
-// Data for the Departments Section
+// 科室板块的数据
 // -----------------------------------------------------------------------------
 export const departmentData = [
   { id: "dept-cardiology", name: "心脏科", iconName: "Heart" },
@@ -19,8 +19,8 @@ export const departmentData = [
 ];
 
 // -----------------------------------------------------------------------------
-// Data for the "Our Doctors" Section
-// This combines user and profile information into one simplified object.
+// “我们的医生”板块的数据
+// 这里将用户与资料信息合并为简化对象。
 // -----------------------------------------------------------------------------
 export const doctorData = [
   {
@@ -53,7 +53,7 @@ export const doctorData = [
 ];
 
 // -----------------------------------------------------------------------------
-// Data for the Patient Testimonials Section
+// 患者评价板块的数据
 // -----------------------------------------------------------------------------
 
 export const testimonialData = [
@@ -90,8 +90,8 @@ export const testimonialData = [
 ];
 
 // -----------------------------------------------------------------------------
-// Main export combining all dummy data for easy import.
-// You can also export each const individually as shown above.
+// 主导出：汇总所有模拟数据，便于统一引入。
+// 也可按上方示例分别导出各个常量。
 // -----------------------------------------------------------------------------
 const allDummyData = {
   banners: bannerImageData,
@@ -101,3 +101,5 @@ const allDummyData = {
 };
 
 export default allDummyData;
+
+

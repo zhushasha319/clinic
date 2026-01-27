@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { PatientProfile, Appointment } from "@/types";
 import { useEffect, useState, useTransition } from "react";
 import { toast } from "react-hot-toast";
@@ -35,26 +35,26 @@ export default function PatientProfileClient({
   const router = useRouter();
   const pathname = usePathname();
 
-  //https://examples.com/dashboard/users?page=1
-  //pathname = /dashboard/users
+  // 示例：https://examples.com/dashboard/users?page=1
+  // pathname = /dashboard/users（示例）
 
   const searchParams = useSearchParams();
   const returnToParam = returnTo ?? searchParams.get("returnTo") ?? undefined;
   const appointmentIdParam =
     appointmentId ?? searchParams.get("appointmentId") ?? undefined;
-  //https://examples.com/dashboard/users?page=1
-  //searchParams = page=1
+  // 示例：https://examples.com/dashboard/users?page=1
+  // searchParams = page=1（示例）
 
   const [isPending, startTransition] = useTransition();
 
-  // State variables for Modals / Dialogs
+  // 弹窗相关状态
   const [isEditProfileModalOpen, setEditProfileModalOpen] = useState(false);
   const [isCancelInfoDialogOpen, setIsCancelInfoDialogOpen] = useState(false);
   const [isConfirmCancelCashDialogOpen, setIsConfirmCancelCashDialogOpen] =
     useState(false);
   const [isReviewDialogOpen, setIsReviewDialogOpen] = useState(false);
 
-  //State for selected items
+  // 选中项状态
   const [appointToCacel, setAppointmentToCancel] = useState<Appointment | null>(
     null,
   );
@@ -63,7 +63,7 @@ export default function PatientProfileClient({
 
   useEffect(() => {
     if (appointmentsError) {
-      toast.error("Appointments could not be loaded. Please again later");
+      toast.error("预约加载失败，请稍后再试。");
       console.log("Appointments Error:", appointmentsError);
     }
   }, [appointmentsError]);
@@ -72,8 +72,8 @@ export default function PatientProfileClient({
     const currentParams = new URLSearchParams(
       Array.from(searchParams.entries()),
     );
-    //https://example.com/products?sort=price&category=electronics
-    // ['sort','price'], ['category','electronics']
+    // 示例：https://example.com/products?sort=price&category=electronics
+    // 结果示例：["sort","price"]，["category","electronics"]
     currentParams.set("page", page.toString());
     const newUrl = `${pathname}?${currentParams.toString()}`;
     router.push(newUrl, { scroll: false });
@@ -88,10 +88,10 @@ export default function PatientProfileClient({
     startTransition(async () => {
       const result = await cancelCashAppointment(idToCancel);
       if (result.success) {
-        toast.success(result.message || "Appointment cancelled successfully.");
+        toast.success(result.message || "预约已取消。");
         router.refresh();
       } else {
-        toast.error(result.message || "Failed to cancel appointment.");
+        toast.error(result.message || "取消预约失败。");
       }
       setAppointmentToCancel(null);
     });
@@ -99,7 +99,7 @@ export default function PatientProfileClient({
 
   const handleReviewSubmit = (formData: ReviewFormValues) => {
     if (!selectedAppointmentForReview) {
-      toast.error("No appointment selected for review");
+      toast.error("未选择要评价的预约。");
       return;
     }
     startTransition(async () => {
@@ -110,13 +110,13 @@ export default function PatientProfileClient({
         reviewText: formData.reviewText,
       });
       if (result.success) {
-        toast.success(result.message || "Review submitted successfully");
+        toast.success(result.message || "评价提交成功。");
         setIsReviewDialogOpen(false);
         router.refresh();
       } else {
         const message = result.fieldErrors
-          ? "Please check errors on the form "
-          : result.message || "Failed to submit review";
+          ? "请检查表单中的错误。"
+          : result.message || "提交评价失败。";
         toast.error(message);
       }
     });
@@ -161,7 +161,7 @@ export default function PatientProfileClient({
         isPending={isPending}
       />
 
-      {/* Models*/}
+      {/* 弹窗 */}
       <EditProfileModal
         isOpen={isEditProfileModalOpen}
         onClose={() => setEditProfileModalOpen(false)}
@@ -187,3 +187,4 @@ export default function PatientProfileClient({
     </div>
   );
 }
+

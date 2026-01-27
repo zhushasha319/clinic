@@ -1,4 +1,4 @@
-"use server";
+﻿"use server";
 
 import prisma from "@/db/prisma";
 import { AppointmentStatus } from "@/lib/generated/prisma";
@@ -23,7 +23,7 @@ export async function confirmCashAppointment(
   if (!existingAppointment) {
     return {
       success: false,
-      message: "Appointment not found.",
+      message: "未找到预约。",
       errorType: "NOT_FOUND",
     };
   }
@@ -32,18 +32,18 @@ export async function confirmCashAppointment(
   if (existingAppointment.status !== AppointmentStatus.PAYMENT_PENDING) {
     return {
       success: false,
-      message: `Action cannot be completed. Appointment status is '${existingAppointment.status}'.`,
+      message: `无法完成操作，预约状态为 '${existingAppointment.status}'。`,
       errorType: "STATUS_CONFLICT",
     };
   }
 
-  // 3. 更新预约状态为 CASH (等待现金支付)
+  // 3. 更新预约状态为 CASH（等待现金支付）
   await prisma.appointment.update({
     where: {
       appointmentId: existingAppointment.appointmentId,
     },
     data: {
-      status: AppointmentStatus.CASH, // 设置状态为 CASH (等待支付)
+      status: AppointmentStatus.CASH, // 设置状态为 CASH（等待支付）
       paymentMethod: "CASH", // 设置支付方式为现金
       paymentStatus: "PENDING", // 支付状态为待支付
       reservationExpiresAt: null, // 清除预约过期时间
@@ -52,7 +52,7 @@ export async function confirmCashAppointment(
 
   return {
     success: true,
-    message: "Cash payment method confirmed. Awaiting payment.",
+    message: "已确认现金支付方式，等待付款。",
   };
 }
 
@@ -88,7 +88,7 @@ export async function updateAppointmentToPaid({
 
   return {
     success: true,
-    message: "Appointment updated to paid",
+    message: "预约已更新为已支付",
     data: updatedAppointment,
   };
 }
@@ -111,7 +111,7 @@ export async function createAlipayPayment({
   ServerActionResponse<{ charge: any }>
 > {
   try {
-    // 验证预约是否存在
+    // 校验预约是否存在
     const appointment = await prisma.appointment.findUnique({
       where: { appointmentId },
       include: { doctor: true },
@@ -120,7 +120,7 @@ export async function createAlipayPayment({
     if (!appointment) {
       return {
         success: false,
-        error: "预约不存在",
+        error: "预约不存在。",
         errorType: "NOT_FOUND",
       };
     }
@@ -132,7 +132,7 @@ export async function createAlipayPayment({
     if (!isOwner && !isGuest) {
       return {
         success: false,
-        error: "无权访问此预约",
+        error: "无权访问该预约。",
         errorType: "UNAUTHORIZED",
       };
     }
@@ -141,22 +141,22 @@ export async function createAlipayPayment({
     if (appointment.paymentStatus === "PAID") {
       return {
         success: false,
-        error: "预约已支付",
+        error: "预约已支付。",
         errorType: "ALREADY_PAID",
       };
     }
 
-    // 创建订单号(移除连字符以符合 Ping++ 格式要求)
+    // 创建订单号（移除连字符以符合 Ping++ 格式要求）
     const orderNo = `ORDER_${appointmentId.replace(/-/g, "")}_${Date.now()}`;
 
     // 创建 Ping++ Charge 对象
     const chargeParams = {
       order_no: orderNo,
       app: { id: process.env.PINGPP_APP_ID },
-      channel: "alipay_wap", // 支付宝H5支付
+      channel: "alipay_wap", // 支付宝 H5 支付
       amount: Math.round(amount * 100), // 转换为分
       client_ip: clientIp || "127.0.0.1",
-      currency: "cny", 
+      currency: "cny",
       subject: `诊所预约 - ${appointment.doctor.name}`,
       body: `预约日期: ${new Date(appointment.appointmentStartUTC).toLocaleDateString()}`,
       extra: {
@@ -197,7 +197,7 @@ export async function createAlipayPayment({
 }
 
 /**
- * 处理支付宝支付成功回调 (Webhook)
+ * 处理支付宝支付回调（Webhook）
  */
 export async function handleAlipayWebhook(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -244,7 +244,7 @@ export async function handleAlipayWebhook(
       const appointmentId = charge.metadata?.appointmentId;
 
       if (appointmentId) {
-        // 支付失败,恢复预约状态为待支付,允许用户重新支付
+        // 支付失败，恢复预约状态为待支付，允许用户重新支付
         await prisma.appointment.update({
           where: { appointmentId },
           data: {
@@ -258,7 +258,7 @@ export async function handleAlipayWebhook(
 
       return {
         success: true,
-        message: `预约 ${appointmentId} 支付失败,已恢复为待支付状态`,
+        message: `预约 ${appointmentId} 支付失败，已恢复为待支付状态`,
       };
     }
 

@@ -1,4 +1,4 @@
-import type { Role } from "@/lib/generated/prisma";
+﻿import type { Role } from "@/lib/generated/prisma";
 import type { DefaultSession, User as DefaultUser } from "next-auth";
 
 declare module "next-auth" {
@@ -9,9 +9,10 @@ declare module "next-auth" {
     user: {
       id: string;
       role: Role;
-    } & DefaultSession["user"]; // Keep the default properties
+    } & DefaultSession["user"]; // 保留默认字段
   }
   export interface User extends DefaultUser {
     role: Role;
   }
 }
+

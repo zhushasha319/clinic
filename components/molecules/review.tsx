@@ -1,4 +1,4 @@
-import {
+﻿import {
   Card,
   CardContent,
   CardHeader,
@@ -7,7 +7,7 @@ import {
 import { Star } from "lucide-react";
 import Image from "next/image";
  
-// Define the properties for the ReviewCard component
+// 定义 ReviewCard 组件的属性
 interface ReviewCardProps {
   id: string;
   name: string;
@@ -17,7 +17,7 @@ interface ReviewCardProps {
   imageSrc: string;
 }
  
-// A helper component to render the star rating
+// 渲染星级评分的辅助组件
 const StarRating = ({ rating }: { rating: number }) => {
   return (
     <div className="flex justify-center md:justify-start mb-[3px]">
@@ -48,7 +48,7 @@ export default function Review({
           {imageSrc ? (
             <Image
               src={imageSrc}
-              alt={`${name}'s avatar`}
+              alt={`${name}的头像`}
               fill
               className="object-cover rounded-full"
             />
@@ -76,3 +76,4 @@ export default function Review({
     </Card>
   );
 }
+

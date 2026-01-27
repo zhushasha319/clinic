@@ -1,4 +1,4 @@
-"use server";
+﻿"use server";
 
 import { signIn } from "@/auth";
 import { signInFormSchema, signUpFormSchema } from "../validations/auth";
@@ -80,7 +80,7 @@ export async function signInWithCredentials(
     if (isNextRedirectError(err)) throw err;
     // 常见：Auth.js 会抛出某些错误（比如 CredentialsSignin / 回调错误等）
     const message =
-      err instanceof Error ? err.message : "Something went wrong.";
+      err instanceof Error ? err.message : "出现错误。";
 
     return {
       success: false,
@@ -99,12 +99,12 @@ export async function signOutUser(): Promise<ServerActionResponse> {
     // 一般情况下这行不会执行（因为会 redirect）
     return {
       success: true,
-      message: "Signed out successfully.",
+      message: "已成功退出登录。",
     };
   } catch (err: unknown) {
     return {
       success: false,
-      error: err instanceof Error ? err.message : "Failed to sign out.",
+      error: err instanceof Error ? err.message : "退出登录失败。",
       errorType: "SIGN_OUT_ERROR",
     };
   }
@@ -116,16 +116,16 @@ export async function signUp(
   _prevState: ServerActionResponse,
   formData: FormData,
 ): Promise<ServerActionResponse> {
-  // Extract data from formData by converting it to an object
+  // 将 formData 转成对象以提取数据
   const formValues = Object.fromEntries(formData.entries());
 
-  // Validate the form data using the new schema
+  // 使用新 schema 校验表单数据
   const validationResult = signUpFormSchema.safeParse(formValues);
 
   if (!validationResult.success) {
     return {
       success: false,
-      message: "Validation failed.",
+      message: "校验失败。",
       fieldErrors: validationResult.error.flatten().fieldErrors,
     };
   }
@@ -134,7 +134,7 @@ export async function signUp(
   const callbackUrl = (formData.get("callbackUrl") as string) || "/";
 
   try {
-    // Check if a user with the given email already exists
+    // 检查该邮箱是否已存在用户
     const existingUser = await prisma.user.findUnique({
       where: { email },
     });
@@ -143,16 +143,16 @@ export async function signUp(
       return {
         success: false,
         message:
-          "Please use another email as a User with this email already exists",
-        error: "A user with this email already exists.",
+          "该邮箱已被注册，请使用其他邮箱。",
+        error: "该邮箱已被注册。",
         errorType: "Conflict",
       };
     }
 
-    // Hash the password before saving it to the database
+    // 保存前先对密码进行哈希
     //const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create the new user in the database
+    // 在数据库中创建新用户
     await prisma.user.create({
       data: {
         name,
@@ -161,24 +161,24 @@ export async function signUp(
       },
     });
 
-    // Sign in the user automatically after successful registration
+    // 注册成功后自动登录
     await signIn("credentials", {
       email,
       password,
       redirect: false,
     });
 
-    // Manually redirect to callbackUrl after successful sign up
+    // 注册成功后手动重定向到 callbackUrl
     redirect(callbackUrl);
   } catch (error: unknown) {
     if (isNextRedirectError(error)) throw error;
     const errorMessage =
-      error instanceof Error ? error.message : "Unkown error type caught.";
+      error instanceof Error ? error.message : "捕获到未知错误类型。";
 
     return {
       success: false,
       error: errorMessage,
-      message: "Sign up did not suceed. Please try again.",
+      message: "注册失败，请重试。",
       errorType: "SERVER_ERROR",
     };
   }
@@ -202,7 +202,7 @@ export async function getUserDetails(): Promise<
         success: false,
         error: "Unauthorized",
         errorType: "UNAUTHORIZED",
-        message: "You must be logged in to view user details.",
+        message: "请先登录后查看用户信息。",
       };
     }
 
@@ -225,7 +225,7 @@ export async function getUserDetails(): Promise<
         success: false,
         error: "User not found",
         errorType: "NOT_FOUND",
-        message: "No user record exists for the current session.",
+        message: "当前会话不存在用户记录。",
       };
     }
 
@@ -245,15 +245,15 @@ export async function getUserDetails(): Promise<
     return {
       success: true,
       data: profile,
-      message: "User details fetched successfully.",
+      message: "用户信息获取成功。",
     };
   } catch (err: unknown) {
     // 生产环境别把 err.message 原样回传给前端也行
     return {
       success: false,
-      error: err instanceof Error ? err.message : "Something went wrong",
+      error: err instanceof Error ? err.message : "发生错误",
       errorType: "INTERNAL_SERVER_ERROR",
-      message: "Failed to fetch user details.",
+      message: "获取用户信息失败。",
     };
   }
 }
@@ -307,7 +307,7 @@ export async function getUserAppointments(params?: {
   limit?: number;
 }): Promise<ServerActionResponse<UserAppointmentsData>> {
   try {
-    // 1) Auth
+    // 1) 认证
     const session = await auth();
     const email = session?.user?.email ?? null;
 
@@ -316,11 +316,11 @@ export async function getUserAppointments(params?: {
         success: false,
         error: "Unauthorized",
         errorType: "UNAUTHORIZED",
-        message: "You must be logged in to view appointments.",
+        message: "请先登录后查看预约。",
       };
     }
 
-    // 2) Resolve user id
+    // 2) 解析用户 id
     const user = await prisma.user.findUnique({
       where: { email },
       select: { id: true },
@@ -331,22 +331,22 @@ export async function getUserAppointments(params?: {
         success: false,
         error: "User not found",
         errorType: "NOT_FOUND",
-        message: "No user record exists for the current session.",
+        message: "当前会话不存在用户记录。",
       };
     }
 
-    // 3) Pagination
+    // 3) 分页
     const page = clampInt(params?.page, DEFAULT_PAGE, 1, 10_000);
     const limit = clampInt(params?.limit, DEFAULT_LIMIT, 1, 100);
     const skip = (page - 1) * limit;
 
-    // 4) Filter (exclude PAYMENT_PENDING)
+    // 4) 过滤（排除 PAYMENT_PENDING）
     const where = {
       userId: user.id,
       NOT: { status: "PAYMENT_PENDING" as const },
     };
 
-    // 5) Query count + current page rows
+    // 5) 查询总数与当前页数据
     const [totalAppointments, rows] = await Promise.all([
       prisma.appointment.count({ where }),
       prisma.appointment.findMany({
@@ -380,7 +380,7 @@ export async function getUserAppointments(params?: {
 
     const tz = getAppTimeZone();
 
-    // 6) Map to DTO
+    // 6) 映射为 DTO
     const appointments: AppointmentDTO[] = rows
       .map((a) => {
         const mappedStatus = mapAppointmentStatus(String(a.status));
@@ -391,7 +391,7 @@ export async function getUserAppointments(params?: {
         return {
           id: a.appointmentId,
           doctorId: a.doctorId,
-          doctorName: a.doctor?.name ?? "Unknown Doctor",
+          doctorName: a.doctor?.name ?? "未知医生",
           specialty: a.doctor?.doctorProfile?.specialty ?? undefined,
           date, // 'MMMM d,yyyy'
           time, // derived from start time in app TZ
@@ -404,7 +404,7 @@ export async function getUserAppointments(params?: {
 
     return {
       success: true,
-      message: "Appointments fetched successfully.",
+      message: "预约获取成功。",
       data: {
         appointments,
         totalAppointments,
@@ -415,9 +415,9 @@ export async function getUserAppointments(params?: {
   } catch {
     return {
       success: false,
-      error: "Something went wrong",
+      error: "发生错误",
       errorType: "INTERNAL_SERVER_ERROR",
-      message: "Failed to fetch user appointments.",
+      message: "获取预约失败。",
     };
   }
 }
@@ -433,8 +433,8 @@ export async function updateProfileImage(
   if (!session?.user?.id) {
     return {
       success: false,
-      message: "User not authenticated",
-      error: "Unauthorized: You must be logged in to update your profile.",
+      message: "用户未登录",
+      error: "未授权：请登录后再更新资料。",
       errorType: "AUTHENTICATION",
     };
   }
@@ -442,7 +442,7 @@ export async function updateProfileImage(
   const { id: userId } = session.user;
 
   try {
-    // Get the current user to find the old image URL
+    // 获取当前用户以找到旧头像 URL
     const currentUser = await prisma.user.findUnique({
       where: { id: userId },
       select: { image: true },
@@ -468,7 +468,7 @@ export async function updateProfileImage(
         await utapi.deleteFiles(oldFileKey);
       } catch (deleteError) {
         console.log(
-          `Failed to delete old profile image for user ${userId} with key ${oldFileKey}.`,
+          `删除旧头像失败，用户 ${userId} with key ${oldFileKey}.`,
           deleteError,
         );
       }
@@ -477,24 +477,24 @@ export async function updateProfileImage(
     // 5. 重新验证用户个人资料页面以立即反映更改
     // 根据您的应用程序结构调整路径。
 
-    revalidatePath("/user/profile"); // 如果存在，重新验证公共个人资料页面
+    revalidatePath("/user/profile"); // ?????????????
 
     return {
       success: true,
-      message: "Profile image updated successfully.",
+      message: "头像更新成功。",
     };
   } catch (error) {
-    console.error("Error updating profile image:", error);
+    console.error("更新头像出错：", error);
     return {
       success: false,
-      message: "Failed to update profile image. Please try again later.",
-      error: error instanceof Error ? error.message : "Unknown error",
+      message: "更新头像失败，请稍后再试。",
+      error: error instanceof Error ? error.message : "未知错误",
       errorType: "SERVER_ERROR",
     };
   }
 }
 
-/** 包装 next/cache 的 revalidatePath，保护性校验路径字符串。 */
+/** ?? next/cache ? revalidatePath???????????? */
 function revalidatePath(path: string) {
   if (typeof path !== "string" || !path.trim()) return;
   nextRevalidatePath(path);
@@ -513,7 +513,7 @@ export async function updateUserProfile(
   data: ProfileUpdateInput,
 ): Promise<ServerActionResponse<{ id: string }>> {
   try {
-    // 1) Auth
+    // 1) 认证
     const session = await auth();
     const userId = session?.user?.id;
 
@@ -521,11 +521,11 @@ export async function updateUserProfile(
       return {
         success: false,
         errorType: "UNAUTHORIZED",
-        error: "You must be logged in to update your profile.",
+        error: "请登录后再更新资料。",
       };
     }
 
-    // 2) Validate input with Zod (and return fieldErrors if invalid)
+    // 2) 使用 Zod 校验输入（无效则返回 fieldErrors）
     const parsed = patientProfileUpdateSchema.safeParse(data);
 
     if (!parsed.success) {
@@ -537,14 +537,14 @@ export async function updateUserProfile(
       return {
         success: false,
         errorType: "VALIDATION_ERROR",
-        message: "Please fix the highlighted fields.",
+        message: "请修正高亮的字段。",
         fieldErrors,
       };
     }
 
     const { name, address, phoneNumber, dateOfBirth } = parsed.data;
 
-    // 3) Build update payload (only include optional fields if provided)
+    // 3) 构建更新数据（仅包含有值的可选字段）
     const updateData: {
       name: string;
       address?: string | null;
@@ -557,22 +557,22 @@ export async function updateUserProfile(
       dateofbirth: dateOfBirth ? new Date(dateOfBirth) : null,
     };
 
-    // 4) Update user
+    // 4) 更新用户
     await prisma.user.update({
       where: { id: userId },
       data: updateData,
     });
 
-    // 5) Revalidate the profile page to show updated data
+    // 5) 重新验证资料页以显示更新
     nextRevalidatePath("/user/profile");
 
     return {
       success: true,
-      message: "Profile updated successfully.",
+      message: "资料更新成功。",
       data: { id: userId },
     };
   } catch (err: unknown) {
-    // Helpful Prisma-specific handling
+    // Prisma 特定错误处理
     if (
       err &&
       typeof err === "object" &&
@@ -582,26 +582,27 @@ export async function updateUserProfile(
       return {
         success: false,
         errorType: "NOT_FOUND",
-        error: "User not found.",
+        error: "未找到用户。",
       };
     }
 
-    // Zod should be caught earlier, but keep it robust
+    // 理论上 Zod 已提前捕获，但这里保持健壮性
     if (err instanceof z.ZodError) {
       return {
         success: false,
         errorType: "VALIDATION_ERROR",
-        message: "Please fix the highlighted fields.",
+        message: "请修正高亮的字段。",
         fieldErrors: err.flatten().fieldErrors,
       };
     }
 
-    console.error("updateUserProfile error:", err);
+    console.error("updateUserProfile 出错：", err);
 
     return {
       success: false,
       errorType: "SERVER_ERROR",
-      error: "Something went wrong while updating your profile.",
+      error: "发生错误 while updating your profile.",
     };
   }
 }
+

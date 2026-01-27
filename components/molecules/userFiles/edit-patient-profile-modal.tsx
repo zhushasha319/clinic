@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import * as React from "react";
 import { useForm } from "react-hook-form";
@@ -30,7 +30,7 @@ interface EditProfileModalProps {
   patientData: PatientProfile;
 }
 
-// Convert various date strings to yyyy-mm-dd for <input type="date" />
+// 将不同格式的日期字符串转换为 yyyy-mm-dd，供 <input type="date" /> 使用
 function toDateInputValue(dateString?: string) {
   if (!dateString) return "";
   const d = new Date(dateString);
@@ -68,7 +68,7 @@ export default function EditProfileModal({
     formState: { errors, isSubmitting },
   } = form;
 
-  // When modal opens / patientData changes, re-fill values
+  // 弹窗打开或 patientData 变化时，重新填充表单
   React.useEffect(() => {
     if (!isOpen) return;
 
@@ -84,7 +84,7 @@ export default function EditProfileModal({
   const onSubmit = async (values: ProfileUpdateInput) => {
     setServerError(null);
 
-    // Normalize: empty optional fields -> undefined (schema expects optional)
+    // 归一化：可选字段为空时置为 undefined（schema 期望可选）
     const payload: ProfileUpdateInput = {
       name: values.name,
       phoneNumber: values.phoneNumber,
@@ -95,26 +95,26 @@ export default function EditProfileModal({
     const res = await updateUserProfile(payload);
 
     if (!res.success) {
-      // If server returns fieldErrors, you can optionally map them into RHF:
-      // (keeping it simple: show top error message)
-      setServerError(res.error || res.message || "Failed to update profile.");
+      // 若服务端返回 fieldErrors，可选映射到 RHF：
+      //（简化处理：仅显示首条错误信息）
+      setServerError(res.error || res.message || "更新资料失败。");
       return;
     }
 
-    // Success: update session with new name, show toast, close modal, and refresh to get updated data
+    // 成功：更新 session 名称、弹提示、关闭弹窗并刷新数据
     await updateSession({
       user: {
         name: payload.name,
       },
     });
 
-    toast.success("Profile updated successfully!");
+    toast.success("资料更新成功！");
     onClose();
-    router.refresh(); //刷新页面数据
+    router.refresh(); //鍒锋柊椤甸潰鏁版嵁
   };
 
   const handleCancel = () => {
-    // reset to original data when cancelling
+    // 取消时重置为原始数据
     reset({
       name: patientData?.name ?? "",
       phoneNumber: patientData?.phoneNumber ?? "",
@@ -129,16 +129,16 @@ export default function EditProfileModal({
     <Dialog open={isOpen} onOpenChange={(open) => !open && handleCancel()}>
       <DialogContent className="sm:max-w-[520px]">
         <DialogHeader>
-          <DialogTitle>Edit Profile</DialogTitle>
+          <DialogTitle>编辑资料</DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-          {/* Full Name */}
+          {/* 姓名 */}
           <div className="space-y-2">
-            <Label htmlFor="name">Full Name</Label>
+            <Label htmlFor="name">姓名</Label>
             <Input
               id="name"
-              placeholder="Your full name"
+              placeholder="请输入姓名"
               {...register("name")}
             />
             {errors.name?.message && (
@@ -146,12 +146,12 @@ export default function EditProfileModal({
             )}
           </div>
 
-          {/* Phone Number */}
+          {/* 手机号 */}
           <div className="space-y-2">
-            <Label htmlFor="phoneNumber">Phone Number</Label>
+            <Label htmlFor="phoneNumber">手机号</Label>
             <Input
               id="phoneNumber"
-              placeholder="1234567"
+              placeholder="请输入手机号"
               {...register("phoneNumber")}
               inputMode="tel"
             />
@@ -162,12 +162,12 @@ export default function EditProfileModal({
             )}
           </div>
 
-          {/* Address */}
+          {/* 地址 */}
           <div className="space-y-2">
-            <Label htmlFor="address">Address</Label>
+            <Label htmlFor="address">地址</Label>
             <Textarea
               id="address"
-              placeholder="Your address"
+              placeholder="请输入地址"
               className="min-h-[84px]"
               {...register("address")}
             />
@@ -178,9 +178,9 @@ export default function EditProfileModal({
             )}
           </div>
 
-          {/* Date of Birth */}
+          {/* 出生日期 */}
           <div className="space-y-2">
-            <Label htmlFor="dateOfBirth">Date of Birth</Label>
+            <Label htmlFor="dateOfBirth">出生日期</Label>
             <Input id="dateOfBirth" type="date" {...register("dateOfBirth")} />
             {errors.dateOfBirth?.message && (
               <p className="text-sm text-destructive">
@@ -189,7 +189,7 @@ export default function EditProfileModal({
             )}
           </div>
 
-          {/* Server error */}
+          {/* 服务端错误 */}
           {serverError && (
             <div className="rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
               {serverError}
@@ -207,7 +207,7 @@ export default function EditProfileModal({
               Cancel
             </Button>
             <Button type="submit" disabled={isSubmitting} className="w-[140px]">
-              {isSubmitting ? "Saving..." : "Save Changes"}
+              {isSubmitting ? "保存中..." : "保存修改"}
             </Button>
           </div>
         </form>
@@ -215,3 +215,4 @@ export default function EditProfileModal({
     </Dialog>
   );
 }
+

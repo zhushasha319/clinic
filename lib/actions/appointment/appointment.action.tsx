@@ -1,4 +1,4 @@
-//预约界面
+﻿//预约界面
 //实现预约，分为访客和用户预约
 //1.访客访问预约表单->验证输入->创建访客标识符->转换时间为UTC->检查时间段可用性->计算保留过期时间->创建预约记录->重新验证医生页面->返回成功负载
 "use server";
@@ -111,8 +111,8 @@ export async function createGuestAppointment({
         ? crypto.randomUUID()
         : `${Date.now()}-${Math.random().toString(16).slice(2)}`;
 
-    // 2) Convert app-timezone date+time -> UTC Date objects for DB
-    const tz = getAppTimeZone(); // e.g. "Asia/Singapore"
+    // 2) 将应用时区日期+时间转换为数据库用的 UTC Date
+    const tz = getAppTimeZone(); // 例如："Asia/Singapore"
     const startLocal = new Date(`${date}T${startTime}:00`);
     const endLocal = new Date(`${date}T${endTime}:00`);
 
@@ -129,7 +129,7 @@ export async function createGuestAppointment({
       return makeFieldError("endTime", "endTime must be after startTime");
     }
 
-    // 3) Check if slot is available (exact same start/end, blocking statuses, not expired)
+    // 3) 检查时段是否可用（起止时间一致、阻塞状态、未过期）
     const available = await checkSlotAvailability(
       doctorId,
       appointmentStartUTC,
@@ -140,11 +140,11 @@ export async function createGuestAppointment({
       return {
         success: false,
         errorType: "SLOT_UNAVAILABLE",
-        message: "This slot is no longer available. Please pick another time.",
+        message: "该时段已不可用，请选择其他时间。",
       };
     }
 
-    // 4) Calculate reservation expiration from appSettings (fallback 10 minutes)
+    // 4) 从配置计算预留过期时间（默认 10 分钟）
     const settings = await prisma.appSettings.findUnique({
       where: { id: "global" },
       select: { slotReservationDuration: true },
@@ -157,7 +157,7 @@ export async function createGuestAppointment({
 
     const reservationExpiresAt = addMinutes(new Date(), durationMinutes);
 
-    // 5) Create appointment record (guest reservation)
+    // 5) 创建预约记录（访客预留）
     const created = await prisma.appointment.create({
       data: {
         doctorId,
@@ -168,7 +168,7 @@ export async function createGuestAppointment({
         appointmentStartUTC,
         appointmentEndUTC,
 
-        // required fields in your schema
+        // schema 中的必填字段
         patientType: "MYSELF",
         patientName: "Guest",
       },
@@ -178,20 +178,20 @@ export async function createGuestAppointment({
       },
     });
 
-    // 6) Revalidate doctor page for fresh schedule data
+    // 6) 重新验证医生页面以刷新排班
     revalidatePath(`/doctors/${doctorId}`);
 
-    // 7) Return success payload
+    // 7) 返回成功结果
     return {
       success: true,
-      message: "Slot reserved successfully.",
+      message: "时段已成功预留。",
       data: {
         appointmentId: created.appointmentId,
         guestIdentifier: created.guestIdentifier ?? guestIdentifier,
       },
     };
   } catch (err: unknown) {
-    // Prisma unique constraint race conditions etc can land here.
+    // Prisma 唯一约束竞态等错误可能在这里出现。
     return {
       success: false,
       errorType: "SERVER_ERROR",
@@ -222,7 +222,7 @@ export async function createOrUpdateAppointmentReservation({
   ServerActionResponse<ReservationSuccessData>
 > {
   try {
-    // 1) Auth check: session user must match userId
+    // 1) 权限校验：session 用户必须匹配 userId
     const session = await auth();
     const sessionUserId = (session as { user?: { id?: string } })?.user?.id;
 
@@ -242,7 +242,7 @@ export async function createOrUpdateAppointmentReservation({
       };
     }
 
-    // 2) Validate input
+    // 2) 校验输入
     if (!doctorId) return makeFieldError("doctorId", "doctorId is required");
     if (!userId) return makeFieldError("userId", "userId is required");
     if (!date || !isValidISODate(date))
@@ -252,7 +252,7 @@ export async function createOrUpdateAppointmentReservation({
     if (!endTime || !isValidHHmm(endTime))
       return makeFieldError("endTime", "endTime must be in HH:mm format");
 
-    // 3) Convert clinic-local time -> UTC dates for DB
+    // 3) 将门诊本地时间转换为数据库用的 UTC 时间
     const tz = getAppTimeZone();
     const startLocal = new Date(`${date}T${startTime}:00`);
     const endLocal = new Date(`${date}T${endTime}:00`);
@@ -270,7 +270,7 @@ export async function createOrUpdateAppointmentReservation({
       return makeFieldError("endTime", "endTime must be after startTime");
     }
 
-    // 4) Fetch reservation duration (fallback 10) and compute expiry
+    // 4) 获取预留时长（默认 10）并计算过期时间
     const settings = await prisma.appSettings.findUnique({
       where: { id: "global" },
       select: { slotReservationDuration: true },
@@ -284,7 +284,7 @@ export async function createOrUpdateAppointmentReservation({
     const now = new Date();
     const reservationExpiresAt = addMinutes(now, durationMinutes);
 
-    // 5) Check if user already has a non-expired PAYMENT_PENDING reservation for this doctor
+    // 5) 检查用户是否已有该医生未过期的 PAYMENT_PENDING 预留
     const existingPending = await prisma.appointment.findFirst({
       where: {
         doctorId,
@@ -303,8 +303,8 @@ export async function createOrUpdateAppointmentReservation({
     let appointmentId: string;
 
     if (existingPending) {
-      // 6a) Rescheduling existing pending reservation:
-      //     IMPORTANT: exclude itself from conflict check
+      // 6a) 重新安排已存在的待支付预留：
+      //     重要：冲突检查时需排除自身
       const available = await checkSlotAvailability(
         doctorId,
         appointmentStartUTC,
@@ -317,7 +317,7 @@ export async function createOrUpdateAppointmentReservation({
           success: false,
           errorType: "SLOT_UNAVAILABLE",
           message:
-            "This slot is no longer available. Please pick another time.",
+            "该时段已不可用，请选择其他时间。",
         };
       }
 
@@ -333,7 +333,7 @@ export async function createOrUpdateAppointmentReservation({
 
       appointmentId = updated.appointmentId;
     } else {
-      // 6b) Create a new reservation
+      // 6b) 创建新的预留
       const available = await checkSlotAvailability(
         doctorId,
         appointmentStartUTC,
@@ -345,7 +345,7 @@ export async function createOrUpdateAppointmentReservation({
           success: false,
           errorType: "SLOT_UNAVAILABLE",
           message:
-            "This slot is no longer available. Please pick another time.",
+            "该时段已不可用，请选择其他时间。",
         };
       }
 
@@ -366,7 +366,7 @@ export async function createOrUpdateAppointmentReservation({
       appointmentId = created.appointmentId;
     }
 
-    // 7) Revalidate doctor schedule page
+    // 7) 重新验证医生排班页面
     revalidatePath(`/doctors/${doctorId}`);
 
     return {
@@ -390,7 +390,7 @@ export async function cleanupExpiredReservations(): Promise<ServerActionResponse
   try {
     const now = new Date();
 
-    // Delete PAYMENT_PENDING reservations that have expired
+    // 删除已过期的 PAYMENT_PENDING 预留
     const result = await prisma.appointment.deleteMany({
       where: {
         status: "PAYMENT_PENDING",
@@ -400,7 +400,7 @@ export async function cleanupExpiredReservations(): Promise<ServerActionResponse
 
     return {
       success: true,
-      message: `Cleaned up ${result.count} expired reservation(s).`,
+      message: `已清理 ${result.count} 条过期预留。`,
       data: { deletedCount: result.count },
     };
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -452,7 +452,7 @@ export async function getAppointmentData({
       };
     }
 
-    // Status conflict
+    // 状态冲突
     if (appointment.status !== "PAYMENT_PENDING") {
       return {
         success: false,
@@ -463,7 +463,7 @@ export async function getAppointmentData({
       };
     }
 
-    // Expiration check (treat missing expiresAt as expired to be safe)
+    // 过期检查（缺失 expiresAt 视为已过期以保证安全）
     const now = new Date();
     const expiresAt = appointment.reservationExpiresAt;
 
@@ -479,7 +479,7 @@ export async function getAppointmentData({
 
     return {
       success: true,
-      message: "Appointment reservation fetched successfully.",
+      message: "预约预留获取成功。",
       data: appointment as AppoitmentWithRelations,
     };
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -488,7 +488,7 @@ export async function getAppointmentData({
       success: false,
       errorType: "SERVER_ERROR",
       error: err?.message ?? "Failed to fetch appointment data",
-      message: "Something went wrong while fetching your reservation.",
+      message: "获取预约预留时出错。",
     };
   }
 }
@@ -500,7 +500,7 @@ export async function updateGuestAppointmentWithUser(
   guestIdentifier: string,
 ): Promise<ServerActionResponse<{ appointmentId?: string }>> {
   try {
-    // 1) Auth check
+    // 1) 权限校验
     const session = await auth();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const userId = (session as any)?.user?.id as string | undefined;
@@ -510,7 +510,7 @@ export async function updateGuestAppointmentWithUser(
         success: false,
         errorType: "AUTHENTICATION_ERROR",
         error: "User is not authenticated",
-        message: "Please sign in to continue.",
+        message: "请先登录后继续。",
       };
     }
 
@@ -525,7 +525,7 @@ export async function updateGuestAppointmentWithUser(
 
     const now = new Date();
 
-    // 2) Find non-expired guest appointment
+    // 2) 查找未过期的访客预约
     const appt = await prisma.appointment.findFirst({
       where: {
         guestIdentifier,
@@ -549,16 +549,16 @@ export async function updateGuestAppointmentWithUser(
       };
     }
 
-    // 3) If already linked, treat as success (idempotent)
+    // 3) 已关联则视为成功（幂等）
     if (appt.userId === userId) {
       return {
         success: true,
-        message: "Reservation already linked to your account.",
+        message: "该预留已关联到你的账号。",
         data: { appointmentId: appt.appointmentId },
       };
     }
 
-    // If linked to some other user, block
+    // 若已关联到其他用户则阻止
     if (appt.userId && appt.userId !== userId) {
       return {
         success: false,
@@ -569,7 +569,7 @@ export async function updateGuestAppointmentWithUser(
       };
     }
 
-    // 4) Update record with userId
+    // 4) 用 userId 更新记录
     const updated = await prisma.appointment.update({
       where: { appointmentId: appt.appointmentId },
       data: { userId },
@@ -578,7 +578,7 @@ export async function updateGuestAppointmentWithUser(
 
     return {
       success: true,
-      message: "Guest reservation linked to your account.",
+      message: "访客预留已关联到你的账号。",
       data: { appointmentId: updated.appointmentId },
     };
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -587,7 +587,7 @@ export async function updateGuestAppointmentWithUser(
       success: false,
       errorType: "SERVER_ERROR",
       error: err?.message ?? "Failed to update guest appointment with user",
-      message: "Something went wrong while linking your reservation.",
+      message: "关联预留时发生错误。",
     };
   }
 }
@@ -633,12 +633,12 @@ function computeUtcTimes(params: {
 export type AppointmentSubmissionData = PatientDetailsFormValues & {
   appointmentId: string;
   doctorId: string;
-  date: string; // YYYY-MM-DD (app TZ)
-  timeSlot: string; // HH:mm (app TZ)
-  endTime: string; // HH:mm (app TZ)
+  date: string; // YYYY-MM-DD（应用时区）
+  timeSlot: string; // HH:mm（应用时区）
+  endTime: string; // HH:mm（应用时区）
   isForSelf: boolean;
-  phone: string | null | undefined; // chosen phone (profile or alternate)
-  patientdateofbirth?: string; // DD/MM/YYYY (only for SOMEONE_ELSE typically)
+  phone: string | null | undefined; // 选择的手机号（资料或备用）
+  patientdateofbirth?: string; // DD/MM/YYYY（通常仅 SOMEONE_ELSE 使用）
 };
 
 interface AppointmentData {
@@ -671,7 +671,7 @@ export async function processAppointmentBooking(
         success: false,
         errorType: "VALIDATION_ERROR",
         error: "Invalid form data",
-        message: "Please fix the highlighted fields and try again.",
+        message: "请修正高亮字段后重试。",
         fieldErrors: toFieldErrorsFromZod(parsed.error.issues),
       };
     }
@@ -709,7 +709,7 @@ export async function processAppointmentBooking(
         success: false,
         errorType: "VALIDATION_ERROR",
         error: "Invalid time slot",
-        message: "Please select a valid time slot.",
+        message: "请选择有效的时段。",
         fieldErrors: {
           timeSlot: ["Invalid time slot selection."],
         },
@@ -731,12 +731,12 @@ export async function processAppointmentBooking(
 
     const dobDate = parseDobDDMMYYYYToDate(data.patientdateofbirth);
     if (data.patientType === "SOMEONE_ELSE" && !dobDate) {
-      // If schema is wired correctly, this should already be caught, but keeping it safe.
+      // 如果 schema 配置正确，本应已捕获，但这里做安全兜底。
       return {
         success: false,
         errorType: "VALIDATION_ERROR",
         error: "Invalid date of birth",
-        message: "Please enter a valid date of birth in DD/MM/YYYY format.",
+        message: "请输入 DD/MM/YYYY 格式的有效出生日期。",
         fieldErrors: { dateOfBirth: ["Invalid date of birth."] },
       };
     }
@@ -799,7 +799,7 @@ export async function processAppointmentBooking(
 
       return {
         success: true,
-        message: "Appointment details saved successfully.",
+        message: "预约信息保存成功。",
         data: { appointmentId: updated.appointmentId },
       };
     }
@@ -860,7 +860,9 @@ export async function processAppointmentBooking(
       success: false,
       errorType: "SERVER_ERROR",
       error: error?.message ?? "Failed to process appointment booking",
-      message: "Something went wrong while saving your appointment details.",
+      message: "保存预约信息时出错。",
     };
   }
 }
+
+

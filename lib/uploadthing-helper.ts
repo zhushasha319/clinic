@@ -1,7 +1,7 @@
-export function extractFileKeyFromUrl(
+﻿export function extractFileKeyFromUrl(
   url: string | undefined | null
 ): string | null {
-  // Return null immediately if the URL is null, undefined, or an empty string.
+  // 如果 URL 为空、未定义或空字符串，直接返回 null。
   if (!url) {
     return null;
   }

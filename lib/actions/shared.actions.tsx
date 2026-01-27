@@ -1,4 +1,4 @@
-"use server";
+﻿"use server";
 
 import { ServerActionResponse } from "@/types";
 import prisma from "@/db/prisma";
@@ -14,36 +14,36 @@ export async function cancelCashAppointment(
   if (!appointmentId) {
     return {
       success: false,
-      message: "Appointment ID is required.",
+      message: "需要预约 ID。",
       errorType: "badRequest",
     };
   }
   try {
-    // Step 1: Find the appointment by its ID
+    // 步骤 1：根据 ID 查找预约
     const appointment = await prisma.appointment.findUnique({
       where: { appointmentId },
     });
 
-    // Step 2: Handle case where appointment is not found
+    // 步骤 2：处理预约不存在的情况
     if (!appointment) {
       return {
         success: false,
-        message: "Appointment not found.",
+        message: "未找到预约。",
         errorType: "notFound",
       };
     }
 
-    // Step 3: Check if the appointment status is 'CASH'
+    // 步骤 3：检查预约状态是否为 CASH
     if (appointment.status !== AppointmentStatus.CASH) {
       return {
         success: false,
         message:
-          "This appointment cannot be cancelled. This is not a cash payment appointment. Please call the Admin",
+          "该预约无法取消，非现金支付预约。请联系管理员。",
         errorType: "InvalidStatus",
       };
     }
 
-    // Step 4: Update the appointment status to 'CANCELLED'
+    // 步骤 4：将预约状态更新为 CANCELLED
     const updatedAppointment = await prisma.appointment.update({
       where: { appointmentId },
       data: {
@@ -51,22 +51,23 @@ export async function cancelCashAppointment(
       },
     });
 
-    revalidatePath(`/user/profile`); //刷新用户个人资料页面
+    revalidatePath(`/user/profile`); //鍒锋柊鐢ㄦ埛涓汉璧勬枡椤甸潰
     // revalidatePath("/admin/appointments");
 
-    // Step 6: Return a success response
+    // 步骤 6：返回成功响应
     return {
       success: true,
-      message: "Appointment successfully cancelled.",
+      message: "预约已取消。",
     };
   } catch (error) {
-    // Step 7: Handle any unexpected errors
-    console.error("Error cancelling cash appointment:", error);
+    // 步骤 7：处理意外错误
+    console.error("取消现金预约出错：", error);
     return {
       success: false,
-      message: "An unexpected error occurred. Please try again later.",
-      error: error instanceof Error ? error.message : "Unknown error",
+      message: "发生意外错误，请稍后再试。",
+      error: error instanceof Error ? error.message : "未知错误",
       errorType: "SERVER_ERROR",
     };
   }
 }
+

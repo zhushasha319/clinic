@@ -1,9 +1,9 @@
-//auth.ts是总逻辑：规定“怎么登录”、登录后“我是谁”、权限字段怎么保存。
+// auth.ts ????????????????????????????????
 import NextAuth, { NextAuthConfig } from "next-auth";
 import prisma from "@/db/prisma";
-import { PrismaAdapter } from "@auth/prisma-adapter"; //让 NextAuth 能把用户/账号/session 等信息跟 Prisma 数据库对接（即使你用 jwt，也常见会配 adapter）
+import { PrismaAdapter } from "@auth/prisma-adapter"; // ? NextAuth ???/??/session ???? Prisma ????????? jwt ????? adapter?
 import { authConfig } from "./auth.config";
-import Credentials from "next-auth/providers/credentials"; //用户名密码登录
+import Credentials from "next-auth/providers/credentials"; // ???????
 import { compareSync } from "bcryptjs";
 import { Role } from "@/lib/generated/prisma";
 
@@ -13,8 +13,8 @@ export const config: NextAuthConfig = {
     error: "/sign-in",
   }, //登录/错误页去哪
   session: {
-    strategy: "jwt", // Use JSON Web Tokens for session management
-    maxAge: 30 * 24 * 60 * 60, // token 30 天过期
+    strategy: "jwt", // 使用 JWT 管理会话
+    maxAge: 30 * 24 * 60 * 60, // token 30 ???
   },
   adapter: PrismaAdapter(prisma) as NextAuthConfig["adapter"],
   providers: [
@@ -26,10 +26,10 @@ export const config: NextAuthConfig = {
 
       async authorize(credentials) {
         if (!credentials?.email || !credentials.password) {
-          return null; // Invalid credentials format
+          return null; // 凭证格式无效
         }
 
-        // Find the user in the database
+        // 在数据库中查找用户
         const user = await prisma.user.findUnique({
           where: { email: credentials.email as string },
         });
@@ -40,14 +40,14 @@ export const config: NextAuthConfig = {
         }
 
         if (user && user.password) {
-          // Verify the password
+          // 校验密码
           const passwordsMatch = compareSync(
             credentials.password as string,
             user.password,
           );
 
           if (passwordsMatch) {
-            // On successful authentication, return user details
+            // 认证成功返回用户信息
             return {
               id: user.id,
               name: user.name,
@@ -58,7 +58,7 @@ export const config: NextAuthConfig = {
           }
         }
 
-        // If password does not match, return null
+        // 密码不匹配则返回 null
         return null;
       }, //正式登录
     }),
@@ -67,7 +67,7 @@ export const config: NextAuthConfig = {
     ...authConfig.callbacks, //把 auth.config.ts 里的 callbacks 合进来
 
     async redirect({ url, baseUrl }) {
-      // Parse the url to check for callbackUrl in query params
+      // 解析 URL，检查 query 中的 callbackUrl
       try {
         const urlObj = new URL(url, baseUrl);
         const callbackUrl = urlObj.searchParams.get("callbackUrl");
@@ -76,20 +76,20 @@ export const config: NextAuthConfig = {
           return `${baseUrl}${callbackUrl}`;
         }
       } catch (e) {
-        // Ignore parse errors
+        // 忽略解析错误
       }
 
-      // If url is a relative path, make it absolute
+      // 若为相对路径，拼接成绝对路径
       if (url.startsWith("/")) {
         return `${baseUrl}${url}`;
       }
 
-      // If url is already absolute and same-origin, use it
+      // 若已是同源绝对地址，直接使用
       if (url.startsWith(baseUrl)) {
         return url;
       }
 
-      // Otherwise fall back to home page
+      // 否则回退到首页
       return baseUrl;
     },
     async jwt({ token, user, trigger, session }) {
@@ -103,7 +103,7 @@ export const config: NextAuthConfig = {
         return token;
       }
 
-      // On subsequent requests, refresh token data if needed
+      // 后续请求时按需刷新 token 数据
       if (trigger === "update" && session?.user) {
         if (session.user.image) {
           token.picture = session.user.image;

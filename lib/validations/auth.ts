@@ -1,115 +1,115 @@
-//验证表单
+﻿
 import { z } from "zod";
 export const signInFormSchema = z.object({
-  // Validation for the email field
+  // 邮箱字段校验
   email: z
     .string()
-    .min(4, { message: "Email must be at least 4 characters." })
-    .email({ message: "Invalid email address." }),
+    .min(4, { message: "邮箱至少需要 4 个字符。" })
+    .email({ message: "邮箱格式不正确。" }),
 
-  // Validation for the password field
+  // 密码字段校验
   password: z
     .string()
-    .min(3, { message: "Password must be at least 3 characters." }),
+    .min(3, { message: "密码至少需要 3 个字符。" }),
 });
 
-// You can also infer the TypeScript type from the schema
+// 也可以从 schema 推导 TypeScript 类型
 export type SignInFormValues = z.infer<typeof signInFormSchema>;
 
 export const signUpFormSchema = z.object({
-    // Validation for the name field
+    // 姓名字段校验
     name: z
       .string()
-      .min(3, { message: "Email must be at least 3 characters." }),
-    // Validation for the email field
+      .min(3, { message: "姓名至少需要 3 个字符。" }),
+    // 邮箱字段校验
     email: z
       .string()
-      .min(4, { message: "Email must be at least 4 characters." })
-      .email({ message: "Invalid email address." }),
-    // Validation for the password field
+      .min(4, { message: "邮箱至少需要 4 个字符。" })
+      .email({ message: "邮箱格式不正确。" }),
+    // 密码字段校验
     password: z
       .string()
-      .min(3, { message: "Password must be at least 3 characters." }),
-    // Validation for the password field
+      .min(3, { message: "密码至少需要 3 个字符。" }),
+    // 密码字段校验
     confirmPassword: z
       .string()
-      .min(3, { message: "Password must be at least 3 characters." }),
+      .min(3, { message: "密码至少需要 3 个字符。" }),
   }).refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords don't match",
+    message: "两次密码不一致",
     path: ["confirmPassword"],
   });
 
 export const patientProfileUpdateSchema = z.object({
-  name: z.string().min(3, "Name must be at least 3 characters"),
+  name: z.string().min(3, "姓名至少 3 个字符"),
   phoneNumber: z
     .string()
-    .min(7, "Phone number must be at least 7 characters")
-    .max(20, "Phone number must be at most 20 characters")
-    .regex(/^[0-9+\-]+$/, "Phone number can only contain numbers, +, and -"),
+    .min(7, "手机号至少 7 位")
+    .max(20, "手机号最多 20 位")
+    .regex(/^[0-9+\-]+$/, "手机号只能包含数字、+ 和 -"),
   address: z.string().optional(),
   dateOfBirth: z
     .string()
     .optional()
     .refine((val) => {
-      if (!val) return true; // optional
+      if (!val) return true; // 可选
       const d = new Date(val);
       if (Number.isNaN(d.getTime())) return false;
 
       const now = new Date();
-      // strip time for safer "date" comparisons
+      // 去掉时间，避免日期比较误差
       const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
       const dob = new Date(d.getFullYear(), d.getMonth(), d.getDate());
 
-      // no future dates
+      // 不能是未来日期
       if (dob > today) return false;
 
-      // not more than 120 years ago
+      // 不能早于 120 年前
       const oldest = new Date(today.getFullYear() - 120, today.getMonth(), today.getDate());
       if (dob < oldest) return false;
 
       return true;
-    }, "Date of birth must be a valid date, not in the future, and not more than 120 years ago"),
+    }, "出生日期必须有效，不能是未来日期，且不能早于 120 年前"),
 });
-//服务器侧
+//鏈嶅姟鍣ㄤ晶
 export const fullReviewDataSchema = z.object({
   appointmentId: z.string().uuid({
-    message: "A valid appointment ID is required.",
+    message: "需要有效的预约 ID。",
   }),
  
   doctorId: z.string().uuid({
-    message: "A valid doctor ID is required.",
+    message: "需要有效的医生 ID。",
   }),
  
   patientId: z.string().uuid({
-    message: "A valid patient ID is required.",
+    message: "需要有效的患者 ID。",
   }),
  
   rating: z
-    .number({ message: "A rating is required." })
-    .int({ message: "Rating must be a whole number (e.g., 1, 2, 3, 4, or 5)." })
-    .min(1, { message: "Rating must be at least 1." })
-    .max(5, { message: "Rating cannot be greater than 5." }),
+    .number({ message: "请提供评分。" })
+    .int({ message: "评分必须是整数（如 1、2、3、4、5）。" })
+    .min(1, { message: "评分至少为 1。" })
+    .max(5, { message: "评分不能大于 5。" }),
  
   reviewText: z
     .string()
-    .min(10, { message: "Review must be at least 10 characters long." })
-    .max(100, { message: "Review must be no more than 100 characters long." }),
+    .min(10, { message: "评价至少 10 个字符。" })
+    .max(100, { message: "评价最多 100 个字符。" }),
 });
  
-//客户端
+// ???
 export const reviewFormSchema = z.object({
   rating: z
     .number({
-      message: "A rating is required.",
+      message: "请提供评分。",
     })
-    .int({ message: "Rating must be a whole number (e.g., 1, 2, 3, 4, or 5)." })
-    .min(1, { message: "Rating must be at least 1." })
-    .max(5, { message: "Rating cannot be greater than 5." }),
+    .int({ message: "评分必须是整数（如 1、2、3、4、5）。" })
+    .min(1, { message: "评分至少为 1。" })
+    .max(5, { message: "评分不能大于 5。" }),
  
   reviewText: z
     .string()
-    .min(10, { message: "Review must be at least 10 characters long." })
-    .max(100, { message: "Review must be no more than 100 characters long." }),
+    .min(10, { message: "评价至少 10 个字符。" })
+    .max(100, { message: "评价最多 100 个字符。" }),
 });
 
 import { parse, isValid } from "date-fns";
@@ -121,8 +121,8 @@ import { parse, isValid } from "date-fns";
  */
 export const phoneValidationSchema = z
   .string()
-  .min(7, "Phone number must be at least 7 characters.")
-  .max(20, "Phone number must be at most 20 characters.")
+  .min(7, "手机号至少 7 位.")
+  .max(20, "手机号最多 20 位.")
   .regex(/^[0-9+-]+$/, "Phone number can contain only digits, '+' or '-'.");
 
 /**
@@ -132,12 +132,12 @@ export const phoneValidationSchema = z
  */
 export const validDateString = z
   .string()
-  .regex(/^\d{2}\/\d{2}\/\d{4}$/, "Date must be in DD/MM/YYYY format.")
+  .regex(/^\d{2}\/\d{2}\/\d{4}$/, "日期格式必须为 DD/MM/YYYY。")
   .refine((value) => {
     const parsed = parse(value, "dd/MM/yyyy", new Date());
-    // Ensure parse didn't “fix” invalid dates like 32/01/2025 -> some other date
+    // 确保解析没有“修正”无效日期（如 32/01/2025 -> 其他日期）
     return isValid(parsed) && value === `${value}`; // keep strictness; format check handled by regex
-  }, "Invalid calendar date.");
+  }, "无效的日期。");
 
 /**
  * Base schema: fields common to both patient types
@@ -145,14 +145,14 @@ export const validDateString = z
 const baseSchema = z.object({
   patientType: z.enum(["MYSELF", "SOMEONE_ELSE"]),
 
-  // "readonly" is a UI concern; schema just validates value.
-  email: z.string().email("Please enter a valid email address."),
+  // “readonly” 属于 UI 关心点；schema 仅校验值。
+  email: z.string().email("请输入正确的邮箱地址。"),
 
-  reason: z.string().min(1, "Reason is required."),
+  reason: z.string().min(1, "请填写就诊原因。"),
   notes: z.string().optional(),
 
   useAlternatePhone: z.boolean().optional(),
-  phone: z.string().optional(), // no validation here; conditional refinement applies later
+  phone: z.string().optional(), // 这里不校验；后续条件校验处理
 });
 
 /**
@@ -163,7 +163,7 @@ const baseSchema = z.object({
  */
 const myselfSchema = baseSchema.extend({
   patientType: z.literal("MYSELF"),
-  fullName: z.string().min(1, "Full name is required."),
+  fullName: z.string().min(1, "请填写姓名。"),
   dateOfBirth: validDateString.optional(),
   relationship: z.string().optional(),
 });
@@ -176,8 +176,8 @@ const myselfSchema = baseSchema.extend({
  */
 const someoneElseSchema = baseSchema.extend({
   patientType: z.literal("SOMEONE_ELSE"),
-  fullName: z.string().min(1, "Full name is required."),
-  relationship: z.string().min(1, "Relationship is required."),
+  fullName: z.string().min(1, "请填写姓名。"),
+  relationship: z.string().min(1, "请填写关系。"),
   dateOfBirth: validDateString,
 });
 
@@ -193,7 +193,7 @@ export const PatientDetailsFormSchema = z
       const result = phoneValidationSchema.safeParse(phone);
 
       if (!result.success) {
-        // attach issue to "phone" field
+        // 将错误附加到 "phone" 字段
         for (const issue of result.error.issues) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,

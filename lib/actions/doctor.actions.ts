@@ -1,4 +1,4 @@
-"use server";
+﻿"use server";
 import {
   ServerActionResponse,
   DoctorSummary,
@@ -17,8 +17,8 @@ export async function getOurDoctors(): Promise<
   ServerActionResponse<DoctorSummary[]>
 > {
   try {
-    // Fetch users who have the DOCTOR role and an active profile.
-    // We use `select` to efficiently query only the necessary fields.
+    // 获取角色为 DOCTOR 且资料已激活的用户。
+    // 使用 `select` 只查询必要字段以提高效率。
     const doctors = await prisma.user.findMany({
       where: {
         role: Role.DOCTOR,
@@ -39,14 +39,14 @@ export async function getOurDoctors(): Promise<
         },
       },
       orderBy: {
-        // Optional: you can order the results, e.g., by rating or name
+        // 可选：可以按评分或姓名排序
         doctorProfile: {
           rating: "desc",
         },
       },
     });
 
-    // The `where` clause ensures `doctorProfile` is not null, but it's good practice to handle it safely.
+    // `where` 已保证 `doctorProfile` 非空，但仍建议做安全处理。
     if (!doctors || doctors.length === 0) {
       return {
         success: true,
@@ -80,7 +80,7 @@ export async function getOurDoctors(): Promise<
       ]),
     );
 
-    // Map the fetched data to the DoctorSummary structure.
+    // 将数据映射为 DoctorSummary 结构。
     const formattedDoctors: DoctorSummary[] = doctors.map((doc) => ({
       id: doc.id,
       name: doc.name,
@@ -94,34 +94,34 @@ export async function getOurDoctors(): Promise<
         Number(doc.doctorProfile?.reviewCount ?? 0),
     }));
 
-    // Return a success response with the formatted doctor data.
+    // 返回格式化后的医生数据成功响应。
     return {
       success: true,
       data: formattedDoctors,
     };
   } catch (error) {
-    // Log the detailed error for server-side debugging.
+    // 记录详细错误，便于服务端排查。
     console.error("Error fetching our doctors:", error);
 
-    // Return a generic error response to the client.
+    // 向客户端返回通用错误响应。
     return {
       success: false,
       message:
-        "An unexpected error occurred while fetching doctor information.",
+        "获取医生信息时发生意外错误。",
       error: error instanceof Error ? error.message : String(error),
       errorType: "DatabaseError",
     };
   }
 }
 
-/** 拉取指定医生的评价列表并转为应用时区格式。 */
+/** 获取指定医生的评价列表，并转换为应用时区格式。 */
 export async function getDoctorTestimonials(
   doctorId: string,
 ): Promise<ServerActionResponse<DoctorReview[]>> {
   try {
     const { format, toZonedTime } = await import("date-fns-tz");
 
-    // Fetch testimonials for the specified doctor
+    // 获取指定医生的评价
     const testimonials = await prisma.doctorTestimonial.findMany({
       where: {
         doctorId: doctorId,
@@ -150,10 +150,10 @@ export async function getDoctorTestimonials(
       };
     }
 
-    // Map and format testimonials with timezone conversion
+    // 映射并格式化评价（含时区转换）
     const formattedTestimonials: DoctorReview[] = testimonials.map(
       (testimonial: (typeof testimonials)[0]) => {
-        // Convert UTC date to application timezone
+        // 将 UTC 时间转换为应用时区
         const zonedDate = toZonedTime(testimonial.createdAt, getAppTimeZone());
         const formattedDate = format(zonedDate, "MMM dd, yyyy", {
           timeZone: getAppTimeZone(),
@@ -164,7 +164,7 @@ export async function getDoctorTestimonials(
           rating: testimonial.rating ?? 0,
           reviewDate: formattedDate,
           testimonialText: testimonial.testimonialText,
-          patientName: testimonial.patient.name ?? "Anonymous",
+          patientName: testimonial.patient.name ?? "匿名",
           patientImage: testimonial.patient.image,
         };
       },
@@ -179,14 +179,14 @@ export async function getDoctorTestimonials(
 
     return {
       success: false,
-      message: "An unexpected error occurred while fetching testimonials.",
+      message: "获取评价时发生意外错误。",
       error: error instanceof Error ? error.message : String(error),
       errorType: "DatabaseError",
     };
   }
 }
 
-/** 获取单个医生的详细资料并校验角色与活跃状态。 */
+/** ??????????????????????? */
 export async function getDoctorDetails(
   doctorId: string,
 ): Promise<ServerActionResponse<DoctorDetails>> {
@@ -196,12 +196,12 @@ export async function getDoctorDetails(
         success: false,
         errorType: "VALIDATION_ERROR",
         error: "doctorId is required",
-        message: "Invalid request",
+        message: "请求无效",
       };
     }
 
-    // We treat the Doctor's "id" in DoctorDetails as the User.id (doctor user id),
-    // since DoctorProfile is keyed by userId and User holds name/image.
+    // DoctorDetails 中的医生 "id" 视为 User.id（医生用户 id），
+    // 因 DoctorProfile 以 userId 为键，User 保存 name/image。
     const doctor = await prisma.user.findUnique({
       where: { id: doctorId },
       select: {
@@ -228,8 +228,8 @@ export async function getDoctorDetails(
       return {
         success: false,
         errorType: "NOT_FOUND",
-        error: "Doctor not found",
-        message: "Doctor not found",
+        error: "未找到医生",
+        message: "未找到医生",
       };
     }
 
@@ -237,8 +237,8 @@ export async function getDoctorDetails(
       return {
         success: false,
         errorType: "NOT_A_DOCTOR",
-        error: "User is not a doctor",
-        message: "Requested user is not a doctor",
+        error: "该用户不是医生",
+        message: "该用户不是医生",
       };
     }
 
@@ -246,8 +246,8 @@ export async function getDoctorDetails(
       return {
         success: false,
         errorType: "PROFILE_MISSING",
-        error: "Doctor profile not found",
-        message: "Doctor profile not found",
+        error: "未找到医生资料",
+        message: "未找到医生资料",
       };
     }
 
@@ -255,8 +255,8 @@ export async function getDoctorDetails(
       return {
         success: false,
         errorType: "INACTIVE",
-        error: "Doctor is not active",
-        message: "Doctor is not currently active",
+        error: "医生未激活",
+        message: "医生当前未激活",
       };
     }
 
@@ -265,7 +265,7 @@ export async function getDoctorDetails(
       name: doctor.name ?? "NO_NAME",
       image: doctor.image ?? null,
       credentials: doctor.doctorProfile.credentials,
-      speciality: doctor.doctorProfile.specialty, // note: DoctorDetails uses "speciality"
+      speciality: doctor.doctorProfile.specialty, // 注意：DoctorDetails 使用 "speciality"
       rating: Number(doctor.doctorProfile.rating ?? 0),
       reviewCount: Number(doctor.doctorProfile.reviewCount ?? 0),
       languages: doctor.doctorProfile.languages ?? [],
@@ -275,25 +275,25 @@ export async function getDoctorDetails(
 
     return {
       success: true,
-      message: "Doctor details fetched successfully",
+      message: "医生详情获取成功",
       data: details,
     };
   } catch (err: unknown) {
     const message =
-      err instanceof Error ? err.message : "Unknown error occurred";
+      err instanceof Error ? err.message : "发生未知错误";
 
     return {
       success: false,
       errorType: "SERVER_ERROR",
       error: message,
-      message: "Failed to fetch doctor details",
+      message: "获取医生详情失败",
     };
   }
 }
 
 interface GetAvailableSlotsParams {
   doctorId: string;
-  date: string; //format - YYYY - MM-DD
+  date: string; // 格式：YYYY - MM-DD
   currentUserId?: string;
 }
 
@@ -308,26 +308,26 @@ export async function getAvailableDoctorSlots({
   try {
     const timeZone = getAppTimeZone();
 
-    // 1. Fetch App Settings
+    // 1. 获取应用配置
     const settings = await prisma.appSettings.findFirst();
     const slotsPerHour = settings?.slotsPerHour ?? 2;
     const startTimeConfig = settings?.startTime ?? "09:00";
     const endTimeConfig = settings?.endTime ?? "17:00";
     const slotDuration = 60 / slotsPerHour;
 
-    // 2. Date Setup
-    // Construct the ISO string for that date at 00:00:00
-    // Then use fromZonedTime to get the UTC instant that represents 00:00 in that timezone.
+    // 2. 日期设置
+    // 构造该日期 00:00:00 的 ISO 字符串
+    // 再用 fromZonedTime 获取该时区 00:00 对应的 UTC 时间点。
     const startOfDayUTC = fromZonedTime(`${date} 00:00:00`, timeZone);
 
-    // Now determine start and end times for slots in UTC relative to that day
+    // 再基于该天计算时段的 UTC 起止时间
     const workDayStartUTC = fromZonedTime(
       `${date} ${startTimeConfig}`,
       timeZone,
     );
     const workDayEndUTC = fromZonedTime(`${date} ${endTimeConfig}`, timeZone);
 
-    // 3. Generate Master List
+    // 3. 生成主时间段列表
     const allSlots: TimeSlot[] = [];
     let current = workDayStartUTC;
 
@@ -347,10 +347,10 @@ export async function getAvailableDoctorSlots({
       current = slotEnd;
     }
 
-    // 4. Filter Availability
+    // 4. 过滤可用时段
 
-    // 4.1 Doctor Leave
-    // Assuming leaveDate is stored as Date at UTC midnight for the given day or simple date string
+    // 4.1 医生请假
+    // 假设 leaveDate 为该日 UTC 零点或简单日期字符串
     const leaveDate = new Date(date);
 
     const doctorLeave = await prisma.doctorLeave.findFirst({
@@ -365,18 +365,18 @@ export async function getAvailableDoctorSlots({
         return { success: true, data: [] };
       }
 
-      // 13:00 in App Timezone converted to UTC
+      // 应用时区 13:00 转为 UTC
       const splitTimeUTC = fromZonedTime(`${date} 13:00:00`, timeZone);
 
       if (doctorLeave.leaveType === LeaveType.MORNING) {
-        // Remove slots before 13:00
+        // 移除 13:00 之前的时段
         const filtered = allSlots.filter(
           (slot) => slot.startTimeUTC >= splitTimeUTC,
         );
         allSlots.length = 0;
         allSlots.push(...filtered);
       } else if (doctorLeave.leaveType === LeaveType.AFTERNOON) {
-        // Remove slots after or at 13:00
+        // 移除 13:00 之后（含）的时段
         const filtered = allSlots.filter(
           (slot) => slot.startTimeUTC < splitTimeUTC,
         );
@@ -385,7 +385,7 @@ export async function getAvailableDoctorSlots({
       }
     }
 
-    // 4.2 Existing Appointments
+    // 4.2 已有预约
     const nextDayUTC = addMinutes(startOfDayUTC, 24 * 60);
 
     const dayAppointments = await prisma.appointment.findMany({
@@ -402,14 +402,14 @@ export async function getAvailableDoctorSlots({
     const now = new Date();
 
     dayAppointments.forEach((appt) => {
-      // Condition: Booked or Cash
+      // 条件：已预约或现金支付
       if (
         appt.status === AppointmentStatus.BOOKING_CONFIRMED ||
         appt.status === AppointmentStatus.CASH
       ) {
         takenStartTimes.add(appt.appointmentStartUTC.getTime());
       }
-      // Condition: Pending & Future expiry & Not current user
+      // 条件：待支付且未过期且非当前用户
       else if (appt.status === AppointmentStatus.PAYMENT_PENDING) {
         const isMyBooking = currentUserId && appt.userId === currentUserId;
         if (
@@ -426,9 +426,9 @@ export async function getAvailableDoctorSlots({
       (slot) => !takenStartTimes.has(slot.startTimeUTC.getTime()),
     );
 
-    // 4.3 Past Slots
-    // Filter out any slots that are in the past relative to the current time.
-    // This handles filtering 'today's' past slots as well as past dates.
+    // 4.3 过去的时段
+    // 过滤当前时间之前的时段。
+    // 同时处理“今天”的过期时段与过期日期。
     const nowTime = now.getTime();
     availableSlots = availableSlots.filter(
       (slot) => slot.startTimeUTC.getTime() > nowTime,
@@ -442,7 +442,7 @@ export async function getAvailableDoctorSlots({
     console.error("Error getting available slots:", error);
     return {
       success: false,
-      message: "Failed to get available slots",
+      message: "获取可用时段失败",
       error: String(error),
     };
   }
@@ -464,7 +464,7 @@ interface PendingAppointmentData {
 }
 
 /**
- * 查询用户在指定医生下最新且未过期的待支付预约，并返回本地化时间。
+ * 获取用户在指定医生处的待支付预约（若有且未过期）。
  */
 export async function getPendingAppointmentForDoctor({
   userId,
@@ -478,24 +478,24 @@ export async function getPendingAppointmentForDoctor({
         success: false,
         errorType: "VALIDATION_ERROR",
         error: "Missing userId or doctorId",
-        message: "Invalid request",
+        message: "请求无效",
       };
     }
 
     const now = new Date();
-    // Find the most recent pending appointment that has not expired
+    // 查找最近且未过期的待支付预约
     const pendingAppt = await prisma.appointment.findFirst({
       where: {
         userId,
         doctorId,
         status: AppointmentStatus.PAYMENT_PENDING,
-        // Ensure reservation is still valid
+        // 确认预约仍有效
         reservationExpiresAt: {
           gt: now,
         },
       },
       orderBy: {
-        createdAt: "desc", // Get the latest one if multiple exist (though ideally shouldn't)
+        createdAt: "desc", // 如有多条则取最新（理论上不应出现）
       },
     });
 
@@ -508,7 +508,7 @@ export async function getPendingAppointmentForDoctor({
       };
     }
 
-    // Convert stored UTC times to App Timezone for display
+    // 将存储的 UTC 时间转换为应用时区用于展示
     const timeZone = getAppTimeZone();
     const zonedStart = toZonedTime(pendingAppt.appointmentStartUTC, timeZone);
     const zonedEnd = toZonedTime(pendingAppt.appointmentEndUTC, timeZone);
@@ -533,8 +533,11 @@ export async function getPendingAppointmentForDoctor({
     console.error("Error fetching pending appointment:", error);
     return {
       success: false,
-      message: "Failed to fetch pending appointment",
+      message: "获取待处理预约失败",
       error: String(error),
     };
   }
 }
+
+
+

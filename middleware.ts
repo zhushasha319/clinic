@@ -6,8 +6,9 @@ import { authConfig } from "./auth.config";
 
 export const { auth: middleware } = NextAuth(authConfig);
 
-//configure which paths the middleware should run on
+// 配置 middleware 运行的路径
 
 export const config = {
   matcher: ["/admin/:path*", "/user/:path*", "/appointments/:path*"],
 };
+

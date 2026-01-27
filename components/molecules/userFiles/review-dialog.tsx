@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { Appointment, ReviewFormValues } from "@/types";
 import { reviewFormSchema } from "@/lib/validations/auth";
 import {
@@ -57,7 +57,7 @@ export default function ReviewDialog({
     onSubmit(data);
   };
  
-  // Reset form when dialog is closed
+  // 弹窗关闭时重置表单
   const handleOpenChange = (open: boolean) => {
     if (!open) {
       reset();
@@ -70,10 +70,10 @@ export default function ReviewDialog({
       <DialogContent className="max-w-[512px] bg-background rounded-lg p-4 md:p-6 border-none">
         <DialogHeader>
           <DialogTitle className="text-text-title text-base md:text-lg font-semibold">
-            Review Appointment with {appointment.doctorName}
+            评价 {appointment.doctorName} 的就诊
           </DialogTitle>
           <DialogDescription className="text-xs md:text-sm text-text-body font-normal">
-            {appointment.date} • {appointment.time}
+            {appointment.date} 鈥?{appointment.time}
           </DialogDescription>
         </DialogHeader>
  
@@ -81,9 +81,9 @@ export default function ReviewDialog({
           onSubmit={handleSubmit(handleFormSubmit)}
           className="space-y-6 pt-2"
         >
-          {/* Star Rating Field */}
+          {/* 评分 */}
           <div className="space-y-2">
-            <Label>Rating</Label>
+            <Label>评分</Label>
             <Controller
               control={control}
               name="rating"
@@ -115,12 +115,12 @@ export default function ReviewDialog({
             )}
           </div>
  
-          {/* Review Text Field */}
+          {/* 评价内容 */}
           <div className="space-y-2">
-            <Label htmlFor="reviewText">Your Review</Label>
+            <Label htmlFor="reviewText">评价内容</Label>
             <Textarea
               id="reviewText"
-              placeholder="Share your experience..."
+              placeholder="分享你的就诊体验..."
               className="resize-none"
               rows={4}
               {...register("reviewText")}
@@ -147,10 +147,10 @@ export default function ReviewDialog({
               {isSubmitting ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Submitting...
+                  提交中...
                 </>
               ) : (
-                "Submit Review"
+                "提交评价"
               )}
             </Button>
           </DialogFooter>
