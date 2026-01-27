@@ -68,22 +68,21 @@ export default async function PaymentPage({
     date: format(startZoned, "yyyy-MM-dd"),
     timeSlot: format(startZoned, "HH:mm"),
     endTime: format(endZoned, "HH:mm"),
-    patientType:appointment.patientType,
+    patientType: appointment.patientType,
     patientName: appointment.patientName ?? undefined,
     patientdateofbirth: appointment.patientdateofbirth ?? null,
     phoneNumber: appointment.phoneNumber ?? null,
     reasonForVisit: appointment.reasonForVisit ?? null,
     additionalNotes: appointment.additionalNotes ?? null,
     relationship: appointment.patientRelation ?? null,
-    fee:10,
-    patientEmail:user?.email ?? "",
+    fee: 10,
+    patientEmail: user?.email ?? "",
+    userId: session.user.id, // 添加用户ID
   };
 
   return (
     <div className="mx-auto max-w-3xl p-6">
-      <PaymentDetailsClient
-        initialAppointmentData={appointmentDataForClient}
-      />
+      <PaymentDetailsClient initialAppointmentData={appointmentDataForClient} />
     </div>
   );
 }

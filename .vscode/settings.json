@@ -6,5 +6,6 @@
     "**/.next": true,
     "**/.history": true,
     "**/history": true
-  }
+  },
+  "i18n-ally.localesPaths": ["i18n", "messages"]
 }

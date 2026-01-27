@@ -4,14 +4,13 @@ import prisma from "@/db/prisma";
 import { AppointmentStatus } from "@/lib/generated/prisma";
 import { ServerActionResponse } from "@/types";
 
-// 动态导入 pingpp
-const getPingpp = () => {
-  const pingpp = require("pingpp");
-  if (process.env.PINGPP_PRIVATE_KEY) {
-    pingpp.setPrivateKey(process.env.PINGPP_PRIVATE_KEY);
-  }
-  return pingpp;
-};
+// 初始化 pingpp
+const pingpp = require("pingpp")(process.env.PINGPP_API_KEY || "");
+
+// 设置私钥用于签名
+if (process.env.PINGPP_PRIVATE_KEY) {
+  pingpp.setPrivateKey(process.env.PINGPP_PRIVATE_KEY);
+}
 
 export async function confirmCashAppointment(
   appointmentId: string,
@@ -147,8 +146,8 @@ export async function createAlipayPayment({
       };
     }
 
-    // 创建订单号
-    const orderNo = `ORDER_${appointmentId}_${Date.now()}`;
+    // 创建订单号(移除连字符以符合 Ping++ 格式要求)
+    const orderNo = `ORDER_${appointmentId.replace(/-/g, "")}_${Date.now()}`;
 
     // 创建 Ping++ Charge 对象
     const chargeParams = {
@@ -157,12 +156,11 @@ export async function createAlipayPayment({
       channel: "alipay_wap", // 支付宝H5支付
       amount: Math.round(amount * 100), // 转换为分
       client_ip: clientIp || "127.0.0.1",
-      currency: "cny",
+      currency: "cny", 
       subject: `诊所预约 - ${appointment.doctor.name}`,
       body: `预约日期: ${new Date(appointment.appointmentStartUTC).toLocaleDateString()}`,
       extra: {
         success_url: `${process.env.NEXT_PUBLIC_APP_URL}/appointments/payment/success?appointmentId=${appointmentId}`,
-        cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/appointments/payment?appointmentId=${appointmentId}&status=cancelled`,
       },
       metadata: {
         appointmentId: appointmentId,
@@ -170,8 +168,7 @@ export async function createAlipayPayment({
       },
     };
 
-    // 获取 Ping++ 实例并调用 API 创建支付
-    const pingpp = getPingpp();
+    // 调用 Ping++ API 创建支付
     const charge = await pingpp.charges.create(chargeParams);
 
     // 更新预约的支付信息

@@ -3,8 +3,6 @@ import { auth } from "@/auth";
 import db from "@/db/prisma";
 const pingpp = require("pingpp");
 
-// 初始化 Ping++ SDK
-// 你需要在 .env 文件中添加 PINGPP_API_KEY 和 PINGPP_APP_ID
 pingpp.setPrivateKey(process.env.PINGPP_PRIVATE_KEY || "");
 
 export async function POST(req: NextRequest) {
@@ -58,7 +56,6 @@ export async function POST(req: NextRequest) {
       subject: `诊所预约 - ${appointment.doctor.name}`,
       body: `预约日期: ${appointment.date}, 时间: ${appointment.timeSlot}`,
       extra: {
-        // 支付宝H5支付需要的额外参数
         ...(channel === "alipay_wap" && {
           success_url: `${process.env.NEXT_PUBLIC_APP_URL}/appointments/payment/success?appointmentId=${appointmentId}`,
         }),

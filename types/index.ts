@@ -117,48 +117,48 @@ export type AppoitmentWithRelations = Prisma.AppointmentGetPayload<{
   };
 }>;
 export interface AppointmentData {
-appointmentId: string;
-doctorId: string;
-doctorName: string;
-doctorSpecilaity: string;
-doctorImage?: string | null;
-date: string;
-timeSlot: string;
-endTime: string;
-patientType?: "MYSELF" | "SOMEONE_ELSE";
-patientName?: string;
-patientdateofbirth?: Date | null;
-phoneNumber?: string | null;
-reasonForVisit?: string | null;
-additionalNotes?: string | null;
-relationship?: string | null;
+  appointmentId: string;
+  doctorId: string;
+  doctorName: string;
+  doctorSpecilaity: string;
+  doctorImage?: string | null;
+  date: string;
+  timeSlot: string;
+  endTime: string;
+  patientType?: "MYSELF" | "SOMEONE_ELSE";
+  patientName?: string;
+  patientdateofbirth?: Date | null;
+  phoneNumber?: string | null;
+  reasonForVisit?: string | null;
+  additionalNotes?: string | null;
+  relationship?: string | null;
 }
- 
+
 export interface paymentData {
   appointmentId: string;
-doctorId: string;
-doctorName: string;
-doctorSpecilaity: string;
-doctorImage?: string | null;
-date: string;
-timeSlot: string;
-endTime: string;
-patientType?: "MYSELF" | "SOMEONE_ELSE";
-patientName?: string;
-patientdateofbirth?: Date | null;
-phoneNumber?: string | null;
-reasonForVisit?: string | null;
-additionalNotes?: string | null;
-relationship?: string | null;
-fee: number;
-patientEmail?: string;
+  doctorId: string;
+  doctorName: string;
+  doctorSpecilaity: string;
+  doctorImage?: string | null;
+  date: string;
+  timeSlot: string;
+  endTime: string;
+  patientType?: "MYSELF" | "SOMEONE_ELSE";
+  patientName?: string;
+  patientdateofbirth?: Date | null;
+  phoneNumber?: string | null;
+  reasonForVisit?: string | null;
+  additionalNotes?: string | null;
+  relationship?: string | null;
+  fee: number;
+  patientEmail?: string;
+  userId: string; // 用户ID用于权限验证
 }
 export interface PatientData {
-name: string;
-email: string;
-phoneNumber: string;
-dateOfBirth: string;
+  name: string;
+  email: string;
+  phoneNumber: string;
+  dateOfBirth: string;
 }
-import {PatientDetailsFormSchema} from "@/lib/validations/auth";
+import { PatientDetailsFormSchema } from "@/lib/validations/auth";
 export type PatientDetailsFormValues = z.infer<typeof PatientDetailsFormSchema>;
- 

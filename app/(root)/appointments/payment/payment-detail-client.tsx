@@ -107,6 +107,7 @@ export default function PaymentDetailsClient({
     additionalNotes,
     relationship,
     fee,
+    userId,
   } = initialAppointmentData;
 
   // Format date and time
@@ -171,7 +172,7 @@ export default function PaymentDetailsClient({
       const result = await createAlipayPayment({
         appointmentId,
         amount: fee,
-        userId: patientEmail || "", // 使用邮箱作为用户标识
+        userId: userId, // 使用正确的用户ID
         clientIp: "", // 客户端IP可以为空,服务端会使用默认值
       });
 
@@ -182,11 +183,44 @@ export default function PaymentDetailsClient({
       // 获取支付凭据
       const charge = result.data?.charge;
 
-      // 根据不同的支付渠道跳转
-      // 支付宝H5支付
+      // 检查是否是测试环境 (livemode: false)
+      if (charge?.livemode === false) {
+        // 测试环境: 模拟支付成功,直接跳转到成功页面
+        console.log("测试环境: 模拟支付成功");
+        toast.success("测试环境: 模拟支付成功");
+        router.push(
+          `/appointments/payment/success?appointmentId=${appointmentId}&method=alipay&test=true`,
+        );
+        return;
+      }
+
+      // 生产环境: 跳转支付宝H5支付
       if (charge?.credential?.alipay_wap) {
-        // 支付宝H5支付,直接跳转
-        window.location.href = charge.credential.alipay_wap;
+        const alipayData = charge.credential.alipay_wap;
+
+        // alipay_wap 返回的是一个对象,需要构建完整的支付宝网关URL
+        if (typeof alipayData === "object" && alipayData.channel_url) {
+          // 构建查询参数
+          const params = new URLSearchParams();
+          Object.entries(alipayData).forEach(([key, value]) => {
+            if (
+              key !== "channel_url" &&
+              value !== undefined &&
+              value !== null
+            ) {
+              params.append(key, String(value));
+            }
+          });
+
+          const paymentUrl = `${alipayData.channel_url}?${params.toString()}`;
+          console.log("Redirecting to Alipay:", paymentUrl);
+          window.location.href = paymentUrl;
+        } else if (typeof alipayData === "string") {
+          // 如果直接返回的是URL字符串
+          window.location.href = alipayData;
+        } else {
+          throw new Error("支付凭据格式无效");
+        }
       } else {
         throw new Error("未获取到支付凭据");
       }

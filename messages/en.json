@@ -84,7 +84,7 @@
     "tryRefresh": "Please try refreshing the page or check back later",
     "patientReviews": "Patient Reviews",
     "showingReviews": "Showing {start}-{end} of {total} reviews",
-    "loadingReviews": "Loading reviews…",
+    "loadingReviews": "Loading reviews...",
     "noReviewsYet": "No reviews yet.",
     "anonymous": "Anonymous"
   },
@@ -118,6 +118,7 @@
     "payAtCounter": "Pay at Counter",
     "termsAgree": "I agree to the payment terms and cancellation policy. I understand that I can cancel or reschedule up to 24 hours before the appointment.",
     "pleaseAgreeTerms": "Please agree to the payment terms",
+    "paymentFailed": "Payment failed, please try again.",
     "success": {
       "title": "Payment Successful",
       "cashTitle": "Appointment Confirmed",
@@ -146,5 +147,7 @@
     "phone": "Phone",
     "address": "Address",
     "dateOfBirth": "Date of Birth"
-  }
+  },
+  "User Profile": "User Profile",
+  "Admin Dashboard": "Admin Dashboard"
 }

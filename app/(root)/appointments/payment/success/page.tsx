@@ -9,9 +9,14 @@ import { format } from "date-fns";
 import { toZonedTime } from "date-fns-tz";
 import { getAppTimeZone } from "@/lib/config";
 import { getTranslations } from "next-intl/server";
+import { AppointmentStatus } from "@/lib/generated/prisma";
 
 interface PageProps {
-  searchParams: Promise<{ appointmentId?: string; method?: string }>;
+  searchParams: Promise<{
+    appointmentId?: string;
+    method?: string;
+    test?: string;
+  }>;
 }
 
 export default async function PaymentSuccessPage({ searchParams }: PageProps) {
@@ -22,15 +27,29 @@ export default async function PaymentSuccessPage({ searchParams }: PageProps) {
   }
 
   const params = await searchParams;
-  const appointmentId = params.appointmentId;
-  const paymentMethod = params.method;
+  let appointmentId = params.appointmentId;
 
+  // 如果没有 appointmentId,查找用户最近的已支付预约
   if (!appointmentId) {
-    redirect("/");
+    const recentAppointment = await db.appointment.findFirst({
+      where: {
+        OR: [{ userId: session.user.id }, { guestIdentifier: session.user.id }],
+        paymentStatus: "PAID",
+      },
+      orderBy: {
+        updatedAt: "desc",
+      },
+    });
+
+    if (!recentAppointment) {
+      redirect("/");
+    }
+
+    appointmentId = recentAppointment.appointmentId;
   }
 
   // 获取预约信息
-  const appointment = await db.appointment.findUnique({
+  let appointment = await db.appointment.findUnique({
     where: { appointmentId: appointmentId },
     include: {
       doctor: true,
@@ -49,11 +68,29 @@ export default async function PaymentSuccessPage({ searchParams }: PageProps) {
     redirect("/");
   }
 
+  // 测试模式: 模拟支付成功,更新数据库
+  if (params.test === "true" && appointment.paymentStatus !== "PAID") {
+    appointment = await db.appointment.update({
+      where: { appointmentId: appointmentId },
+      data: {
+        paymentStatus: "PAID",
+        paymentMethod: "ALIPAY",
+        paymentCompletedAt: new Date(),
+        status: AppointmentStatus.BOOKING_CONFIRMED,
+        reservationExpiresAt: null,
+      },
+      include: {
+        doctor: true,
+      },
+    });
+  }
+
   // 格式化日期和时间
   const tz = getAppTimeZone();
   const startZoned = toZonedTime(appointment.appointmentStartUTC, tz);
   const appointmentDate = format(startZoned, "yyyy年MM月dd日");
   const appointmentTime = format(startZoned, "HH:mm");
+  const paymentMethod = params.method;
 
   return (
     <div className="container mx-auto max-w-2xl px-4 py-16">
