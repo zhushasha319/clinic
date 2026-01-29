@@ -22,7 +22,7 @@ import {
   FieldErrors,
   PatientDetailsFormValues,
 } from "@/types";
-import { parse, isValid } from "date-fns";
+import { isValid } from "date-fns";
 import type { ZodIssue } from "zod";
 import { PatientDetailsFormSchema } from "@/lib/validations/auth";
 import { PatientType, Prisma } from "@/lib/generated/prisma/client";
@@ -316,8 +316,7 @@ export async function createOrUpdateAppointmentReservation({
         return {
           success: false,
           errorType: "SLOT_UNAVAILABLE",
-          message:
-            "该时段已不可用，请选择其他时间。",
+          message: "该时段已不可用，请选择其他时间。",
         };
       }
 
@@ -344,8 +343,7 @@ export async function createOrUpdateAppointmentReservation({
         return {
           success: false,
           errorType: "SLOT_UNAVAILABLE",
-          message:
-            "该时段已不可用，请选择其他时间。",
+          message: "该时段已不可用，请选择其他时间。",
         };
       }
 
@@ -609,7 +607,12 @@ function toFieldErrorsFromZod(issues: ZodIssue[]): FieldErrors {
 /** 按 DD/MM/YYYY 解析生日字符串，失败返回 null。 */
 function parseDobDDMMYYYYToDate(value?: string): Date | null {
   if (!value) return null;
-  const d = parse(value, "dd/MM/yyyy", new Date());
+  // 手动解析 DD/MM/YYYY 格式
+  const parts = value.split("/");
+  if (parts.length !== 3) return null;
+  const [day, month, year] = parts.map(Number);
+  if (isNaN(day) || isNaN(month) || isNaN(year)) return null;
+  const d = new Date(year, month - 1, day);
   return isValid(d) ? d : null;
 }
 
@@ -864,5 +867,3 @@ export async function processAppointmentBooking(
     };
   }
 }
-
-

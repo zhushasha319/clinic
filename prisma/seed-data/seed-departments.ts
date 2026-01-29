@@ -1,5 +1,5 @@
 import { PrismaNeonHttp } from "@prisma/adapter-neon";
-import { PrismaClient } from "../lib/generated/prisma";
+import { PrismaClient } from "../../lib/generated/prisma";
 import dotenv from "dotenv";
 
 dotenv.config();

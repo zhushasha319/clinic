@@ -1,5 +1,5 @@
 import { PrismaNeonHttp } from "@prisma/adapter-neon";
-import { PrismaClient, Role } from "../lib/generated/prisma";
+import { PrismaClient, Role } from "../../lib/generated/prisma";
 import dotenv from "dotenv";
 import { hashSync } from "bcryptjs";
 

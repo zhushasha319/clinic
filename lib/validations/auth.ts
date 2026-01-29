@@ -1,5 +1,4 @@
-﻿
-import { z } from "zod";
+﻿import { z } from "zod";
 export const signInFormSchema = z.object({
   // 邮箱字段校验
   email: z
@@ -8,33 +7,27 @@ export const signInFormSchema = z.object({
     .email({ message: "邮箱格式不正确。" }),
 
   // 密码字段校验
-  password: z
-    .string()
-    .min(3, { message: "密码至少需要 3 个字符。" }),
+  password: z.string().min(3, { message: "密码至少需要 3 个字符。" }),
 });
 
 // 也可以从 schema 推导 TypeScript 类型
 export type SignInFormValues = z.infer<typeof signInFormSchema>;
 
-export const signUpFormSchema = z.object({
+export const signUpFormSchema = z
+  .object({
     // 姓名字段校验
-    name: z
-      .string()
-      .min(3, { message: "姓名至少需要 3 个字符。" }),
+    name: z.string().min(3, { message: "姓名至少需要 3 个字符。" }),
     // 邮箱字段校验
     email: z
       .string()
       .min(4, { message: "邮箱至少需要 4 个字符。" })
       .email({ message: "邮箱格式不正确。" }),
     // 密码字段校验
-    password: z
-      .string()
-      .min(3, { message: "密码至少需要 3 个字符。" }),
+    password: z.string().min(3, { message: "密码至少需要 3 个字符。" }),
     // 密码字段校验
-    confirmPassword: z
-      .string()
-      .min(3, { message: "密码至少需要 3 个字符。" }),
-  }).refine((data) => data.password === data.confirmPassword, {
+    confirmPassword: z.string().min(3, { message: "密码至少需要 3 个字符。" }),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
     message: "两次密码不一致",
     path: ["confirmPassword"],
   });
@@ -64,7 +57,11 @@ export const patientProfileUpdateSchema = z.object({
       if (dob > today) return false;
 
       // 不能早于 120 年前
-      const oldest = new Date(today.getFullYear() - 120, today.getMonth(), today.getDate());
+      const oldest = new Date(
+        today.getFullYear() - 120,
+        today.getMonth(),
+        today.getDate(),
+      );
       if (dob < oldest) return false;
 
       return true;
@@ -75,27 +72,27 @@ export const fullReviewDataSchema = z.object({
   appointmentId: z.string().uuid({
     message: "需要有效的预约 ID。",
   }),
- 
+
   doctorId: z.string().uuid({
     message: "需要有效的医生 ID。",
   }),
- 
+
   patientId: z.string().uuid({
     message: "需要有效的患者 ID。",
   }),
- 
+
   rating: z
     .number({ message: "请提供评分。" })
     .int({ message: "评分必须是整数（如 1、2、3、4、5）。" })
     .min(1, { message: "评分至少为 1。" })
     .max(5, { message: "评分不能大于 5。" }),
- 
+
   reviewText: z
     .string()
     .min(10, { message: "评价至少 10 个字符。" })
     .max(100, { message: "评价最多 100 个字符。" }),
 });
- 
+
 // ???
 export const reviewFormSchema = z.object({
   rating: z
@@ -105,14 +102,32 @@ export const reviewFormSchema = z.object({
     .int({ message: "评分必须是整数（如 1、2、3、4、5）。" })
     .min(1, { message: "评分至少为 1。" })
     .max(5, { message: "评分不能大于 5。" }),
- 
+
   reviewText: z
     .string()
     .min(10, { message: "评价至少 10 个字符。" })
     .max(100, { message: "评价最多 100 个字符。" }),
 });
 
-import { parse, isValid } from "date-fns";
+import { isValid } from "date-fns";
+
+/** 手动解析 DD/MM/YYYY 格式的日期 */
+function parseDDMMYYYY(value: string): Date | null {
+  const parts = value.split("/");
+  if (parts.length !== 3) return null;
+  const [day, month, year] = parts.map(Number);
+  if (isNaN(day) || isNaN(month) || isNaN(year)) return null;
+  const d = new Date(year, month - 1, day);
+  // 验证日期没有被自动修正（如 32/01/2025 -> 01/02/2025）
+  if (
+    d.getDate() !== day ||
+    d.getMonth() !== month - 1 ||
+    d.getFullYear() !== year
+  ) {
+    return null;
+  }
+  return d;
+}
 
 /**
  * Reusable Phone Number Schema
@@ -134,9 +149,8 @@ export const validDateString = z
   .string()
   .regex(/^\d{2}\/\d{2}\/\d{4}$/, "日期格式必须为 DD/MM/YYYY。")
   .refine((value) => {
-    const parsed = parse(value, "dd/MM/yyyy", new Date());
-    // 确保解析没有“修正”无效日期（如 32/01/2025 -> 其他日期）
-    return isValid(parsed) && value === `${value}`; // keep strictness; format check handled by regex
+    const parsed = parseDDMMYYYY(value);
+    return parsed !== null && isValid(parsed);
   }, "无效的日期。");
 
 /**
