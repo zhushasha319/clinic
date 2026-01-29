@@ -1,14 +1,27 @@
-﻿import {
+﻿"use client";
+
+import {
   CalendarCheck2,
-  ClipboardList,
   LayoutDashboard,
   Settings,
   Stethoscope,
-  Users,
 } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export function AdminSidebar() {
+  const pathname = usePathname();
+  const isActive = (href: string) =>
+    pathname === href ||
+    pathname.startsWith(`${href}/`) ||
+    (href === "/admin/dashboard" && pathname === "/admin");
+
+  const linkClass = (href: string, inactive?: string) =>
+    [
+      "flex items-center gap-3 rounded-md px-3 py-2 font-medium transition",
+      isActive(href) ? "bg-emerald-500/30 text-white" : inactive ?? "text-white/75 hover:bg-white/10",
+    ].join(" ");
+
   return (
     <aside className="w-full shrink-0 bg-[color:var(--color-text-primary)] text-white md:w-64">
       <div className="flex items-center gap-3 border-b border-white/15 px-6 py-5">
@@ -24,44 +37,27 @@ export function AdminSidebar() {
       <nav className="flex flex-col gap-1 px-3 py-4 text-sm">
         <Link
           href="/admin/dashboard"
-          className="flex items-center gap-3 rounded-md bg-emerald-500/30 px-3 py-2 font-medium text-white"
+          className={linkClass("/admin/dashboard")}
         >
           <LayoutDashboard className="h-4 w-4" />
           仪表盘
         </Link>
         <Link
           href="/admin/doctors"
-          className="flex items-center gap-3 rounded-md px-3 py-2 text-white/75 transition hover:bg-white/10"
+          className={linkClass("/admin/doctors")}
         >
           <Stethoscope className="h-4 w-4" />
-          医生
+          医生管理
         </Link>
-        <button
-          type="button"
-          className="flex items-center gap-3 rounded-md px-3 py-2 text-white/75 transition hover:bg-white/10"
-          disabled
-        >
-          <Link href="/admin/appointment-action" className="flex items-center gap-3">
+       
+          <Link
+            href="/admin/appointment-action"
+            className={linkClass("/admin/appointment-action")}
+          >
           <CalendarCheck2 className="h-4 w-4" />
           预约处理
           </Link>
-        </button>
-        <button
-          type="button"
-          className="flex items-center gap-3 rounded-md px-3 py-2 text-white/75 transition hover:bg-white/10"
-          disabled
-        >
-          <ClipboardList className="h-4 w-4" />
-          全部预约
-        </button>
-        <button
-          type="button"
-          className="flex items-center gap-3 rounded-md px-3 py-2 text-white/75 transition hover:bg-white/10"
-          disabled
-        >
-          <Users className="h-4 w-4" />
-          患者
-        </button>
+      
         <button
           type="button"
           className="flex items-center gap-3 rounded-md px-3 py-2 text-white/75 transition hover:bg-white/10"

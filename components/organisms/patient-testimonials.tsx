@@ -20,7 +20,7 @@ export function PatientTestimonials({ className }: PatientTestimonialsProps) {
 
         {/* Testimonials Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center">
-          {testimonialData.map((testimonial) => (
+          {testimonialData.slice(0, 3).map((testimonial) => (
             <Review
               key={testimonial.id}
               id={testimonial.id}

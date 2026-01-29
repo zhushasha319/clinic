@@ -8,8 +8,8 @@ import { auth } from "@/auth";
 import { cookies } from "next/headers";
 
 export const metadata: Metadata = {
-  title: "Clinic App",
-  description: "A modern clinic management application",
+  title: "莎莎医院",
+  description: "现代医院管理系统",
 };
 
 export default async function RootLayout({

@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState, useTransition } from "react";
 import Link from "next/link";
-import { format } from "date-fns";
+import { addDays, format, startOfDay } from "date-fns";
 import type { LeaveType } from "@/lib/generated/prisma";
 import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
@@ -25,15 +25,18 @@ const parseDateOnly = (value: string) => {
   return new Date(year, month - 1, day);
 };
 
+const toDateKey = (value: string) => value.slice(0, 10);
+
 const toLocalDateKey = (value: string) => {
-  const date = value.includes("T") ? new Date(value) : parseDateOnly(value);
+  if (value.length <= 10) return value;
+  const date = new Date(value);
   return format(date, "yyyy-MM-dd");
 };
 
 const normalizeLeaves = (items: DoctorLeaveDay[]) =>
   items.map((leave) => ({
     ...leave,
-    date: toLocalDateKey(leave.date),
+    date: toDateKey(leave.date),
   }));
 
 const normalizeBlockedDates = (items: string[]) =>
@@ -100,6 +103,14 @@ export default function DoctorLeaveClient({
   const blockedDateObjects = useMemo(
     () => blockedDates.map((date) => parseDateOnly(date)),
     [blockedDates],
+  );
+  const minSelectableDate = useMemo(
+    () => addDays(startOfDay(new Date()), 1),
+    [],
+  );
+  const disabledDays = useMemo(
+    () => [{ before: minSelectableDate }, ...blockedDateObjects],
+    [minSelectableDate, blockedDateObjects],
   );
 
   const loadMonth = (date: Date) => {
@@ -186,7 +197,7 @@ export default function DoctorLeaveClient({
               onMonthChange={setMonthDate}
               selected={selectedDate}
               onSelect={handleSelectDate}
-              disabled={blockedDateObjects}
+              disabled={disabledDays}
               modifiers={{
                 fullDay: fullDayDates,
                 morning: morningDates,
