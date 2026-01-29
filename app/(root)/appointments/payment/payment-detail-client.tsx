@@ -9,7 +9,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { DollarSign, Loader2 } from "lucide-react";
-import { format, parse } from "date-fns";
+import { format } from "date-fns";
 import toast from "react-hot-toast";
 import { useTranslations } from "@/hooks/useTranslations";
 import {
@@ -113,8 +113,10 @@ export default function PaymentDetailsClient({
   // Format date and time
   const formattedDateTime = React.useMemo(() => {
     try {
-      const dateStr = `${date} ${timeSlot}`;
-      const parsedDate = parse(dateStr, "yyyy-MM-dd HH:mm");
+      // 简单拼接，不使用 parse
+      const [year, month, day] = date.split("-");
+      const [hour, minute] = timeSlot.split(":");
+      const parsedDate = new Date(+year, +month - 1, +day, +hour, +minute);
       return format(parsedDate, "MMMM dd, yyyy 'at' HH:mm");
     } catch {
       return `${date} at ${timeSlot}`;

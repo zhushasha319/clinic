@@ -2,7 +2,11 @@
 
 import { format } from "date-fns";
 import prisma from "@/db/prisma";
-import { AppointmentStatus, TransactionStatus } from "@/lib/generated/prisma";
+import {
+  AppointmentStatus,
+  Prisma,
+  TransactionStatus,
+} from "@/lib/generated/prisma";
 import type { ServerActionResponse } from "@/types";
 import { auth } from "@/auth";
 
@@ -30,7 +34,11 @@ const statusLabelMap: Record<AppointmentStatus, string> = {
 const ensureAdmin = async (): Promise<ServerActionResponse | null> => {
   const session = await auth();
   if (!session?.user) {
-    return { success: false, message: "请先登录。", errorType: "AUTHENTICATION" };
+    return {
+      success: false,
+      message: "请先登录。",
+      errorType: "AUTHENTICATION",
+    };
   }
   if (session.user.role !== "ADMIN") {
     return { success: false, message: "没有权限。", errorType: "UNAUTHORIZED" };
@@ -58,7 +66,7 @@ export async function searchAppointmentsByPatientName({
   const safeLimit = Math.max(1, Math.min(limit, 50));
   const safePage = Math.max(1, page);
 
-  const whereClause = {
+  const whereClause: Prisma.AppointmentWhereInput = {
     status: {
       in: [AppointmentStatus.CASH, AppointmentStatus.BOOKING_CONFIRMED],
     },
@@ -66,7 +74,7 @@ export async function searchAppointmentsByPatientName({
       ? {
           patientName: {
             contains: keyword,
-            mode: "insensitive",
+            mode: "insensitive" as Prisma.QueryMode,
           },
         }
       : {}),

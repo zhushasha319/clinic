@@ -54,7 +54,7 @@ export async function POST(req: NextRequest) {
       client_ip: clientIp || req.headers.get("x-forwarded-for") || "127.0.0.1",
       currency: "cny",
       subject: `诊所预约 - ${appointment.doctor.name}`,
-      body: `预约日期: ${appointment.appointmentDate}, 时间: ${appointment.timeSlot}`,
+      body: `预约时间: ${new Date(appointment.appointmentStartUTC).toLocaleString("zh-CN")}`,
       extra: {
         ...(channel === "alipay_wap" && {
           success_url: `${process.env.NEXT_PUBLIC_APP_URL}/appointments/payment/success?appointmentId=${appointmentId}`,
@@ -83,7 +83,7 @@ export async function POST(req: NextRequest) {
       success: true,
       charge: charge,
     });
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     console.error("创建支付订单失败:", error);
     return NextResponse.json(
