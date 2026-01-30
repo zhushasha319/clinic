@@ -1,5 +1,5 @@
 import { SignUpForm } from "./sign-up-form";
- 
+ import { useTranslations } from "@/hooks/useTranslations";
 import Link from "next/link";
 import {
   Card,
@@ -12,13 +12,13 @@ import Image from "next/image";
 import { App_NAME } from "@/lib/constants";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
- 
 const SignUpPage = async (props: {
   searchParams: Promise<{ callbackUrl: string }>;
 }) => {
   const searchParamsObject = await props.searchParams;
   const callbackUrl = searchParamsObject.callbackUrl;
- 
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const t = useTranslations("SignUpPage"); 
   const session = await auth();
  
   if (session) {
@@ -39,16 +39,16 @@ const SignUpPage = async (props: {
             />
           </Link>
           <CardTitle>
-            <h2 className="text-center mb-2">Create Account</h2>
+            <h2 className="text-center mb-2">{t("createAccount")}</h2>
           </CardTitle>
           <CardDescription className="body-small text-center mb-10">
-            Enter your information below to create your account
+            {t("enterInformation")}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <SignUpForm />
           <div className="text-center text-sm mt-10">
-            Already have an account?{" "}
+            {t("alreadyHaveAccount")}{" "}
             <Link
               target="_self"
               href={
@@ -58,7 +58,7 @@ const SignUpPage = async (props: {
               }
               className="text-text-primary body-small-bold"
             >
-              Sign In
+              {t("signIn")}
             </Link>
           </div>
         </CardContent>

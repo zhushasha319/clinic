@@ -8,6 +8,12 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+export function formatRating(value: number, maxFractionDigits = 2) {
+  if (!Number.isFinite(value)) return "0";
+  const fixed = value.toFixed(maxFractionDigits);
+  return maxFractionDigits > 0 ? fixed.replace(/\.?0+$/, "") : fixed;
+}
+
 export function getIconComponent(
   iconName: string,
   props?: React.SVGProps<SVGSVGElement>

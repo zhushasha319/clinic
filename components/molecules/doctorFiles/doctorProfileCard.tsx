@@ -5,6 +5,7 @@ import { DoctorDetails } from "@/types";
 import { Card, CardContent } from "@/components/ui/card";
 import RatingStars from "../RatingStars";
 import { useTranslations } from "@/hooks/useTranslations";
+import { formatRating } from "@/lib/utils";
 
 export default function DoctorProfileTopCard({
   name,
@@ -17,6 +18,7 @@ export default function DoctorProfileTopCard({
   image,
 }: DoctorDetails) {
   const t = useTranslations("doctors");
+  const displayRating = formatRating(rating);
   const languagesText = languages?.length ? languages.join(", ") : "—";
   const specializationsText = specializations?.length
     ? specializations.join(", ")
@@ -61,7 +63,7 @@ export default function DoctorProfileTopCard({
             <div className="mt-2 flex flex-wrap items-center gap-2">
               <RatingStars rating={rating} size={16} />
               <span className="text-sm font-medium text-gray-700">
-                {Number.isFinite(rating) ? rating.toFixed(1) : "0.0"}
+                {displayRating}
               </span>
               <span className="text-sm text-gray-500">
                 ({reviewCount} {t("reviews")})

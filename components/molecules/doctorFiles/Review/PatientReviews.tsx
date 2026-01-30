@@ -7,6 +7,7 @@ import ReviewList from "./ReviewList";
 import PaginationControls from "../../PaginationControls";
 import RatingStars from "../../RatingStars";
 import { useTranslations } from "@/hooks/useTranslations";
+import { formatRating } from "@/lib/utils";
 
 interface PatientReviewsProps {
   doctorId: string;
@@ -40,6 +41,7 @@ export default function PatientReviews({
     typeof avgRating === "number" && Number.isFinite(avgRating)
       ? avgRating
       : calculatedAverageRating;
+  const ratingText = formatRating(ratingToDisplay);
 
   const totalReviewsToDisplay =
     typeof totalReviewsFromServer === "number"
@@ -56,9 +58,7 @@ export default function PatientReviews({
         {/* Top-right rating summary */}
         <div className="flex items-start gap-2">
           <span className="text-2xl font-semibold text-gray-900">
-            {Number.isFinite(ratingToDisplay)
-              ? ratingToDisplay.toFixed(1)
-              : "0.0"}
+            {ratingText}
           </span>
           <div className="flex flex-col items-end">
             <RatingStars

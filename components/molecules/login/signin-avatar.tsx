@@ -6,7 +6,7 @@ import Link from "next/link";
 import { auth } from "@/auth";
 import { InteractiveSignInButton } from "./interactive-sign-in-button";
 import SignOutButton from "./sign-out-button";
-import {getTranslations }from "next-intl/server";
+import { getTranslations } from "next-intl/server";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,7 +22,9 @@ export default async function SigninOrAvatar() {
   if (!session?.user) {
     return <InteractiveSignInButton />;
   }
-  const userName = session.user.name ?? "User";
+  const tCommon = await getTranslations("common");
+  const tRoot = await getTranslations();
+  const userName = session.user.name ?? tCommon("user");
   const userEmail = session.user.email ?? "";
   const userImage = session.user.image ?? "";
   const role = session.user.role;
@@ -30,19 +32,18 @@ export default async function SigninOrAvatar() {
 
   const isPatient = role === "PATIENT";
   const isAdmin = role === "ADMIN";
-  const t = await getTranslations();
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <button
           type="button"
-          aria-label="Open user menu"
+          aria-label={tCommon("openMenu")}
           className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border bg-background text-sm font-semibold text-foreground shadow-sm"
         >
           {userImage ? (
             <Image
               src={userImage}
-              alt={`${userName} avatar`}
+              alt={tCommon("userAvatar", { name: userName })}
               width={40}
               height={40}
               className="h-10 w-10 object-cover rounded-full"
@@ -69,13 +70,13 @@ export default async function SigninOrAvatar() {
 
         {isPatient ? (
           <DropdownMenuItem asChild>
-            <Link href="/user/profile">{t('User Profile')}</Link>
+            <Link href="/user/profile">{tRoot("User Profile")}</Link>
           </DropdownMenuItem>
         ) : null}
 
         {isAdmin ? (
           <DropdownMenuItem asChild>
-            <Link href="/admin/dashboard">{t('Admin Dashboard')}</Link>
+            <Link href="/admin/dashboard">{tRoot("Admin Dashboard")}</Link>
           </DropdownMenuItem>
         ) : null}
 

@@ -1,4 +1,5 @@
 ﻿"use client";
+
 import { Appointment, ReviewFormValues } from "@/types";
 import { reviewFormSchema } from "@/lib/validations/auth";
 import {
@@ -18,7 +19,8 @@ import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Star, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
- 
+import { useTranslations } from "@/hooks/useTranslations";
+
 interface ReviewDialogProps {
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
@@ -26,7 +28,7 @@ interface ReviewDialogProps {
   onSubmit: (data: ReviewFormValues) => void;
   isSubmitting: boolean;
 }
- 
+
 export default function ReviewDialog({
   isOpen,
   onOpenChange,
@@ -34,8 +36,9 @@ export default function ReviewDialog({
   onSubmit,
   isSubmitting,
 }: ReviewDialogProps) {
+  const t = useTranslations('common');
   const [hoveredRating, setHoveredRating] = useState(0);
- 
+
   const {
     handleSubmit,
     control,
@@ -50,13 +53,13 @@ export default function ReviewDialog({
       reviewText: "",
     },
   });
- 
+
   const currentRating = watch("rating");
- 
+
   const handleFormSubmit = (data: ReviewFormValues) => {
     onSubmit(data);
   };
- 
+
   // 弹窗关闭时重置表单
   const handleOpenChange = (open: boolean) => {
     if (!open) {
@@ -64,26 +67,29 @@ export default function ReviewDialog({
     }
     onOpenChange(open);
   };
- 
+
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogContent className="max-w-[512px] bg-background rounded-lg p-4 md:p-6 border-none">
         <DialogHeader>
           <DialogTitle className="text-text-title text-base md:text-lg font-semibold">
-            评价 {appointment.doctorName} 的就诊
+            {t("review.title", { doctorName: appointment.doctorName })}
           </DialogTitle>
           <DialogDescription className="text-xs md:text-sm text-text-body font-normal">
-            {appointment.date} 鈥?{appointment.time}
+            {t("review.time", {
+              date: appointment.date,
+              time: appointment.time,
+            })}
           </DialogDescription>
         </DialogHeader>
- 
+
         <form
           onSubmit={handleSubmit(handleFormSubmit)}
           className="space-y-6 pt-2"
         >
           {/* 评分 */}
           <div className="space-y-2">
-            <Label>评分</Label>
+            <Label>{t("review.rating")}</Label>
             <Controller
               control={control}
               name="rating"
@@ -99,7 +105,7 @@ export default function ReviewDialog({
                         "h-8 w-8 cursor-pointer transition-colors",
                         hoveredRating >= starValue || currentRating >= starValue
                           ? "text-yellow-400 fill-yellow-400"
-                          : "text-gray-300"
+                          : "text-gray-300",
                       )}
                       onMouseEnter={() => setHoveredRating(starValue)}
                       onClick={() => field.onChange(starValue)}
@@ -114,13 +120,13 @@ export default function ReviewDialog({
               </p>
             )}
           </div>
- 
+
           {/* 评价内容 */}
           <div className="space-y-2">
-            <Label htmlFor="reviewText">评价内容</Label>
+            <Label htmlFor="reviewText">{t("review.content")}</Label>
             <Textarea
               id="reviewText"
-              placeholder="分享你的就诊体验..."
+              placeholder={t("review.placeholder")}
               className="resize-none"
               rows={4}
               {...register("reviewText")}
@@ -131,7 +137,7 @@ export default function ReviewDialog({
               </p>
             )}
           </div>
- 
+
           <DialogFooter className="pt-4">
             <DialogClose asChild>
               <Button
@@ -140,17 +146,17 @@ export default function ReviewDialog({
                 disabled={isSubmitting}
                 className="border border-border"
               >
-                Cancel
+                {t("cancel")}
               </Button>
             </DialogClose>
             <Button type="submit" disabled={isSubmitting}>
               {isSubmitting ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  提交中...
+                  {t("submitting")}
                 </>
               ) : (
-                "提交评价"
+                t("review.submit")
               )}
             </Button>
           </DialogFooter>

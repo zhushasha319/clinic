@@ -23,6 +23,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { useTranslations } from "@/hooks/useTranslations";
 
 interface EditProfileModalProps {
   isOpen: boolean;
@@ -46,6 +47,7 @@ export default function EditProfileModal({
   onClose,
   patientData,
 }: EditProfileModalProps) {
+  const t = useTranslations('common');
   const router = useRouter();
   const { update: updateSession } = useSession();
   const [serverError, setServerError] = React.useState<string | null>(null);
@@ -110,7 +112,7 @@ export default function EditProfileModal({
 
     toast.success("资料更新成功！");
     onClose();
-    router.refresh(); //鍒锋柊椤甸潰鏁版嵁
+    router.refresh();
   };
 
   const handleCancel = () => {
@@ -129,16 +131,16 @@ export default function EditProfileModal({
     <Dialog open={isOpen} onOpenChange={(open) => !open && handleCancel()}>
       <DialogContent className="sm:max-w-[520px]">
         <DialogHeader>
-          <DialogTitle>编辑资料</DialogTitle>
+          <DialogTitle>{t("profileEdit.editTitle")}</DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
           {/* 姓名 */}
           <div className="space-y-2">
-            <Label htmlFor="name">姓名</Label>
+            <Label htmlFor="name">{t("profileEdit.name")}</Label>
             <Input
               id="name"
-              placeholder="请输入姓名"
+              placeholder={t("profileEdit.namePlaceholder")}
               {...register("name")}
             />
             {errors.name?.message && (
@@ -148,10 +150,10 @@ export default function EditProfileModal({
 
           {/* 手机号 */}
           <div className="space-y-2">
-            <Label htmlFor="phoneNumber">手机号</Label>
+            <Label htmlFor="phoneNumber">{t("profileEdit.phone")}</Label>
             <Input
               id="phoneNumber"
-              placeholder="请输入手机号"
+              placeholder={t("profileEdit.phonePlaceholder")}
               {...register("phoneNumber")}
               inputMode="tel"
             />
@@ -164,10 +166,10 @@ export default function EditProfileModal({
 
           {/* 地址 */}
           <div className="space-y-2">
-            <Label htmlFor="address">地址</Label>
+            <Label htmlFor="address">{t("profileEdit.address")}</Label>
             <Textarea
               id="address"
-              placeholder="请输入地址"
+              placeholder={t("profileEdit.addressPlaceholder")}
               className="min-h-[84px]"
               {...register("address")}
             />
@@ -180,7 +182,7 @@ export default function EditProfileModal({
 
           {/* 出生日期 */}
           <div className="space-y-2">
-            <Label htmlFor="dateOfBirth">出生日期</Label>
+            <Label htmlFor="dateOfBirth">{t("profileEdit.dob")}</Label>
             <Input id="dateOfBirth" type="date" {...register("dateOfBirth")} />
             {errors.dateOfBirth?.message && (
               <p className="text-sm text-destructive">
@@ -204,10 +206,10 @@ export default function EditProfileModal({
               disabled={isSubmitting}
               className="w-[110px]"
             >
-              Cancel
+              {t("cancel")}
             </Button>
             <Button type="submit" disabled={isSubmitting} className="w-[140px]">
-              {isSubmitting ? "保存中..." : "保存修改"}
+              {isSubmitting ? t("saving") : t("save")}
             </Button>
           </div>
         </form>
@@ -215,4 +217,3 @@ export default function EditProfileModal({
     </Dialog>
   );
 }
-

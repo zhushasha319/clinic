@@ -1,5 +1,7 @@
-{
+ 
+{ "appName": "Shasha Medical Center",
   "common": {
+     "appName": "Shasha Medical Center",
     "home": "Home",
     "bookAppointment": "Book Appointment",
     "signIn": "Sign In",
@@ -8,7 +10,55 @@
     "menu": "Menu",
     "theme": "Theme",
     "openMenu": "Open Menu",
+    "user": "User",
+    "userAvatar": "{name} avatar",
+    "close": "Close",
     "cancel": "Cancel",
+    "ok": "OK",
+    "no": "No",
+    "yes": "Yes",
+    "saving": "Saving...",
+    "submitting": "Submitting...",
+    "footer": {
+    "slogan": "Excellence in Healthcare, Committed to Your Well-being",
+    "contactUs": "Contact Us",
+    "phone": "(555) 123-4567",
+    "email": "info@shasha.med",
+    "address": "123 Medical Center Dr, Shasha, CA 92346",
+    "copyright": "All rights reserved."
+  },
+    "booking": {
+      "selectSlot": "Select Slot",
+      "patientDetails": "Patient Details",
+      "payment": "Payment",
+      "confirmation": "Confirmation"
+    },
+    "appointment": {
+      "cancelTitle": "Cancel Appointment",
+      "cancelInfo": "Please call the Admin on number (555) 123-4567 to cancel the appointment.",
+      "cancelConfirm": "Are you sure you want to cancel this appointment?",
+      "cancelling": "Cancelling..."
+    },
+    "profileEdit": {
+      "editTitle": "Edit Profile",
+      "name": "Name",
+      "namePlaceholder": "Enter your name",
+      "phone": "Phone",
+      "phonePlaceholder": "Enter your phone number",
+      "address": "Address",
+      "addressPlaceholder": "Enter your address",
+      "dob": "Date of Birth",
+      "updateSuccess": "Profile updated successfully!",
+      "updateFail": "Failed to update profile."
+    },
+    "review": {
+      "title": "Review {doctorName}'s Appointment",
+      "time": "{date} - {time}",
+      "rating": "Rating",
+      "content": "Review Content",
+      "placeholder": "Share your experience...",
+      "submit": "Submit Review"
+    },
     "confirm": "Confirm",
     "edit": "Edit",
     "delete": "Delete",
@@ -31,6 +81,7 @@
       "about": "About"
     }
   },
+  
   "appointments": {
     "title": "My Appointments",
     "noAppointments": "No appointments found.",
@@ -66,12 +117,12 @@
     "fullName": "fullName",
     "toChangeNameEditProfile": "toChangeNameEditProfile",
     "emailAddress": "email address",
-    "primaryPhoneNumber": "主要手机号",
+    "primaryPhoneNumber": "PhoneNumber",
     "useAlternatePhoneNumber": "useAlternatePhoneNumber",
     "reasonForVisit": "reasonForVisit",
     "selectReason": "selectReason",
-    "additionalNotes": "备注",
-    "additionalNotesPlaceholder": "additionalNotesPlaceholder",
+    "additionalNotes": "additionalNotes",
+    "additionalNotesPlaceholder": "additionalNotes",
     "reset": "reset"
   },
   "doctors": {
@@ -160,5 +211,11 @@
     "dateOfBirth": "Date of Birth"
   },
   "User Profile": "User Profile",
-  "Admin Dashboard": "Admin Dashboard"
+  "Admin Dashboard": "Admin Dashboard",
+  "SignUpPage": {
+    "createAccount": "createAccount",
+    "enterInformation": "enterInformation",
+    "alreadyHaveAccount": "alreadyHaveAccount",
+    "signIn": "signIn"
+  }
 }

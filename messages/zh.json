@@ -1,5 +1,7 @@
-{
+  
+{"appName": "莎莎医疗中心",
   "common": {
+    "appName": "莎莎医疗中心",
     "home": "首页",
     "bookAppointment": "预约挂号",
     "signIn": "登录",
@@ -8,7 +10,55 @@
     "menu": "菜单",
     "theme": "主题",
     "openMenu": "打开菜单",
+    "user": "用户",
+    "userAvatar": "{name} 头像",
+    "close": "关闭",
     "cancel": "取消",
+    "ok": "确定",
+    "no": "否",
+    "yes": "是",
+    "saving": "保存中...",
+    "submitting": "提交中...",
+    "booking": {
+      "selectSlot": "选择时间",
+      "patientDetails": "患者信息",
+      "payment": "支付",
+      "confirmation": "确认"
+    },
+    "footer": {
+      "slogan": "卓越医疗，关爱您的健康",
+      "contactUs": "联系我们",
+      "phone": "(555) 123-4567",
+      "email": "info@shasha.med",
+      "address": "加州莎莎市医学中心路123号，邮编92346",
+      "copyright": "版权所有。"
+    },
+    "appointment": {
+      "cancelTitle": "取消预约",
+      "cancelInfo": "如需取消预约，请致电管理员 (555) 123-4567。",
+      "cancelConfirm": "确定要取消本次预约吗？",
+      "cancelling": "正在取消..."
+    },
+    "profileEdit": {
+      "editTitle": "编辑资料",
+      "name": "姓名",
+      "namePlaceholder": "请输入姓名",
+      "phone": "手机号",
+      "phonePlaceholder": "请输入手机号",
+      "address": "地址",
+      "addressPlaceholder": "请输入地址",
+      "dob": "出生日期",
+      "updateSuccess": "资料更新成功！",
+      "updateFail": "更新资料失败。"
+    },
+    "review": {
+      "title": "评价{doctorName}的就诊",
+      "time": "{date} - {time}",
+      "rating": "评分",
+      "content": "评价内容",
+      "placeholder": "分享你的就诊体验...",
+      "submit": "提交评价"
+    },
     "confirm": "确认",
     "edit": "编辑",
     "delete": "删除",
@@ -61,7 +111,18 @@
       "CANCELLED": "已取消",
       "NO_SHOW": "未到场",
       "CASH": "待现金支付"
-    }
+    },
+    "additionalNotes": "备注",
+    "additionalNotesPlaceholder": "备注",
+    "dateOfBirthHelpText": "生日",
+    "emailAddress": "邮件地址",
+    "fullName": "全名",
+    "primaryPhoneNumber": "手机号",
+    "reasonForVisit": "来访理由",
+    "reset": "返回",
+    "selectReason": "选择理由",
+    "toChangeNameEditProfile": "修改资料",
+    "useAlternatePhoneNumber": "其他号码"
   },
   "doctors": {
     "title": "我们的医生",
@@ -148,6 +209,12 @@
     "address": "地址",
     "dateOfBirth": "出生日期"
   },
-  "User Profile":"用户信息",
-  "Admin Dashboard":"管理员菜单"
+  "User Profile": "用户信息",
+  "Admin Dashboard": "管理员菜单",
+  "SignUpPage": {
+    "alreadyHaveAccount": "已有账户",
+    "createAccount": "创建账户",
+    "enterInformation": "输入信息",
+    "signIn": "登录"
+  }
 }

@@ -2,7 +2,7 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Star } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, formatRating } from "@/lib/utils";
 import { ViewProfileButton } from "./view-profile-button";
 import Image from "next/image";
 import { useTranslations } from "@/hooks/useTranslations";
@@ -27,6 +27,7 @@ export function DoctorCard({
   className,
 }: DoctorCardProps) {
   const t = useTranslations("doctors");
+  const displayRating = formatRating(rating);
 
   return (
     <Card className={cn("w-[384px] p-6", className)}>
@@ -58,7 +59,7 @@ export function DoctorCard({
             <div className="flex items-center gap-1.5 pt-1">
               <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
               <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">
-                {rating}
+                {displayRating}
               </span>
               <span className="text-sm text-gray-500 dark:text-gray-400">
                 ({reviewCount} {t("reviews")})

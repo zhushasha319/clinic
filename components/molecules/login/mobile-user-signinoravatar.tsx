@@ -10,6 +10,7 @@ import { signOut } from "next-auth/react";
 import { InteractiveSignInButton } from "./interactive-sign-in-button";
 
 import { Button } from "@/components/ui/button";
+import { useTranslations } from "@/hooks/useTranslations";
 import {
   Dialog,
   DialogContent,
@@ -30,6 +31,8 @@ export default function MobileUserSignOrAvatar({
   session,
 }: MobileUserMenuProps) {
   const [open, setOpen] = React.useState(false);
+  const t = useTranslations("common");
+  const tRoot = useTranslations();
 
   if (!session?.user) {
     return (
@@ -42,7 +45,7 @@ export default function MobileUserSignOrAvatar({
   }
 
   const { name, image, email, role } = session.user;
-  const userName = name ?? "User";
+  const userName = name ?? t("user");
   const userEmail = email ?? "";
   const userImage = image ?? "";
   const firstInitial = userName.charAt(0).toUpperCase();
@@ -66,14 +69,14 @@ export default function MobileUserSignOrAvatar({
         <button
           type="button"
           className="flex w-full items-center gap-3 rounded-md px-2 py-2 text-left hover:bg-muted"
-          aria-label="Open user menu"
+          aria-label={t("openMenu")}
           onClick={() => setOpen(true)}
         >
           <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border bg-background text-sm font-semibold">
             {userImage ? (
               <Image
                 src={userImage}
-                alt={`${userName} avatar`}
+                alt={t("userAvatar", { name: userName })}
                 width={40}
                 height={40}
                 className="h-10 w-10 object-cover"
@@ -117,7 +120,7 @@ export default function MobileUserSignOrAvatar({
                 onMobileActionComplete?.();
               }}
             >
-              <Link href="/user/profile">User Profile</Link>
+              <Link href="/user/profile">{tRoot("User Profile")}</Link>
             </Button>
           ) : null}
 
@@ -131,7 +134,7 @@ export default function MobileUserSignOrAvatar({
                 onMobileActionComplete?.();
               }}
             >
-              <Link href="/admin/dashboard">Admin Dashboard</Link>
+              <Link href="/admin/dashboard">{tRoot("Admin Dashboard")}</Link>
             </Button>
           ) : null}
 
@@ -140,7 +143,7 @@ export default function MobileUserSignOrAvatar({
             className="w-full justify-start text-destructive"
             onClick={handleSignOut}
           >
-            Sign out
+            {t("signOut")}
           </Button>
         </div>
 
@@ -153,7 +156,7 @@ export default function MobileUserSignOrAvatar({
               onMobileActionComplete?.();
             }}
           >
-            Close
+            {t("close")}
           </Button>
         </DialogFooter>
       </DialogContent>

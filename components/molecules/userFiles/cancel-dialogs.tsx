@@ -1,5 +1,5 @@
 "use client";
- 
+
 import {
   Dialog,
   DialogContent,
@@ -11,7 +11,8 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
- 
+import { useTranslations } from "@/hooks/useTranslations";
+
 interface CancellationDialogsProps {
   isInfoOpen: boolean;
   onInfoOpenChange: (isOpen: boolean) => void;
@@ -29,39 +30,39 @@ export default function CancellationDialogs({
   onConfirmCancel,
   isPending,
 }: CancellationDialogsProps) {
+  const t = useTranslations('common');
   return (
     <>
-      {/* Dialog 1: 如果是非现金支付，需要联系admin */}
+      {/* Dialog 1: 非现金支付 */}
       <Dialog open={isInfoOpen} onOpenChange={onInfoOpenChange}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="text-xl font-semibold">
-              Cancel Appointment
+              {t("appointment.cancelTitle")}
             </DialogTitle>
             <DialogDescription className="pt-4 text-base text-gray-600 dark:text-gray-300">
-              Please call the Admin on number (555) 123-4567 to cancel the
-              appointment.
+              {t("appointment.cancelInfo")}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="mt-4">
             <DialogClose asChild>
               <Button type="button" variant="outline">
-                OK
+                {t("ok")}
               </Button>
             </DialogClose>
           </DialogFooter>
         </DialogContent>
       </Dialog>
- 
-      {/* Dialog 2: 如果是现金支付，可以直接取消 */}
+
+      {/* Dialog 2: 现金支付 */}
       <Dialog open={isConfirmOpen} onOpenChange={onConfirmOpenChange}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="text-xl font-semibold">
-              Cancel Appointment
+              {t("appointment.cancelTitle")}
             </DialogTitle>
             <DialogDescription className="pt-4 text-base text-gray-600 dark:text-gray-300">
-              Are you sure you want to cancel this appointment?
+              {t("appointment.cancelConfirm")}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="mt-4 sm:justify-end space-x-2">
@@ -72,7 +73,7 @@ export default function CancellationDialogs({
                 disabled={isPending}
                 className="text-text-caption-2"
               >
-                No
+                {t("no")}
               </Button>
             </DialogClose>
             <Button
@@ -85,10 +86,10 @@ export default function CancellationDialogs({
               {isPending ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Cancelling...
+                  {t("appointment.cancelling")}
                 </>
               ) : (
-                "Yes"
+                t("yes")
               )}
             </Button>
           </DialogFooter>
@@ -97,4 +98,3 @@ export default function CancellationDialogs({
     </>
   );
 }
- 

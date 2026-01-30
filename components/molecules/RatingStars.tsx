@@ -1,5 +1,9 @@
+"use client";
+
 import React from "react";
 import { Star } from "lucide-react";
+import { useTranslations } from "@/hooks/useTranslations";
+import { formatRating } from "@/lib/utils";
 
 type RatingStarsProps = {
   rating: number;
@@ -32,7 +36,10 @@ export default function RatingStars({
   outOf = 5,
   className = "",
 }: RatingStarsProps) {
+  const t = useTranslations("doctors");
   const safeRating = Number.isFinite(rating) ? Math.max(0, Math.min(rating, outOf)) : 0;
+  const ratingLabel = t("rating");
+  const ratingText = formatRating(safeRating);
 
   const fullStars = Math.floor(safeRating);
   const decimal = safeRating - fullStars;
@@ -42,7 +49,7 @@ export default function RatingStars({
   return (
     <div
       className={`inline-flex items-center gap-1 ${className}`}
-      aria-label={`Rating ${safeRating} out of ${outOf}`}
+      aria-label={`${ratingLabel} ${ratingText} / ${outOf}`}
       role="img"
     >
       {Array.from({ length: outOf }).map((_, i) => {
