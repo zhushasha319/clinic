@@ -102,13 +102,15 @@ export async function getOurDoctors(): Promise<
   } catch (error) {
     // 记录详细错误，便于服务端排查。
     console.error("Error fetching our doctors:", error);
-    console.error("Error stack:", error instanceof Error ? error.stack : "No stack");
+    console.error(
+      "Error stack:",
+      error instanceof Error ? error.stack : "No stack",
+    );
 
     // 向客户端返回通用错误响应。
     return {
       success: false,
-      message:
-        "获取医生信息时发生意外错误。",
+      message: "获取医生信息时发生意外错误。",
       error: error instanceof Error ? error.message : String(error),
       errorType: "DatabaseError",
     };
@@ -280,8 +282,7 @@ export async function getDoctorDetails(
       data: details,
     };
   } catch (err: unknown) {
-    const message =
-      err instanceof Error ? err.message : "发生未知错误";
+    const message = err instanceof Error ? err.message : "发生未知错误";
 
     return {
       success: false,
@@ -539,6 +540,3 @@ export async function getPendingAppointmentForDoctor({
     };
   }
 }
-
-
-
