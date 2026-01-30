@@ -175,7 +175,7 @@ export default function PatientDetailsForm({
                 : "border-gray-200 bg-white text-gray-700 hover:bg-gray-50",
             )}
           >
-            浠栦汉
+            {t("someoneElse")}
           </button>
         </div>
       </div>
@@ -278,7 +278,7 @@ export default function PatientDetailsForm({
                 }}
               />
             </div>
-            <p className="mt-1 text-xs text-gray-500">鐢熸棩</p>
+            <p className="mt-1 text-xs text-gray-500">{t("dateOfBirthHelpText")}</p>
             <FieldError message={errors.dateOfBirth?.message} />
           </div>
         </div>
@@ -290,7 +290,7 @@ export default function PatientDetailsForm({
           {/* 全名 */}
           <div>
             <label className="mb-2 block text-xs font-semibold text-gray-700">
-              鍏ㄥ悕
+              {t("fullName")}
             </label>
             <div className="亲属">
               <input
@@ -319,7 +319,7 @@ export default function PatientDetailsForm({
               </button>
             </div>
             <p className="mt-1 text-xs text-gray-500">
-              濡傞渶鏇存柊鎮ㄧ殑濮撳悕锛岃璁块棶鎮ㄧ殑涓汉璧勬枡銆?
+              {t("toChangeNameEditProfile")}
             </p>
             <FieldError message={errors.fullName?.message} />
           </div>
@@ -329,7 +329,7 @@ export default function PatientDetailsForm({
       {/* 邮箱地址（只读） */}
       <div className="mb-4">
         <label className="mb-2 block text-xs font-semibold text-gray-700">
-          鐢靛瓙閭欢鍦板潃
+          {t("emailAddress")}
         </label>
         <input
           {...register("email")}
@@ -345,7 +345,7 @@ export default function PatientDetailsForm({
       {/* 主手机号（只读 + 可切换） */}
       <div className="mb-4">
         <label className="mb-2 block text-xs font-semibold text-gray-700">
-          涓昏鐢佃瘽鍙风爜
+          {t("primaryPhoneNumber")}
         </label>
 
         <div className="亲属">
@@ -365,7 +365,7 @@ export default function PatientDetailsForm({
             {...register("useAlternatePhone")}
             className="h-4 w-4 rounded border-gray-300"
           />
-          <span>涓烘娆￠绾︿娇鐢ㄤ笉鍚岀殑鐢佃瘽鍙风爜</span>
+          <span>{t("useAlternatePhoneNumber")}</span>
         </label>
 
         {useAlternatePhone && (
@@ -386,7 +386,7 @@ export default function PatientDetailsForm({
       {/* 就诊原因 */}
       <div className="mb-4">
         <label className="mb-2 block text-xs font-semibold text-gray-700">
-          璁块棶鍘熷洜
+          {t("reasonForVisit")}
         </label>
         <select
           {...register("reason")}
@@ -397,7 +397,7 @@ export default function PatientDetailsForm({
           defaultValue={defaultValues.reason || ""}
         >
           <option value="" disabled>
-            閫夋嫨鐞嗙敱
+            {t("selectReason")}
           </option>
           {REASON_OPTIONS.map((r) => (
             <option key={r} value={r}>
@@ -411,7 +411,7 @@ export default function PatientDetailsForm({
       {/* 额外备注 */}
       <div className="mb-6">
         <label className="mb-2 block text-xs font-semibold text-gray-700">
-          棰濆澶囨敞
+          {t("additionalNotes")}
         </label>
         <textarea
           {...register("notes")}
@@ -419,7 +419,7 @@ export default function PatientDetailsForm({
             "min-h-[120px] w-full resize-none rounded-md border px-3 py-2 text-sm outline-none",
             errors.notes ? "border-red-500" : "border-gray-200",
           )}
-          placeholder="娣诲姞鏈夊叧鎮ㄨ闂殑浠讳綍鍏朵粬淇℃伅"
+          placeholder={t("additionalNotesPlaceholder")}
         />
         <FieldError message={errors.notes?.message} />
       </div>
@@ -432,7 +432,7 @@ export default function PatientDetailsForm({
           onClick={() => reset(defaultValues)}
           disabled={isSubmitting}
         >
-          鍙栨秷
+          {t("reset")}
         </button>
 
         <button

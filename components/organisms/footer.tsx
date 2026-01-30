@@ -24,11 +24,11 @@ export function Footer() {
               </div>
               <div className="flex items-center gap-3">
                 <Mail className="h-4 w-4 shrink-0" />
-                <span>info@highland.med</span>
+                <span>info@shasha.med</span>
               </div>
               <div className="flex items-center gap-3">
                 <MapPin className="h-4 w-4 shrink-0" />
-                <span>123 Medical Center Dr, Highland, CA 92346</span>
+                <span>123 Medical Center Dr, Shasha, CA 92346</span>
               </div>
             </div>
           </div>

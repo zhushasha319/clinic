@@ -61,7 +61,18 @@
       "CANCELLED": "Cancelled",
       "NO_SHOW": "No Show",
       "CASH": "Cash Payment Pending"
-    }
+    },
+    "dateOfBirthHelpText": "birth",
+    "fullName": "fullName",
+    "toChangeNameEditProfile": "toChangeNameEditProfile",
+    "emailAddress": "email address",
+    "primaryPhoneNumber": "主要手机号",
+    "useAlternatePhoneNumber": "useAlternatePhoneNumber",
+    "reasonForVisit": "reasonForVisit",
+    "selectReason": "selectReason",
+    "additionalNotes": "备注",
+    "additionalNotesPlaceholder": "additionalNotesPlaceholder",
+    "reset": "reset"
   },
   "doctors": {
     "title": "Our Doctors",

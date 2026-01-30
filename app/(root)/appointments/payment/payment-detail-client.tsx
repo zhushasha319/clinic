@@ -171,6 +171,15 @@ export default function PaymentDetailsClient({
       }
 
       // 支付宝支付流程 - 使用 server action
+      // 生产环境：临时跳过支付宝支付，直接进入成功页
+      if (process.env.NODE_ENV === "production") {
+        toast.success("已跳过支付宝支付，直接进入成功页");
+        router.push(
+          `/appointments/payment/success?appointmentId=${appointmentId}&method=alipay&test=true`,
+        );
+        return;
+      }
+
       const result = await createAlipayPayment({
         appointmentId,
         amount: fee,
@@ -215,7 +224,6 @@ export default function PaymentDetailsClient({
           });
 
           const paymentUrl = `${alipayData.channel_url}?${params.toString()}`;
-          console.log("Redirecting to Alipay:", paymentUrl);
           window.location.href = paymentUrl;
         } else if (typeof alipayData === "string") {
           // 如果直接返回的是URL字符串
