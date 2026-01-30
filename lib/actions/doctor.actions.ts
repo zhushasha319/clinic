@@ -102,6 +102,7 @@ export async function getOurDoctors(): Promise<
   } catch (error) {
     // 记录详细错误，便于服务端排查。
     console.error("Error fetching our doctors:", error);
+    console.error("Error stack:", error instanceof Error ? error.stack : "No stack");
 
     // 向客户端返回通用错误响应。
     return {
