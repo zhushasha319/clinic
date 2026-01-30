@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿// 逻辑：加载预约数据、鉴权校验、必要时绑定访客预约，并组装传给客户端组件的数据
+﻿﻿// 逻辑：加载预约数据、鉴权校验、必要时绑定访客预约，并组装传给客户端组件的数据
 import PatientDetailsClient from "./patient-details-client";
 import type { AppointmentData, PatientData ,AppoitmentWithRelations} from "@/types";
 import {

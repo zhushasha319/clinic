@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useCallback, useEffect, useState, useTransition } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -52,7 +52,7 @@ export default function AppointmentActionClient() {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setQuery(urlQuery);
     }
-  }, [urlQuery]);
+  }, [query, urlQuery]);
 
   useEffect(() => {
     if (debouncedQuery === urlQuery) return;
@@ -68,7 +68,7 @@ export default function AppointmentActionClient() {
     router.replace(next ? `${pathname}?${next}` : pathname);
   }, [debouncedQuery, pathname, router, searchParams, urlQuery]);
 
-  const refreshRows = async () => {
+  const refreshRows = useCallback(async () => {
     const data = await searchAppointmentsByPatientName({
       query: urlQuery,
       page: urlPage,
@@ -76,13 +76,13 @@ export default function AppointmentActionClient() {
     });
     setRows(data.rows);
     setTotalPages(data.totalPages);
-  };
+  }, [urlQuery, urlPage]);
 
   useEffect(() => {
     startTransition(async () => {
       await refreshRows();
     });
-  }, [urlQuery, urlPage]);
+  }, [urlQuery, urlPage, refreshRows]);
 
   const runAction = (
     action: (id: string) => Promise<{ success: boolean }>,
@@ -121,7 +121,7 @@ export default function AppointmentActionClient() {
 
       <div className="rounded-xl border bg-background shadow-sm">
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[900px] text-left text-sm">
+          <table className="w-full min-w-225 text-left text-sm">
             <thead className="bg-background-1 text-xs uppercase text-muted-foreground">
               <tr>
                 <th className="px-4 py-3 font-medium">ID</th>

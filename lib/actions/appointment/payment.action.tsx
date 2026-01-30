@@ -5,6 +5,7 @@ import { AppointmentStatus } from "@/lib/generated/prisma";
 import { ServerActionResponse } from "@/types";
 
 // 初始化 pingpp
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const pingpp = require("pingpp")(process.env.PINGPP_API_KEY || "");
 
 // 设置私钥用于签名

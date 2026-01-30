@@ -58,7 +58,7 @@ export default function AdminDashboardClient({
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[720px] text-left text-sm">
+            <table className="w-full min-w-180 text-left text-sm">
               <thead className="bg-background-1 text-xs uppercase text-muted-foreground">
                 <tr>
                   <th className="px-3 py-3 font-medium">交易日期</th>

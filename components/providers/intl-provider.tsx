@@ -4,7 +4,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { ReactNode } from "react";
 
 type Props = {
-  messages: any;
+  messages: Record<string, unknown>;
   locale: string;
   children: ReactNode;
 };

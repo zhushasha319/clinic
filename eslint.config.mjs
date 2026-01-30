@@ -12,6 +12,11 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Additional ignores
+    ".history/**",
+    "node_modules/**",
+    "lib/generated/**",
+    "prisma/seed-data/**",
   ]),
 ]);
 

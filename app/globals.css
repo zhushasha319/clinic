@@ -306,7 +306,7 @@
   h2 {
     @apply text-xl md:text-2xl font-bold text-text-title font-sans;
     line-height: var(--text-xl--line-height);
-    @media (width>= theme(--breakpoint-md)) {
+    @media (width >= theme(--breakpoint-md)) {
       line-height: var(--text-2xl--line-height);
     }
   }
@@ -314,7 +314,7 @@
   h3 {
     @apply text-lg md:text-xl font-semibold text-text-title font-sans;
     line-height: var(--text-lg--line-height);
-    @media (width>= theme(--breakpoint-md)) {
+    @media (width >= theme(--breakpoint-md)) {
       line-height: var(--text-xl--line-height);
     }
   }
@@ -322,7 +322,7 @@
   h4 {
     @apply text-base md:text-lg font-semibold text-text-title font-sans;
     line-height: var(--text-base--line-height);
-    @media (width>= theme(--breakpoint-md)) {
+    @media (width >= theme(--breakpoint-md)) {
       line-height: var(--text-lg--line-height);
     }
   }
@@ -337,7 +337,7 @@
   .body-semibold {
     @apply text-sm md:text-base font-semibold font-sans;
     line-height: var(--text-sm--line-height);
-    @media (width>= theme(--breakpoint-md)) {
+    @media (width >= theme(--breakpoint-md)) {
       line-height: var(--text-base--line-height);
     }
   }
@@ -345,7 +345,7 @@
   .body-regular {
     @apply text-xs md:text-sm text-text-body-subtle font-normal font-sans;
     line-height: var(--text-xs--line-height);
-    @media (width>= theme(--breakpoint-md)) {
+    @media (width >= theme(--breakpoint-md)) {
       line-height: var(--text-sm--line-height);
     }
   }
@@ -353,7 +353,7 @@
   .body-small {
     @apply text-xs md:text-sm text-text-body font-normal font-sans;
     line-height: var(--text-xs--line-height);
-    @media (width>= theme(--breakpoint-md)) {
+    @media (width >= theme(--breakpoint-md)) {
       line-height: var(--text-sm--line-height);
     }
   }
@@ -361,7 +361,7 @@
   .body-small-bold {
     @apply text-xs md:text-sm text-text-body font-bold font-sans;
     line-height: var(--text-xs--line-height);
-    @media (width>= theme(--breakpoint-md)) {
+    @media (width >= theme(--breakpoint-md)) {
       line-height: var(--text-sm--line-height);
     }
   }

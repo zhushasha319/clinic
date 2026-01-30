@@ -3,6 +3,7 @@ import { auth } from "@/auth";
 import db from "@/db/prisma";
 
 // 初始化 pingpp
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const pingpp = require("pingpp")(process.env.PINGPP_API_KEY || "");
 
 if (process.env.PINGPP_PRIVATE_KEY) {

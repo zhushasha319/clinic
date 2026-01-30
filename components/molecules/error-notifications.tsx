@@ -2,13 +2,13 @@
 import { useState, useEffect, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { X, AlertCircle } from "lucide-react";
- 
+
 export default function ErrorNotification(): React.ReactNode {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isVisible, setIsVisible] = useState(false);
- 
+
   const handleDismiss = useCallback(() => {
     setIsVisible(false);
     // Create a new URLSearchParams object from the current ones
@@ -19,35 +19,38 @@ export default function ErrorNotification(): React.ReactNode {
     // Replace the current URL with the cleaned one
     router.replace(`?${newSearchParams.toString()}`);
   }, [searchParams, router]);
- 
+
   useEffect(() => {
     // Read the 'message' parameter from the URL
     const encodedMessage = searchParams.get("message");
- 
-    if (encodedMessage) {
-      const message = decodeURIComponent(encodedMessage);
- 
-      // If a message exists, update the state to display the banner
+
+    if (!encodedMessage) {
+      return;
+    }
+
+    const message = decodeURIComponent(encodedMessage);
+
+    // Use a microtask to avoid synchronous setState in effect
+    queueMicrotask(() => {
       setErrorMessage(message);
       setIsVisible(true);
- 
-      // Set a timer to automatically hide the banner after 10 seconds
-      const timer = setTimeout(() => {
-        handleDismiss();
-      }, 10000); // 10 seconds
- 
-      // Cleanup function: clear the timer if the component unmounts
-      // or if the user dismisses the banner manually.
-      return () => clearTimeout(timer);
-    }
+    });
+
+    // Set a timer to automatically hide the banner after 10 seconds
+    const timer = setTimeout(() => {
+      handleDismiss();
+    }, 10000); // 10 seconds
+
+    // Cleanup function: clear the timer if the component unmounts
+    // or if the user dismisses the banner manually.
+    return () => clearTimeout(timer);
   }, [searchParams, handleDismiss]); // Rerun the effect if the URL search params change
- 
- 
+
   // If the banner is not visible, render nothing.
   if (!isVisible) {
     return null;
   }
- 
+
   return (
     <div
       className="fixed top-4 left-1/2 -translate-x-1/2 w-11/12 max-w-2xl bg-background-1 text-white p-4 rounded-lg shadow-lg z-50 flex items-start justify-between border border-red-500"
