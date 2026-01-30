@@ -1,9 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import db from "@/db/prisma";
-const pingpp = require("pingpp");
 
-pingpp.setPrivateKey(process.env.PINGPP_PRIVATE_KEY || "");
+// 初始化 pingpp
+const pingpp = require("pingpp")(process.env.PINGPP_API_KEY || "");
+
+if (process.env.PINGPP_PRIVATE_KEY) {
+  pingpp.setPrivateKey(process.env.PINGPP_PRIVATE_KEY);
+}
 
 export async function POST(req: NextRequest) {
   try {

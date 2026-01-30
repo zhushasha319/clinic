@@ -23,7 +23,7 @@ export function AdminSidebar() {
     ].join(" ");
 
   return (
-    <aside className="w-full shrink-0 bg-[color:var(--color-text-primary)] text-white md:w-64">
+    <aside className="w-full shrink-0 bg-(--color-text-primary) text-white md:w-64">
       <div className="flex items-center gap-3 border-b border-white/15 px-6 py-5">
         <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/15">
           <LayoutDashboard className="h-5 w-5" />

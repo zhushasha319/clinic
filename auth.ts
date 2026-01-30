@@ -75,6 +75,7 @@ export const config: NextAuthConfig = {
         if (callbackUrl && callbackUrl.startsWith("/")) {
           return `${baseUrl}${callbackUrl}`;
         }
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (e) {
         // 忽略解析错误
       }
