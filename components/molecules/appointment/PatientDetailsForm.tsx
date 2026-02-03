@@ -139,7 +139,11 @@ export default function PatientDetailsForm({
         return;
       }
       toast.success(res.message || "预约信息已保存。");
-      router.replace(`/appointments/payment?appointmentId=${appointmentId}`);
+      const params = new URLSearchParams({ appointmentId });
+      if (appointmentData.guestIdentifier) {
+        params.set("guestIdentifier", appointmentData.guestIdentifier);
+      }
+      router.replace(`/appointments/payment?${params.toString()}`);
     } else {
       toast.error(res.message || "保存预约信息失败。");
     }

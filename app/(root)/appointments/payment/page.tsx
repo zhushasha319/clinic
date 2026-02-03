@@ -5,17 +5,47 @@ import prisma from "@/db/prisma";
 import { toZonedTime } from "date-fns-tz";
 import { format } from "date-fns";
 import { redirect } from "next/navigation";
+import { updateGuestAppointmentWithUser } from "@/lib/actions/appointment/appointment.action";
 
 interface PaymentDetailsSearchParams {
   appointmentId: string;
+  guestIdentifier?: string;
 }
+
+const buildPaymentUrl = ({
+  appointmentId,
+  guestIdentifier,
+}: {
+  appointmentId: string;
+  guestIdentifier?: string;
+}) => {
+  const params = new URLSearchParams({ appointmentId });
+  if (guestIdentifier) {
+    params.set("guestIdentifier", guestIdentifier);
+  }
+  return `/appointments/payment?${params.toString()}`;
+};
+
+const buildPatientDetailsUrl = ({
+  appointmentId,
+  guestIdentifier,
+}: {
+  appointmentId: string;
+  guestIdentifier?: string;
+}) => {
+  const params = new URLSearchParams({ appointmentId });
+  if (guestIdentifier) {
+    params.set("guestIdentifier", guestIdentifier);
+  }
+  return `/appointments/patient-details?${params.toString()}`;
+};
 
 export default async function PaymentPage({
   searchParams,
 }: {
   searchParams: Promise<PaymentDetailsSearchParams>;
 }) {
-  const { appointmentId } = await searchParams;
+  const { appointmentId, guestIdentifier } = await searchParams;
 
   if (!appointmentId) {
     redirect("/");
@@ -23,26 +53,52 @@ export default async function PaymentPage({
 
   const session = await auth();
   if (!session?.user?.id) {
-    redirect("/sign-in");
+    const callbackUrl = buildPaymentUrl({ appointmentId, guestIdentifier });
+    redirect(`/sign-in?callbackUrl=${encodeURIComponent(callbackUrl)}`);
   }
 
-  // 获取预约信息
-  const appointment = await prisma.appointment.findUnique({
-    where: { appointmentId },
-    include: {
-      doctor: {
-        include: {
-          doctorProfile: true,
+  const getAppointment = async () => {
+    return prisma.appointment.findUnique({
+      where: { appointmentId },
+      include: {
+        doctor: {
+          include: {
+            doctorProfile: true,
+          },
         },
       },
-    },
-  });
+    });
+  };
+
+  let appointment = await getAppointment();
 
   if (!appointment) {
     redirect("/");
   }
 
-  // 获取用户信息
+  // 访客在支付前登录：根据 guestIdentifier 绑定到当前账号。
+  if (
+    appointment.userId === null &&
+    typeof guestIdentifier === "string" &&
+    guestIdentifier.length > 0 &&
+    appointment.guestIdentifier === guestIdentifier
+  ) {
+    const linkRes = await updateGuestAppointmentWithUser(guestIdentifier);
+    if (!linkRes.success) {
+      redirect(buildPatientDetailsUrl({ appointmentId, guestIdentifier }));
+    }
+
+    appointment = await getAppointment();
+    if (!appointment) {
+      redirect("/");
+    }
+  }
+
+  // 只有预约归属人可以进入支付页。
+  if (appointment.userId !== session.user.id) {
+    redirect(buildPatientDetailsUrl({ appointmentId, guestIdentifier }));
+  }
+
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
     select: {
@@ -54,8 +110,6 @@ export default async function PaymentPage({
   });
 
   const tz = getAppTimeZone();
-
-  // 格式化预约信息
   const startZoned = toZonedTime(appointment.appointmentStartUTC, tz);
   const endZoned = toZonedTime(appointment.appointmentEndUTC, tz);
 
@@ -77,7 +131,7 @@ export default async function PaymentPage({
     relationship: appointment.patientRelation ?? null,
     fee: 10,
     patientEmail: user?.email ?? "",
-    userId: session.user.id, // 添加用户ID
+    userId: session.user.id,
   };
 
   return (

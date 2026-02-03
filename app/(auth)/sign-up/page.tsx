@@ -1,5 +1,6 @@
+
 import { SignUpForm } from "./sign-up-form";
- import { useTranslations } from "@/hooks/useTranslations";
+import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import {
   Card,
@@ -18,7 +19,7 @@ const SignUpPage = async (props: {
   const searchParamsObject = await props.searchParams;
   const callbackUrl = searchParamsObject.callbackUrl;
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  const t = useTranslations("SignUpPage"); 
+  const t = await getTranslations("SignUpPage"); 
   const session = await auth();
  
   if (session) {

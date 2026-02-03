@@ -4,8 +4,10 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "react-hot-toast";
 import { SessionProvider } from "@/components/providers/session-provider";
 import { IntlProvider } from "@/components/providers/intl-provider";
+import { WebVitalsReporter } from "@/components/providers/web-vitals-reporter";
 import { auth } from "@/auth";
 import { cookies } from "next/headers";
+import { getAppTimeZone } from "@/lib/config";
 
 export const metadata: Metadata = {
   title: "莎莎医院",
@@ -21,12 +23,13 @@ export default async function RootLayout({
   const cookieStore = await cookies();
   const locale = cookieStore.get("locale")?.value || "zh";
   const messages = (await import(`../messages/${locale}.json`)).default;
+  const timeZone = getAppTimeZone();
 
   return (
     <html lang={locale} suppressHydrationWarning>
       <body>
         <SessionProvider session={session}>
-          <IntlProvider messages={messages} locale={locale}>
+          <IntlProvider messages={messages} locale={locale} timeZone={timeZone}>
             <ThemeProvider
               attribute="class"
               defaultTheme="system"
@@ -34,6 +37,7 @@ export default async function RootLayout({
               disableTransitionOnChange
             >
               <Toaster position="top-right" reverseOrder={false} />
+              <WebVitalsReporter />
               {children}
             </ThemeProvider>
           </IntlProvider>

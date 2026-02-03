@@ -160,7 +160,8 @@ const baseSchema = z.object({
   patientType: z.enum(["MYSELF", "SOMEONE_ELSE"]),
 
   // “readonly” 属于 UI 关心点；schema 仅校验值。
-  email: z.string().email("请输入正确的邮箱地址。"),
+  // 允许访客流程 email 为空；登录用户仍会校验邮箱格式。
+  email: z.union([z.literal(""), z.string().email("请输入正确的邮箱地址。")]),
 
   reason: z.string().min(1, "请填写就诊原因。"),
   notes: z.string().optional(),

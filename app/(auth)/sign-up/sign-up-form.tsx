@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useActionState } from "react";
 import { useSearchParams } from "next/navigation";
- 
+ import {useTranslations} from "@/hooks/useTranslations";
 // --- UI Components ---
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -34,7 +34,7 @@ export function SignUpForm() {
     password: signUpDefaultValues.password,
     confirmPassword: signUpDefaultValues.confirmPassword,
   });
- 
+const t = useTranslations();
   return (
     <form action={formAction} className="space-y-4">
       {/* Hidden callbackUrl input */}
@@ -42,13 +42,13 @@ export function SignUpForm() {
       {/* name Field */}
       <div className="space-y-2">
         <Label htmlFor="name" className="text-xs md:text-sm font-bold">
-          Name
+          {t("name")}
         </Label>
         <Input
           id="name"
           name="name"
           type="text"
-          placeholder="Enter your name"
+         
           disabled={isPending}
           required
           value={inputs.name}
@@ -64,13 +64,13 @@ export function SignUpForm() {
       {/* Email Field */}
       <div className="space-y-2">
         <Label htmlFor="email" className="text-xs md:text-sm font-bold">
-          Email
+          {t("email")}
         </Label>
         <Input
           id="email"
           name="email"
           type="email"
-          placeholder="Enter your email"
+         
           disabled={isPending}
           required
           value={inputs.email}
@@ -87,13 +87,13 @@ export function SignUpForm() {
       {/* Password Field */}
       <div className="space-y-2">
         <Label htmlFor="password" className="text-xs md:text-sm font-bold">
-          Password
+          {t("password")}
         </Label>
         <Input
           id="password"
           name="password"
           type="password"
-          placeholder="Enter your password"
+         
           disabled={isPending}
           required
           value={inputs.password}
@@ -112,13 +112,13 @@ export function SignUpForm() {
           htmlFor="confirmPassword"
           className="text-xs md:text-sm font-bold"
         >
-          Confirm Password
+          {t("confirmPassword")}
         </Label>
         <Input
           id="confirmPassword"
           name="confirmPassword"
           type="password"
-          placeholder="Confirm your password"
+         
           disabled={isPending}
           required
           value={inputs.confirmPassword}
@@ -141,7 +141,7 @@ export function SignUpForm() {
         disabled={isPending}
         variant="default"
       >
-        {isPending ? "Signing Up..." : "Sign Up"}
+        {isPending ? t("signingUp") : t("signUp")}
       </Button>
  
       {/* General Error Message */}

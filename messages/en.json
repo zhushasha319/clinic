@@ -212,6 +212,8 @@
   },
   "User Profile": "User Profile",
   "Admin Dashboard": "Admin Dashboard",
+  "signingUp": "Signing Up...",
+  "signUp": "Sign Up",
   "SignUpPage": {
     "createAccount": "createAccount",
     "enterInformation": "enterInformation",

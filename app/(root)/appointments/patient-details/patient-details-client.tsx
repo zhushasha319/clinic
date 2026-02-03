@@ -23,11 +23,6 @@ export default function PatientDetailsClient({
   const { doctorName, doctorSpecilaity, doctorImage, date, timeSlot } =
     initialAppointmentData;
 
-  // Debug log
-  React.useEffect(() => {
-    console.log("Doctor image URL:", doctorImage);
-  }, [doctorImage]);
-
   return (
     <div className="w-full max-w-4xl mx-auto rounded-xl border border-gray-200 bg-white shadow-sm">
       {/* Header: Selected Appointment */}

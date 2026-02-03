@@ -216,5 +216,11 @@
     "createAccount": "创建账户",
     "enterInformation": "输入信息",
     "signIn": "登录"
-  }
+  },
+  "name":"姓名",
+  "email":"电子邮件",
+  "password":"密码",
+  "confirmPassword":"确认密码",
+  "signingUp": "注册中...",
+  "signUp": "注册"
 }

@@ -121,6 +121,7 @@ export interface AppointmentData {
   doctorId: string;
   doctorName: string;
   doctorSpecilaity: string;
+  guestIdentifier?: string | null;
   doctorImage?: string | null;
   date: string;
   timeSlot: string;

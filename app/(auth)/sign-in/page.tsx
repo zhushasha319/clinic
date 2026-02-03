@@ -16,12 +16,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-export default function SignInPage({
+type SearchParams = Record<string, string | string[] | undefined>;
+
+export default async function SignInPage({
   searchParams,
 }: {
-  searchParams?: Record<string, string | string[] | undefined>;
+  searchParams?: SearchParams | Promise<SearchParams>;
 }) {
-  const callbackUrlRaw = searchParams?.callbackUrl;
+  const resolvedSearchParams = await Promise.resolve(searchParams);
+  const callbackUrlRaw = resolvedSearchParams?.callbackUrl;
   const callbackUrlCandidate =
     typeof callbackUrlRaw === "string" && callbackUrlRaw.length > 0
       ? callbackUrlRaw
