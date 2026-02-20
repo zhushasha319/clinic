@@ -8,6 +8,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { updateGuestAppointmentWithUser } from "@/lib/actions/appointment/appointment.action";
 import { getGuestReservationCookieName } from "@/lib/appointment/guest-cookie";
+import { DEFAULT_APPOINTMENT_FEE } from "@/lib/payment/transaction-ledger";
 
 interface PaymentDetailsSearchParams {
   appointmentId: string;
@@ -144,7 +145,7 @@ export default async function PaymentPage({
     reasonForVisit: appointment.reasonForVisit ?? null,
     additionalNotes: appointment.additionalNotes ?? null,
     relationship: appointment.patientRelation ?? null,
-    fee: 10,
+    fee: DEFAULT_APPOINTMENT_FEE,
     patientEmail: user?.email ?? "",
     userId: session.user.id,
   };

@@ -134,7 +134,7 @@ export default function DoctorManagementClient({
           )
           .join("\n");
         window.alert(
-          `该医生存在预约，无法删除：\n${items}\n如需删除，请先处理预约。`,
+          `该医生存在待处理预约，无法删除：\n${items}\n如需删除，请先处理预约。`,
         );
       } else {
         window.alert(res.message || "删除失败。");

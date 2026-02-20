@@ -3,7 +3,7 @@
 import { hashSync } from "bcryptjs";
 import { format } from "date-fns";
 import prisma from "@/db/prisma";
-import { Role } from "@/lib/generated/prisma";
+import { AppointmentStatus, Role } from "@/lib/generated/prisma";
 import type { ServerActionResponse } from "@/types";
 import { auth } from "@/auth";
 
@@ -28,10 +28,18 @@ export type DoctorListResult = {
 const ensureAdmin = async (): Promise<ServerActionResponse | null> => {
   const session = await auth();
   if (!session?.user) {
-    return { success: false, message: "请先登录。", errorType: "AUTHENTICATION" };
+    return {
+      success: false,
+      message: "请先登录。",
+      errorType: "AUTHENTICATION",
+    };
   }
   if (session.user.role !== "ADMIN") {
-    return { success: false, message: "没有权限。", errorType: "UNAUTHORIZED" };
+    return {
+      success: false,
+      message: "没有权限。",
+      errorType: "UNAUTHORIZED",
+    };
   }
   return null;
 };
@@ -96,14 +104,22 @@ export async function createDoctor(data: {
   if (guard) return guard;
 
   if (!data.email || !data.name) {
-    return { success: false, message: "请填写邮箱和姓名。", errorType: "VALIDATION" };
+    return {
+      success: false,
+      message: "请填写邮箱和姓名。",
+      errorType: "VALIDATION",
+    };
   }
 
   const existing = await prisma.user.findUnique({
     where: { email: data.email },
   });
   if (existing) {
-    return { success: false, message: "邮箱已存在。", errorType: "CONFLICT" };
+    return {
+      success: false,
+      message: "邮箱已存在。",
+      errorType: "CONFLICT",
+    };
   }
 
   const password = hashSync("123", 10);
@@ -189,17 +205,34 @@ export async function deleteDoctor(id: string): Promise<ServerActionResponse> {
   if (guard) return guard;
 
   try {
-    const appointments = await prisma.appointment.findMany({
-      where: { doctorId: id },
+    const now = new Date();
+    const blockingAppointments = await prisma.appointment.findMany({
+      where: {
+        doctorId: id,
+        OR: [
+          {
+            status: {
+              in: [AppointmentStatus.BOOKING_CONFIRMED, AppointmentStatus.CASH],
+            },
+          },
+          {
+            status: AppointmentStatus.PAYMENT_PENDING,
+            OR: [
+              { reservationExpiresAt: null },
+              { reservationExpiresAt: { gt: now } },
+            ],
+          },
+        ],
+      },
       orderBy: { appointmentStartUTC: "desc" },
       take: 10,
     });
 
-    if (appointments.length > 0) {
+    if (blockingAppointments.length > 0) {
       return {
         success: false,
-        message: "该医生存在预约，无法删除。",
-        data: appointments.map((appointment) => ({
+        message: "该医生存在待处理预约，无法删除。",
+        data: blockingAppointments.map((appointment) => ({
           id: appointment.appointmentId,
           patientName: appointment.patientName,
           slotDate: format(appointment.appointmentStartUTC, "yyyy年M月d日"),
@@ -209,13 +242,53 @@ export async function deleteDoctor(id: string): Promise<ServerActionResponse> {
       };
     }
 
-    await prisma.user.delete({ where: { id } });
+    await prisma.$transaction(async (tx) => {
+      const appointmentIds = (
+        await tx.appointment.findMany({
+          where: { doctorId: id },
+          select: { appointmentId: true },
+        })
+      ).map((item) => item.appointmentId);
+
+      if (appointmentIds.length > 0) {
+        await tx.transaction.deleteMany({
+          where: {
+            OR: [{ doctorId: id }, { appointmentId: { in: appointmentIds } }],
+          },
+        });
+
+        await tx.doctorTestimonial.deleteMany({
+          where: {
+            OR: [{ doctorId: id }, { appointmentId: { in: appointmentIds } }],
+          },
+        });
+
+        await tx.appointment.deleteMany({
+          where: { doctorId: id },
+        });
+      }
+
+      await tx.doctorLeave.deleteMany({
+        where: { doctorId: id },
+      });
+
+      await tx.doctorProfile.deleteMany({
+        where: { userId: id },
+      });
+
+      await tx.account.deleteMany({
+        where: { userId: id },
+      });
+
+      await tx.user.delete({ where: { id } });
+    });
+
     return { success: true, message: "医生已删除。" };
   } catch (error) {
     return {
       success: false,
-      message: "删除失败，可能存在关联预约。",
-      error: error instanceof Error ? error.message : "未知错误",
+      message: "删除失败，可能存在关联数据。",
+      error: error instanceof Error ? error.message : "Unknown error",
       errorType: "SERVER_ERROR",
     };
   }

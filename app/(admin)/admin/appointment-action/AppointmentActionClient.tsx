@@ -15,6 +15,7 @@ import {
   searchAppointmentsByPatientName,
   type AppointmentRow,
 } from "@/lib/actions/admin/appointment.actions";
+import { useTranslations } from "@/hooks/useTranslations";
 
 const statusStyleMap: Record<string, string> = {
   PAYMENT_PENDING: "bg-amber-100 text-amber-700 border-amber-200",
@@ -33,14 +34,12 @@ const actionStyles = {
 };
 
 export default function AppointmentActionClient() {
+  const t = useTranslations();
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const urlQuery = searchParams?.get("q") ?? "";
-  const urlPage = Math.max(
-    1,
-    Number(searchParams?.get("page") ?? "1") || 1,
-  );
+  const urlPage = Math.max(1, Number(searchParams?.get("page") ?? "1") || 1);
   const [query, setQuery] = useState("");
   const debouncedQuery = useDebounce(query, 400);
   const [rows, setRows] = useState<AppointmentRow[]>([]);
@@ -109,10 +108,12 @@ export default function AppointmentActionClient() {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-        <h2 className="text-lg font-semibold text-foreground">管理预约</h2>
+        <h2 className="text-lg font-semibold text-foreground">
+          {t("admin.appointments.manageAppointments")}
+        </h2>
         <div className="w-full md:w-[320px]">
           <Input
-            placeholder="搜索病人姓名"
+            placeholder={t("admin.appointments.searchPatient")}
             value={query}
             onChange={(event) => setQuery(event.target.value)}
           />
@@ -124,15 +125,33 @@ export default function AppointmentActionClient() {
           <table className="w-full min-w-225 text-left text-sm">
             <thead className="bg-background-1 text-xs uppercase text-muted-foreground">
               <tr>
-                <th className="px-4 py-3 font-medium">ID</th>
-                <th className="px-4 py-3 font-medium">医生</th>
-                <th className="px-4 py-3 font-medium">病人</th>
-                <th className="px-4 py-3 font-medium">电话</th>
-                <th className="px-4 py-3 font-medium">预约人</th>
-                <th className="px-4 py-3 font-medium">日期</th>
-                <th className="px-4 py-3 font-medium">时间</th>
-                <th className="px-4 py-3 font-medium">状态</th>
-                <th className="px-4 py-3 font-medium">操作</th>
+                <th className="px-4 py-3 font-medium">
+                  {t("admin.appointments.id")}
+                </th>
+                <th className="px-4 py-3 font-medium">
+                  {t("admin.appointments.doctor")}
+                </th>
+                <th className="px-4 py-3 font-medium">
+                  {t("admin.appointments.patient")}
+                </th>
+                <th className="px-4 py-3 font-medium">
+                  {t("admin.appointments.phone")}
+                </th>
+                <th className="px-4 py-3 font-medium">
+                  {t("admin.appointments.bookedBy")}
+                </th>
+                <th className="px-4 py-3 font-medium">
+                  {t("admin.appointments.date")}
+                </th>
+                <th className="px-4 py-3 font-medium">
+                  {t("admin.appointments.time")}
+                </th>
+                <th className="px-4 py-3 font-medium">
+                  {t("admin.appointments.status")}
+                </th>
+                <th className="px-4 py-3 font-medium">
+                  {t("admin.appointments.actions")}
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -142,7 +161,9 @@ export default function AppointmentActionClient() {
                     colSpan={9}
                     className="px-4 py-6 text-center text-sm text-muted-foreground"
                   >
-                    {isPending ? "搜索中..." : "暂无匹配预约"}
+                    {isPending
+                      ? t("admin.appointments.searching")
+                      : t("admin.appointments.noResults")}
                   </td>
                 </tr>
               ) : (
@@ -173,25 +194,29 @@ export default function AppointmentActionClient() {
                             disabled={isPending}
                             onClick={() => runAction(markCashAsPaid, row.id)}
                           >
-                            标记已支付
+                            {t("admin.appointments.markPaid")}
                           </Button>
                           <Button
                             variant="outline"
                             size="sm"
                             className={actionStyles.cancel}
                             disabled={isPending}
-                            onClick={() => runAction(markAppointmentCancelled, row.id)}
+                            onClick={() =>
+                              runAction(markAppointmentCancelled, row.id)
+                            }
                           >
-                            取消
+                            {t("admin.appointments.cancel")}
                           </Button>
                           <Button
                             variant="outline"
                             size="sm"
                             className={actionStyles.noshow}
                             disabled={isPending}
-                            onClick={() => runAction(markAppointmentNoShow, row.id)}
+                            onClick={() =>
+                              runAction(markAppointmentNoShow, row.id)
+                            }
                           >
-                            未就诊
+                            {t("admin.appointments.noShow")}
                           </Button>
                         </div>
                       ) : row.status === "BOOKING_CONFIRMED" ? (
@@ -201,27 +226,33 @@ export default function AppointmentActionClient() {
                             size="sm"
                             className={actionStyles.cancel}
                             disabled={isPending}
-                            onClick={() => runAction(markAppointmentCancelled, row.id)}
+                            onClick={() =>
+                              runAction(markAppointmentCancelled, row.id)
+                            }
                           >
-                            取消
+                            {t("admin.appointments.cancel")}
                           </Button>
                           <Button
                             variant="outline"
                             size="sm"
                             className={actionStyles.noshow}
                             disabled={isPending}
-                            onClick={() => runAction(markAppointmentNoShow, row.id)}
+                            onClick={() =>
+                              runAction(markAppointmentNoShow, row.id)
+                            }
                           >
-                            未就诊
+                            {t("admin.appointments.noShow")}
                           </Button>
                           <Button
                             variant="outline"
                             size="sm"
                             className={actionStyles.complete}
                             disabled={isPending}
-                            onClick={() => runAction(markAppointmentCompleted, row.id)}
+                            onClick={() =>
+                              runAction(markAppointmentCompleted, row.id)
+                            }
                           >
-                            完成
+                            {t("admin.appointments.complete")}
                           </Button>
                         </div>
                       ) : (

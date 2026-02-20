@@ -1,5 +1,44 @@
- 
-{ "appName": "Shasha Medical Center",
+{
+  "appName": "Shasha Medical Center",
+  "admin": {
+    "dashboard": {
+      "totalRevenue": "Total Revenue",
+      "appointmentCount": "Total Appointments",
+      "revenueTrend": "Revenue Trend",
+      "departmentRevenue": "Department Revenue Distribution",
+      "recentTransactions": "Recent Transactions",
+      "transactionDate": "Transaction Date",
+      "appointmentDate": "Appointment Date",
+      "doctor": "Doctor",
+      "department": "Department",
+      "patient": "Patient",
+      "amount": "Amount",
+      "status": "Status",
+      "noTransactions": "No transactions in the selected time range.",
+      "noData": "No data available",
+      "revenue": "Revenue",
+      "date": "Date"
+    },
+    "appointments": {
+      "manageAppointments": "Manage Appointments",
+      "searchPatient": "Search patient name",
+      "id": "ID",
+      "doctor": "Doctor",
+      "patient": "Patient",
+      "phone": "Phone",
+      "bookedBy": "Booked By",
+      "date": "Date",
+      "time": "Time",
+      "status": "Status",
+      "actions": "Actions",
+      "searching": "Searching...",
+      "noResults": "No matching appointments",
+      "markPaid": "Mark Paid",
+      "cancel": "Cancel",
+      "noShow": "No Show",
+      "complete": "Complete"
+    }
+  },
   "userProfile": {
     "personalInformation": "Personal Information",
     "backToAppointment": "Back to Appointment",
@@ -10,7 +49,7 @@
     "dateOfBirth": "Date of Birth"
   },
   "common": {
-     "appName": "Shasha Medical Center",
+    "appName": "Shasha Medical Center",
     "home": "Home",
     "bookAppointment": "Book Appointment",
     "signIn": "Sign In",
@@ -29,13 +68,13 @@
     "saving": "Saving...",
     "submitting": "Submitting...",
     "footer": {
-    "slogan": "Excellence in Healthcare, Committed to Your Well-being",
-    "contactUs": "Contact Us",
-    "phone": "(555) 123-4567",
-    "email": "info@shasha.med",
-    "address": "123 Medical Center Dr, Shasha, CA 92346",
-    "copyright": "All rights reserved."
-  },
+      "slogan": "Excellence in Healthcare, Committed to Your Well-being",
+      "contactUs": "Contact Us",
+      "phone": "(555) 123-4567",
+      "email": "info@shasha.med",
+      "address": "123 Medical Center Dr, Shasha, CA 92346",
+      "copyright": "All rights reserved."
+    },
     "booking": {
       "selectSlot": "Select Slot",
       "patientDetails": "Patient Details",
@@ -90,7 +129,7 @@
       "about": "About"
     }
   },
-  
+
   "appointments": {
     "title": "My Appointments",
     "noAppointments": "No appointments found.",

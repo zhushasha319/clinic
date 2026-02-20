@@ -10,6 +10,10 @@ import { toZonedTime } from "date-fns-tz";
 import { getAppTimeZone } from "@/lib/config";
 import { getTranslations } from "next-intl/server";
 import { AppointmentStatus } from "@/lib/generated/prisma";
+import {
+  DEFAULT_APPOINTMENT_FEE,
+  upsertCompletedTransaction,
+} from "@/lib/payment/transaction-ledger";
 
 interface PageProps {
   searchParams: Promise<{
@@ -70,7 +74,7 @@ export default async function PaymentSuccessPage({ searchParams }: PageProps) {
 
   // 测试模式: 模拟支付成功,更新数据库
   if (params.test === "true" && appointment.paymentStatus !== "PAID") {
-    await db.appointment.update({
+    const updatedAppointment = await db.appointment.update({
       where: { appointmentId: appointmentId },
       data: {
         paymentStatus: "PAID",
@@ -79,6 +83,16 @@ export default async function PaymentSuccessPage({ searchParams }: PageProps) {
         status: AppointmentStatus.BOOKING_CONFIRMED,
         reservationExpiresAt: null,
       },
+    });
+
+    await upsertCompletedTransaction({
+      appointmentId: updatedAppointment.appointmentId,
+      doctorId: updatedAppointment.doctorId,
+      paymentGateway: "ALIPAY",
+      gatewayTransactionId: `test-alipay-${updatedAppointment.appointmentId}`,
+      amount: DEFAULT_APPOINTMENT_FEE,
+      notes: "Simulated payment success in test mode.",
+      paymentDetails: { source: "payment-success-test-mode" },
     });
 
     // HTTP 模式不支持事务；单独查询一次获取完整数据。

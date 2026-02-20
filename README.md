@@ -81,7 +81,6 @@ npm run dev
 种子数据会创建示例账号（仅用于本地测试）：
 
 - 管理员：`admin@test.com` / `123`
-- 医生：`doctor@test.com` / `123`
 - 患者：`patient@test.com` / `123`
 
 ## 支付接入（Ping++）

@@ -3,6 +3,10 @@
 import prisma from "@/db/prisma";
 import { AppointmentStatus } from "@/lib/generated/prisma";
 import { ServerActionResponse } from "@/types";
+import {
+  DEFAULT_APPOINTMENT_FEE,
+  upsertCompletedTransaction,
+} from "@/lib/payment/transaction-ledger";
 
 // 初始化 pingpp
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -85,6 +89,16 @@ export async function updateAppointmentToPaid({
       status: AppointmentStatus.BOOKING_CONFIRMED, // 更新状态为已确认
       reservationExpiresAt: null, // 清除过期时间
     },
+  });
+
+  await upsertCompletedTransaction({
+    appointmentId: updatedAppointment.appointmentId,
+    doctorId: updatedAppointment.doctorId,
+    paymentGateway: "ALIPAY",
+    gatewayTransactionId: `alipay-${id || updatedAppointment.appointmentId}`,
+    amount: pricePaid,
+    notes: "Appointment payment captured.",
+    paymentDetails: paymentResult,
   });
 
   return {
@@ -221,7 +235,7 @@ export async function handleAlipayWebhook(
       }
 
       // 更新预约支付状态
-      await prisma.appointment.update({
+      const updatedAppointment = await prisma.appointment.update({
         where: { appointmentId },
         data: {
           paymentStatus: "PAID",
@@ -231,6 +245,24 @@ export async function handleAlipayWebhook(
           status: AppointmentStatus.BOOKING_CONFIRMED,
           reservationExpiresAt: null,
         },
+      });
+
+      const amountInYuan =
+        typeof charge.amount === "number" ? charge.amount / 100 : DEFAULT_APPOINTMENT_FEE;
+      const gatewayTransactionId =
+        charge.transaction_no ||
+        charge.id ||
+        updatedAppointment.paymentChargeId ||
+        `alipay-${appointmentId}`;
+
+      await upsertCompletedTransaction({
+        appointmentId,
+        doctorId: updatedAppointment.doctorId,
+        paymentGateway: "ALIPAY",
+        gatewayTransactionId: String(gatewayTransactionId),
+        amount: amountInYuan,
+        notes: "Alipay webhook charge.succeeded",
+        paymentDetails: charge,
       });
 
       return {

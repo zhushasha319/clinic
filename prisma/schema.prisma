@@ -246,7 +246,7 @@ model Transaction {
   id                   String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   appointmentId        String            @db.Uuid
   doctorId             String            @db.Uuid
-  paymentGateway       String //PAYPAL
+  paymentGateway       String //ALIPAY
   gatewayTransactionId String            @unique //PayPal - success : capture id , failure : order id
   amount               Float
   currency             String

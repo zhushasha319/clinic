@@ -1,5 +1,44 @@
-  
-{"appName": "莎莎医疗中心",
+{
+  "appName": "莎莎医疗中心",
+  "admin": {
+    "dashboard": {
+      "totalRevenue": "总收入",
+      "appointmentCount": "预约总数",
+      "revenueTrend": "收入趋势",
+      "departmentRevenue": "科室收入分布",
+      "recentTransactions": "最近交易",
+      "transactionDate": "交易日期",
+      "appointmentDate": "预约日期",
+      "doctor": "医生",
+      "department": "科室",
+      "patient": "患者",
+      "amount": "金额",
+      "status": "状态",
+      "noTransactions": "所选时间范围内暂无交易。",
+      "noData": "暂无数据",
+      "revenue": "收入",
+      "date": "日期"
+    },
+    "appointments": {
+      "manageAppointments": "管理预约",
+      "searchPatient": "搜索病人姓名",
+      "id": "ID",
+      "doctor": "医生",
+      "patient": "病人",
+      "phone": "电话",
+      "bookedBy": "预约人",
+      "date": "日期",
+      "time": "时间",
+      "status": "状态",
+      "actions": "操作",
+      "searching": "搜索中...",
+      "noResults": "暂无匹配预约",
+      "markPaid": "标记已支付",
+      "cancel": "取消",
+      "noShow": "未到场",
+      "complete": "完成"
+    }
+  },
   "userProfile": {
     "personalInformation": "个人信息",
     "backToAppointment": "返回预约页面",
@@ -231,10 +270,10 @@
     "enterInformation": "输入信息",
     "signIn": "登录"
   },
-  "name":"姓名",
-  "email":"电子邮件",
-  "password":"密码",
-  "confirmPassword":"确认密码",
+  "name": "姓名",
+  "email": "电子邮件",
+  "password": "密码",
+  "confirmPassword": "确认密码",
   "signingUp": "注册中...",
   "signUp": "注册",
   "Sign In": "登录",
@@ -245,5 +284,5 @@
   "Enter your password": "输入您的密码",
   "Sign In with credentials": "使用凭证登录",
   "Don't have an account?": "没有账户？",
-   "Sign Up":"注册"
+  "Sign Up": "注册"
 }

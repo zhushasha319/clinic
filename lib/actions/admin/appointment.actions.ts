@@ -2,13 +2,14 @@
 
 import { format } from "date-fns";
 import prisma from "@/db/prisma";
-import {
-  AppointmentStatus,
-  Prisma,
-  TransactionStatus,
-} from "@/lib/generated/prisma";
+import { AppointmentStatus, Prisma } from "@/lib/generated/prisma";
 import type { ServerActionResponse } from "@/types";
 import { auth } from "@/auth";
+import {
+  cancelLatestCompletedTransaction,
+  DEFAULT_APPOINTMENT_FEE,
+  upsertCompletedTransaction,
+} from "@/lib/payment/transaction-ledger";
 
 export type AppointmentRow = {
   id: string;
@@ -28,7 +29,7 @@ const statusLabelMap: Record<AppointmentStatus, string> = {
   COMPLETED: "已完成",
   CANCELLED: "已取消",
   NO_SHOW: "未到诊",
-  CASH: "柜台支付",
+  CASH: "柜台待支付",
 };
 
 const ensureAdmin = async (): Promise<ServerActionResponse | null> => {
@@ -40,9 +41,15 @@ const ensureAdmin = async (): Promise<ServerActionResponse | null> => {
       errorType: "AUTHENTICATION",
     };
   }
+
   if (session.user.role !== "ADMIN") {
-    return { success: false, message: "没有权限。", errorType: "UNAUTHORIZED" };
+    return {
+      success: false,
+      message: "没有权限执行此操作。",
+      errorType: "UNAUTHORIZED",
+    };
   }
+
   return null;
 };
 
@@ -105,7 +112,7 @@ export async function searchAppointmentsByPatientName({
     patientName: appointment.patientName,
     phoneNumber: appointment.phoneNumber ?? "-",
     bookedBy: appointment.user?.name ?? appointment.patientName,
-    slotDate: format(appointment.appointmentStartUTC, "yyyy年M月d日"),
+    slotDate: format(appointment.appointmentStartUTC, "yyyy年MM月dd日"),
     slotTime: format(appointment.appointmentStartUTC, "HH:mm"),
     status: appointment.status,
     statusLabel: statusLabelMap[appointment.status],
@@ -130,13 +137,17 @@ export async function markCashAsPaid(
   });
 
   if (!appointment) {
-    return { success: false, message: "未找到预约。", errorType: "NOT_FOUND" };
+    return {
+      success: false,
+      message: "未找到预约。",
+      errorType: "NOT_FOUND",
+    };
   }
 
   if (appointment.status !== AppointmentStatus.CASH) {
     return {
       success: false,
-      message: "当前预约无法标记为已支付。",
+      message: "当前预约状态无法标记为已支付。",
       errorType: "STATUS_CONFLICT",
     };
   }
@@ -151,7 +162,19 @@ export async function markCashAsPaid(
     },
   });
 
-  return { success: true, message: "已标记为待就诊。" };
+  await upsertCompletedTransaction({
+    appointmentId: appointment.appointmentId,
+    doctorId: appointment.doctorId,
+    paymentGateway: "CASH",
+    gatewayTransactionId: `cash-${appointment.appointmentId}`,
+    amount: DEFAULT_APPOINTMENT_FEE,
+    notes: "Cash payment confirmed by admin.",
+  });
+
+  return {
+    success: true,
+    message: "已标记为已支付，预约状态变更为待就诊。",
+  };
 }
 
 export async function markAppointmentCancelled(
@@ -165,32 +188,40 @@ export async function markAppointmentCancelled(
   });
 
   if (!appointment) {
-    return { success: false, message: "未找到预约。", errorType: "NOT_FOUND" };
+    return {
+      success: false,
+      message: "未找到预约。",
+      errorType: "NOT_FOUND",
+    };
   }
+
+  const wasPaid = appointment.paymentStatus === "PAID";
 
   await prisma.appointment.update({
     where: { appointmentId },
     data: {
       status: AppointmentStatus.CANCELLED,
+      ...(wasPaid ? { paymentStatus: "REFUNDED" } : {}),
     },
   });
 
-  const latestTransaction = await prisma.transaction.findFirst({
-    where: { appointmentId },
-    orderBy: { transactionDate: "desc" },
-  });
-
-  if (latestTransaction) {
-    await prisma.transaction.update({
-      where: { id: latestTransaction.id },
-      data: {
-        status: TransactionStatus.CANCELLED,
-        notes: "管理员取消预约，需退回款项。",
-      },
-    });
+  if (!wasPaid) {
+    return { success: true, message: "预约已取消。" };
   }
 
-  return { success: true, message: "预约已取消，退款处理中。" };
+  const cancelledTransaction = await cancelLatestCompletedTransaction(
+    appointmentId,
+    "Appointment cancelled by admin. Refund required.",
+  );
+
+  if (!cancelledTransaction) {
+    return {
+      success: true,
+      message: "预约已取消，但未找到可冲正的交易记录，请人工核对退款。",
+    };
+  }
+
+  return { success: true, message: "预约已取消，已冲正对应收入。" };
 }
 
 export async function markAppointmentNoShow(
