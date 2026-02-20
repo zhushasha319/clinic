@@ -4,39 +4,22 @@ import { auth } from "@/auth";
 import prisma from "@/db/prisma";
 import { toZonedTime } from "date-fns-tz";
 import { format } from "date-fns";
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { updateGuestAppointmentWithUser } from "@/lib/actions/appointment/appointment.action";
+import { getGuestReservationCookieName } from "@/lib/appointment/guest-cookie";
 
 interface PaymentDetailsSearchParams {
   appointmentId: string;
-  guestIdentifier?: string;
 }
 
-const buildPaymentUrl = ({
-  appointmentId,
-  guestIdentifier,
-}: {
-  appointmentId: string;
-  guestIdentifier?: string;
-}) => {
+const buildPaymentUrl = (appointmentId: string) => {
   const params = new URLSearchParams({ appointmentId });
-  if (guestIdentifier) {
-    params.set("guestIdentifier", guestIdentifier);
-  }
   return `/appointments/payment?${params.toString()}`;
 };
 
-const buildPatientDetailsUrl = ({
-  appointmentId,
-  guestIdentifier,
-}: {
-  appointmentId: string;
-  guestIdentifier?: string;
-}) => {
+const buildPatientDetailsUrl = (appointmentId: string) => {
   const params = new URLSearchParams({ appointmentId });
-  if (guestIdentifier) {
-    params.set("guestIdentifier", guestIdentifier);
-  }
   return `/appointments/patient-details?${params.toString()}`;
 };
 
@@ -45,7 +28,7 @@ export default async function PaymentPage({
 }: {
   searchParams: Promise<PaymentDetailsSearchParams>;
 }) {
-  const { appointmentId, guestIdentifier } = await searchParams;
+  const { appointmentId } = await searchParams;
 
   if (!appointmentId) {
     redirect("/");
@@ -53,9 +36,13 @@ export default async function PaymentPage({
 
   const session = await auth();
   if (!session?.user?.id) {
-    const callbackUrl = buildPaymentUrl({ appointmentId, guestIdentifier });
+    const callbackUrl = buildPaymentUrl(appointmentId);
     redirect(`/sign-in?callbackUrl=${encodeURIComponent(callbackUrl)}`);
   }
+
+  const cookieStore = await cookies();
+  const guestIdentifierFromCookie =
+    cookieStore.get(getGuestReservationCookieName(appointmentId))?.value ?? null;
 
   const getAppointment = async () => {
     return prisma.appointment.findUnique({
@@ -71,21 +58,19 @@ export default async function PaymentPage({
   };
 
   let appointment = await getAppointment();
-
   if (!appointment) {
     redirect("/");
   }
 
-  // 访客在支付前登录：根据 guestIdentifier 绑定到当前账号。
   if (
     appointment.userId === null &&
-    typeof guestIdentifier === "string" &&
-    guestIdentifier.length > 0 &&
-    appointment.guestIdentifier === guestIdentifier
+    typeof guestIdentifierFromCookie === "string" &&
+    guestIdentifierFromCookie.length > 0 &&
+    appointment.guestIdentifier === guestIdentifierFromCookie
   ) {
-    const linkRes = await updateGuestAppointmentWithUser(guestIdentifier);
+    const linkRes = await updateGuestAppointmentWithUser(guestIdentifierFromCookie);
     if (!linkRes.success) {
-      redirect(buildPatientDetailsUrl({ appointmentId, guestIdentifier }));
+      redirect(buildPatientDetailsUrl(appointmentId));
     }
 
     appointment = await getAppointment();
@@ -94,9 +79,8 @@ export default async function PaymentPage({
     }
   }
 
-  // 只有预约归属人可以进入支付页。
   if (appointment.userId !== session.user.id) {
-    redirect(buildPatientDetailsUrl({ appointmentId, guestIdentifier }));
+    redirect(buildPatientDetailsUrl(appointmentId));
   }
 
   const user = await prisma.user.findUnique({
@@ -108,6 +92,37 @@ export default async function PaymentPage({
       dateofbirth: true,
     },
   });
+  if (!user) {
+    redirect("/sign-in");
+  }
+
+  // 绑定后若为“本人就诊”，以当前账号资料为准，避免访客填写与账号不一致。
+  if (appointment.patientType === "MYSELF") {
+    const currentDob = appointment.patientdateofbirth?.getTime() ?? null;
+    const profileDob = user.dateofbirth?.getTime() ?? null;
+    const shouldSyncMyselfInfo =
+      appointment.patientName !== user.name ||
+      appointment.phoneNumber !== (user.phoneNumber ?? null) ||
+      currentDob !== profileDob;
+
+    if (shouldSyncMyselfInfo) {
+      await prisma.appointment.update({
+        where: { appointmentId: appointment.appointmentId },
+        data: {
+          patientName: user.name,
+          phoneNumber: user.phoneNumber ?? null,
+          patientdateofbirth: user.dateofbirth ?? null,
+        },
+      });
+
+      appointment = {
+        ...appointment,
+        patientName: user.name,
+        phoneNumber: user.phoneNumber ?? null,
+        patientdateofbirth: user.dateofbirth ?? null,
+      };
+    }
+  }
 
   const tz = getAppTimeZone();
   const startZoned = toZonedTime(appointment.appointmentStartUTC, tz);

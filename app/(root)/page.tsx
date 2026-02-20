@@ -6,6 +6,7 @@ import { getTranslations } from "next-intl/server";
 
 export default async function Home() {
   const t = await getTranslations("common");
+  const showOurDoctorsOnHome = false;
 
   return (
     <div>
@@ -16,10 +17,10 @@ export default async function Home() {
           <p className="mt-4 mb-12 body-regular text-text-body-subtle max-w-3xl mx-auto text-center">
             {t("welcome")}
           </p>
-          <DepartmentsSection></DepartmentsSection>
+          <DepartmentsSection id="our-departments"></DepartmentsSection>
         </div>
 
-        <OurDoctors></OurDoctors>
+        {showOurDoctorsOnHome ? <OurDoctors></OurDoctors> : null}
         <PatientTestimonials></PatientTestimonials>
       </div>
     </div>

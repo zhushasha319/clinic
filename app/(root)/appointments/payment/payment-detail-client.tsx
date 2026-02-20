@@ -94,6 +94,7 @@ export default function PaymentDetailsClient({
   // 解构数据
   const {
     appointmentId,
+    doctorId,
     doctorName,
     doctorSpecilaity,
     date,
@@ -253,7 +254,9 @@ export default function PaymentDetailsClient({
       <div className="mb-6">
         <button
           type="button"
-          onClick={() => router.replace("/doctors")}
+          onClick={() =>
+            router.replace(doctorId ? `/doctors/${doctorId}` : "/doctors")
+          }
           className="text-sm text-gray-500 hover:text-gray-700"
         >
           ← 返回医生页面

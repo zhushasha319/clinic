@@ -1,4 +1,5 @@
 // app/(auth)/sign-in/page.tsx
+import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import Image from "next/image";
 import { signInWithCredentialsFormAction } from "@/lib/actions/auth/sign-in-form.action";
@@ -21,9 +22,10 @@ type SearchParams = Record<string, string | string[] | undefined>;
 export default async function SignInPage({
   searchParams,
 }: {
-  searchParams?: SearchParams | Promise<SearchParams>;
+  searchParams: Promise<SearchParams>;
 }) {
-  const resolvedSearchParams = await Promise.resolve(searchParams);
+  const t = await getTranslations();
+  const resolvedSearchParams = await searchParams;
   const callbackUrlRaw = resolvedSearchParams?.callbackUrl;
   const callbackUrlCandidate =
     typeof callbackUrlRaw === "string" && callbackUrlRaw.length > 0
@@ -48,8 +50,8 @@ export default async function SignInPage({
                 alt={`${App_NAME}logo`}
               />
             </div>
-            <CardTitle className="text-2xl">Sign In</CardTitle>
-            <CardDescription>sign in to your account</CardDescription>
+            <CardTitle className="text-2xl">{t("Sign In")}</CardTitle>
+            <CardDescription>{t("sign in to your account")}</CardDescription>
           </CardHeader>
 
           <CardContent>
@@ -61,12 +63,12 @@ export default async function SignInPage({
               <input type="hidden" name="callbackUrl" value={callbackUrl} />
 
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email">{t("Email")}</Label>
                 <Input
                   id="email"
                   name="email"
                   type="email"
-                  placeholder="Enter your email"
+                  placeholder={t("Enter your email")}
                   defaultValue={signInDefaultValues.email}
                   autoComplete="email"
                   required
@@ -74,12 +76,12 @@ export default async function SignInPage({
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password">{t("Password")}</Label>
                 <Input
                   id="password"
                   name="password"
                   type="password"
-                  placeholder="Enter your password"
+                  placeholder={t("Enter your password")}
                   defaultValue={signInDefaultValues.password}
                   autoComplete="current-password"
                   required
@@ -90,18 +92,22 @@ export default async function SignInPage({
                 type="submit"
                 className="w-full bg-blue-600 hover:bg-blue-700"
               >
-                Sign In with credentials
+                {t("Sign In with credentials")}
               </Button>
             </form>
           </CardContent>
 
           <CardFooter className="justify-center text-sm text-muted-foreground">
-            <span className="mr-2">Don&apos;t have an account?</span>
+            <span className="mr-2">{t("Don't have an account?")}</span>
             <Link
-              href="/sign-up"
+              href={
+                callbackUrl
+                  ? `/sign-up?callbackUrl=${encodeURIComponent(callbackUrl)}`
+                  : "/sign-up"
+              }
               className="font-medium text-blue-600 hover:underline"
             >
-              Sign Up
+              {t("Sign Up")}
             </Link>
           </CardFooter>
         </Card>

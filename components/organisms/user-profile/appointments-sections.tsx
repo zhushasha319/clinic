@@ -41,7 +41,7 @@ export default function AppointmentsSection({
             variant="default"
             className="text-text-caption-2 mt-4"
           >
-            <Link href="/#our-doctors">{t("bookNow")}</Link>
+            <Link href="/#our-departments">{t("bookNow")}</Link>
           </Button>
         </div>
       ) : (

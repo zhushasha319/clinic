@@ -118,7 +118,6 @@ const t = useTranslations();
           id="confirmPassword"
           name="confirmPassword"
           type="password"
-         
           disabled={isPending}
           required
           value={inputs.confirmPassword}

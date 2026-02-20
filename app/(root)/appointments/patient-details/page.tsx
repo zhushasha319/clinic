@@ -1,4 +1,3 @@
-// 逻辑：加载预约数据、鉴权校验、必要时绑定访客预约，并组装传给客户端组件的数据
 import PatientDetailsClient from "./patient-details-client";
 import type {
   AppointmentData,
@@ -10,10 +9,12 @@ import {
   updateGuestAppointmentWithUser,
 } from "@/lib/actions/appointment/appointment.action";
 import { getAppTimeZone } from "@/lib/config";
+import { getGuestReservationCookieName } from "@/lib/appointment/guest-cookie";
 import { auth } from "@/auth";
 import prisma from "@/db/prisma";
 import { toZonedTime } from "date-fns-tz";
 import { format } from "date-fns";
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 interface PatientDetailsSearchParams {
@@ -48,7 +49,9 @@ function ErrorUI({ title, message }: { title: string; message?: string }) {
   return (
     <div className="mx-auto max-w-xl p-6">
       <h1 className="text-xl font-semibold">{title}</h1>
-      {message ? <p className="mt-2 text-sm text-muted-foreground">{message}</p> : null}
+      {message ? (
+        <p className="mt-2 text-sm text-muted-foreground">{message}</p>
+      ) : null}
     </div>
   );
 }
@@ -66,12 +69,20 @@ export default async function PatientDetails({
 
   const session = await auth();
   const sessionUserId = getSessionUserId(session);
+  const cookieStore = await cookies();
+  const guestIdentifierFromCookie =
+    cookieStore.get(getGuestReservationCookieName(appointmentId))?.value ?? null;
+  const guestIdentifierFromQuery =
+    typeof guestIdentifier === "string" && guestIdentifier.length > 0
+      ? guestIdentifier
+      : null;
 
-  // 1) 获取预约预留数据（服务端会校验状态与过期）
   const apptRes = await getAppointmentData({ appointmentId });
   if (!apptRes.success || !apptRes.data) {
     if (apptRes.errorType === "STATUS_CONFLICT") {
-      return <ErrorUI title="预约状态冲突" message={apptRes.message ?? apptRes.error} />;
+      return (
+        <ErrorUI title="预约状态冲突" message={apptRes.message ?? apptRes.error} />
+      );
     }
     if (apptRes.errorType === "RESERVATION_EXPIRED") {
       return (
@@ -85,56 +96,56 @@ export default async function PatientDetails({
   }
 
   let appointment: AppoitmentWithRelations = apptRes.data;
-
   const appointmentUserId = appointment.userId;
   const appointmentGuestIdentifier = appointment.guestIdentifier;
+
   const isNotExpired =
     appointment.reservationExpiresAt !== null &&
     appointment.reservationExpiresAt > new Date();
-
-  // getAppointmentData 已保证 PAYMENT_PENDING 且未过期，这里多一层保护
   if (!isNotExpired) {
     return <ErrorUI title="预约已过期" message="请重新选择一个可用时段。" />;
   }
 
   const hasGuestIdentifierMatch =
-    typeof guestIdentifier === "string" &&
-    guestIdentifier.length > 0 &&
     appointmentGuestIdentifier !== null &&
-    guestIdentifier === appointmentGuestIdentifier;
+    ((typeof guestIdentifierFromCookie === "string" &&
+      guestIdentifierFromCookie.length > 0 &&
+      appointmentGuestIdentifier === guestIdentifierFromCookie) ||
+      (typeof guestIdentifierFromQuery === "string" &&
+        guestIdentifierFromQuery.length > 0 &&
+        appointmentGuestIdentifier === guestIdentifierFromQuery));
 
   const isOwnerUser =
     sessionUserId !== null &&
     appointmentUserId !== null &&
     appointmentUserId === sessionUserId;
 
-  // guest 已选槽位 -> 登录后认领
   const shouldLinkGuestToUser =
     sessionUserId !== null &&
     appointmentUserId === null &&
     hasGuestIdentifierMatch;
 
-  // 访客可免登录继续填写信息（必须匹配 guestIdentifier）
-  const canGuestContinueWithoutLogin =
-    sessionUserId === null &&
-    appointmentUserId === null &&
-    hasGuestIdentifierMatch;
 
-  // 已绑定用户的预约：未登录则先去登录
-  if (sessionUserId === null && appointmentUserId !== null) {
+  if (sessionUserId === null) {
     const callbackUrl = buildPatientDetailsCallbackUrl({
       appointmentId,
-      guestIdentifier,
+      guestIdentifier:
+        typeof guestIdentifierFromCookie === "string" &&
+        guestIdentifierFromCookie.length > 0
+          ? guestIdentifierFromCookie
+          : undefined,
     });
     redirect(`/sign-in?callbackUrl=${encodeURIComponent(callbackUrl)}`);
   }
 
-  // 仅允许：本人已绑定，或可从访客预约绑定到本人，或访客凭 guestIdentifier 继续
-  if (!isOwnerUser && !shouldLinkGuestToUser && !canGuestContinueWithoutLogin) {
-    return <ErrorUI title="无权访问" message="你无权访问该预约，请重新选择时段。" />;
+  if (!isOwnerUser && !shouldLinkGuestToUser) {
+    const message =
+      appointmentUserId === null
+        ? "访客预约校验失败（可能是预约凭证已失效或不匹配）。请返回医生页面重新选择时段。"
+        : "你无权访问该预约，请重新选择时段。";
+    return <ErrorUI title="无权访问" message={message} />;
   }
 
-  // 2) 如果是访客预约，登录后自动绑定到当前用户
   if (shouldLinkGuestToUser && appointmentGuestIdentifier) {
     const linkRes = await updateGuestAppointmentWithUser(appointmentGuestIdentifier);
     if (!linkRes.success) {
@@ -152,19 +163,16 @@ export default async function PatientDetails({
       return <ErrorUI title="无法绑定预约" message={linkRes.message ?? linkRes.error} />;
     }
 
-    // 重新拉取预约，确保已绑定到当前用户
     const apptRes2 = await getAppointmentData({ appointmentId });
     if (!apptRes2.success || !apptRes2.data) {
       return <ErrorUI title="无法加载预约" message={apptRes2.message ?? apptRes2.error} />;
     }
-
     appointment = apptRes2.data;
 
     const linkedOk =
       sessionUserId !== null &&
       appointment.userId !== null &&
       appointment.userId === sessionUserId;
-
     if (!linkedOk) {
       return (
         <ErrorUI
@@ -175,7 +183,6 @@ export default async function PatientDetails({
     }
   }
 
-  // 3) 拿到用户信息
   let patientDetailsForClient: PatientData = {
     name: appointment.patientName === "Guest" ? "" : (appointment.patientName ?? ""),
     email: "",
@@ -205,7 +212,6 @@ export default async function PatientDetails({
     };
   }
 
-  // 4) 预约时间从 UTC 转为应用时区
   const tz = getAppTimeZone();
   const startZoned = toZonedTime(appointment.appointmentStartUTC, tz);
   const endZoned = toZonedTime(appointment.appointmentEndUTC, tz);
@@ -218,14 +224,12 @@ export default async function PatientDetails({
   const doctorImage = appointment.doctor?.image ?? null;
   const doctorSpecilaity = appointment.doctor?.doctorProfile?.specialty ?? "";
 
-  // 5) 为用户端创建 AppointmentData 结构
   const appointmentDataForClient: AppointmentData = {
     appointmentId: appointment.appointmentId,
     doctorId: appointment.doctorId,
     doctorName,
     doctorSpecilaity,
     doctorImage,
-    guestIdentifier: appointment.userId ? null : (appointment.guestIdentifier ?? null),
     date: dateStr,
     timeSlot: startTimeStr,
     endTime: endTimeStr,
@@ -244,6 +248,7 @@ export default async function PatientDetails({
       <PatientDetailsClient
         initialAppointmentData={appointmentDataForClient}
         initialPatientDetails={patientDetailsForClient}
+        isAuthenticated={sessionUserId !== null}
       />
     </div>
   );

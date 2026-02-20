@@ -88,7 +88,6 @@ export interface GuestAppointmentParams {
 }
 export interface GuestAppointmentSuccessData {
   appointmentId: string;
-  guestIdentifier: string;
 }
 export interface UserAppointmentsData {
   appointments: Appointment[];
@@ -121,7 +120,6 @@ export interface AppointmentData {
   doctorId: string;
   doctorName: string;
   doctorSpecilaity: string;
-  guestIdentifier?: string | null;
   doctorImage?: string | null;
   date: string;
   timeSlot: string;

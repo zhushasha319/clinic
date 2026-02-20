@@ -1,5 +1,14 @@
  
 { "appName": "Shasha Medical Center",
+  "userProfile": {
+    "personalInformation": "Personal Information",
+    "backToAppointment": "Back to Appointment",
+    "fullName": "Full Name",
+    "email": "Email",
+    "phone": "Phone",
+    "address": "Address",
+    "dateOfBirth": "Date of Birth"
+  },
   "common": {
      "appName": "Shasha Medical Center",
     "home": "Home",
@@ -111,7 +120,12 @@
       "COMPLETED": "Completed",
       "CANCELLED": "Cancelled",
       "NO_SHOW": "No Show",
-      "CASH": "Cash Payment Pending"
+      "CASH": "Cash Payment Pending",
+      "upcoming": "Upcoming",
+      "completed": "Completed",
+      "cancelled": "Cancelled",
+      "no_show": "No Show",
+      "cash_payment": "Cash Payment"
     },
     "dateOfBirthHelpText": "birth",
     "fullName": "fullName",
@@ -219,5 +233,14 @@
     "enterInformation": "enterInformation",
     "alreadyHaveAccount": "alreadyHaveAccount",
     "signIn": "signIn"
-  }
+  },
+  "Sign In": "Sign In",
+  "sign in to your account": "sign in to your account",
+  "Email": "Email",
+  "Enter your email": "Enter your email",
+  "Password": "Password",
+  "Enter your password": "Enter your password",
+  "Sign In with credentials": "Sign In with credentials",
+  "Don't have an account?": "Don't have an account?",
+  "Sign Up": "Sign Up"
 }

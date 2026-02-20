@@ -6,6 +6,7 @@ import { notFound } from "next/navigation";
 import PatientReviews from "@/components/molecules/doctorFiles/Review/PatientReviews";
 import AppointmentScheduler from "@/components/molecules/doctorFiles/AppointmentScheduler";
 import { getTranslations } from "next-intl/server";
+import { auth } from "@/auth";
 
 interface Params {
   doctorId: string;
@@ -18,6 +19,8 @@ export default async function DoctorProfilePage({
 }) {
   const t = await getTranslations("doctors");
   const { doctorId } = await params;
+  const session = await auth();
+  const userId = session?.user?.id;
 
   let doctorDetailsResponse;
   try {
@@ -65,7 +68,10 @@ export default async function DoctorProfilePage({
           ></DoctorProfileTopCard>
         </div>
         <div className="md:hidden">
-          <AppointmentScheduler doctorId={doctor.id}></AppointmentScheduler>
+          <AppointmentScheduler
+            doctorId={doctor.id}
+            userId={userId}
+          ></AppointmentScheduler>
         </div>
         <div>
           <DoctorProfileAbout
@@ -82,7 +88,10 @@ export default async function DoctorProfilePage({
         </div>
       </div>
       <div className="hidden md:block">
-        <AppointmentScheduler doctorId={doctor.id}></AppointmentScheduler>
+        <AppointmentScheduler
+          doctorId={doctor.id}
+          userId={userId}
+        ></AppointmentScheduler>
       </div>
     </div>
   );

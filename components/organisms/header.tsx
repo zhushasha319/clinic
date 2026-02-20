@@ -7,7 +7,6 @@ import { auth } from "@/auth";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { LanguageToggle } from "@/components/language-toggle";
 import { Button } from "@/components/ui/button";
-import { useTranslations } from "next-intl";
 import { getTranslations } from "next-intl/server";
 
 export async function Header() {
@@ -45,9 +44,7 @@ export async function Header() {
             >
               {t("common.home")}
             </Link>
-            <Button asChild variant="default" className="w-[164px]">
-              <Link href="/#our-doctors">{t("common.bookAppointment")}</Link>
-            </Button>
+          
             <SigninOrAvatar />
           </nav>
           <MenuClient session={session}></MenuClient>

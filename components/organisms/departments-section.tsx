@@ -6,10 +6,12 @@ import { getTranslations } from "next-intl/server";
 
 interface DepartmentsSectionProps {
   className?: string;
+  id?: string;
 }
 
 export async function DepartmentsSection({
   className,
+  id,
 }: DepartmentsSectionProps) {
   const t = await getTranslations("common");
   let doctors: DoctorSummary[] = [];
@@ -29,7 +31,7 @@ export async function DepartmentsSection({
   }
 
   return (
-    <section className={className}>
+    <section id={id} className={className}>
       <DepartmentsSectionClient
         title={t("ourDepartments")}
         departments={departmentData}

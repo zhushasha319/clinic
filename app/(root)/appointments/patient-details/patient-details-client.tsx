@@ -11,16 +11,18 @@ import { useTranslations } from "@/hooks/useTranslations";
 interface PatientDetailsClientProps {
   initialAppointmentData: AppointmentData;
   initialPatientDetails: PatientData;
+  isAuthenticated: boolean;
 }
 
 export default function PatientDetailsClient({
   initialAppointmentData,
   initialPatientDetails,
+  isAuthenticated,
 }: PatientDetailsClientProps) {
   const router = useRouter();
   const t = useTranslations("appointments");
 
-  const { doctorName, doctorSpecilaity, doctorImage, date, timeSlot } =
+  const { doctorId, doctorName, doctorSpecilaity, doctorImage, date, timeSlot } =
     initialAppointmentData;
 
   return (
@@ -29,7 +31,9 @@ export default function PatientDetailsClient({
       <div className="flex items-center justify-between border-b px-6 py-4">
         <button
           type="button"
-          onClick={() => router.replace("/doctors")}
+          onClick={() =>
+            router.replace(doctorId ? `/doctors/${doctorId}` : "/doctors")
+          }
           className="text-sm text-gray-500 hover:text-gray-700"
         >
           ← {t("backToDoctors")}
@@ -83,6 +87,7 @@ export default function PatientDetailsClient({
         <PatientDetailsForm
           appointmentData={initialAppointmentData}
           patientDetails={initialPatientDetails}
+          isAuthenticated={isAuthenticated}
         ></PatientDetailsForm>
       </div>
     </div>

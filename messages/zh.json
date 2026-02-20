@@ -1,5 +1,14 @@
   
 {"appName": "莎莎医疗中心",
+  "userProfile": {
+    "personalInformation": "个人信息",
+    "backToAppointment": "返回预约页面",
+    "fullName": "姓名",
+    "email": "邮箱",
+    "phone": "电话",
+    "address": "地址",
+    "dateOfBirth": "出生日期"
+  },
   "common": {
     "appName": "莎莎医疗中心",
     "home": "首页",
@@ -110,7 +119,12 @@
       "COMPLETED": "已完成",
       "CANCELLED": "已取消",
       "NO_SHOW": "未到场",
-      "CASH": "待现金支付"
+      "CASH": "待现金支付",
+      "upcoming": "即将到来",
+      "completed": "已完成",
+      "cancelled": "已取消",
+      "no_show": "未到场",
+      "cash_payment": "待现金支付"
     },
     "additionalNotes": "备注",
     "additionalNotesPlaceholder": "备注",
@@ -222,5 +236,14 @@
   "password":"密码",
   "confirmPassword":"确认密码",
   "signingUp": "注册中...",
-  "signUp": "注册"
+  "signUp": "注册",
+  "Sign In": "登录",
+  "sign in to your account": "登录到您的账户",
+  "Email": "电子邮件",
+  "Enter your email": "输入您的电子邮件",
+  "Password": "密码",
+  "Enter your password": "输入您的密码",
+  "Sign In with credentials": "使用凭证登录",
+  "Don't have an account?": "没有账户？",
+   "Sign Up":"注册"
 }

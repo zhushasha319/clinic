@@ -15,7 +15,7 @@ import { processAppointmentBooking } from "@/lib/actions/appointment/appointment
 import { PatientDetailsFormSchema } from "@/lib/validations/auth";
 
 import { cn } from "@/lib/utils";
-import { Pencil, Phone } from "lucide-react";
+import { Pencil } from "lucide-react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { Calendar } from "@/components/ui/calendar";
@@ -23,16 +23,10 @@ import { Calendar } from "@/components/ui/calendar";
 interface PatientDetailsFormProps {
   appointmentData: AppointmentData;
   patientDetails: PatientData;
+  isAuthenticated: boolean;
 }
 
-const REASON_OPTIONS = [
-  "普通咨询",
-  "复诊",
-  "处方续开",
-  "化验结果",
-  "心内科咨询",
-  "其他",
-];
+const REASON_OPTIONS = ["普通咨询", "复诊", "处方续开", "化验结果", "其他"];
 
 const RELATIONSHIP_OPTIONS = [
   "父母",
@@ -53,9 +47,11 @@ function FieldError({ message }: { message?: string }) {
 export default function PatientDetailsForm({
   appointmentData,
   patientDetails,
+  isAuthenticated,
 }: PatientDetailsFormProps) {
   const router = useRouter();
   const t = useTranslations("appointments");
+  const isSignedIn = isAuthenticated;
 
   const defaultPatientType = appointmentData.patientType ?? ("MYSELF" as const);
 
@@ -113,6 +109,7 @@ export default function PatientDetailsForm({
     reset(defaultValues);
   }, [defaultValues, reset]);
 
+  // eslint-disable-next-line react-hooks/incompatible-library
   const patientType = watch("patientType");
   const useAlternatePhone = watch("useAlternatePhone");
 
@@ -139,16 +136,12 @@ export default function PatientDetailsForm({
         return;
       }
       toast.success(res.message || "预约信息已保存。");
-      const params = new URLSearchParams({ appointmentId });
-      if (appointmentData.guestIdentifier) {
-        params.set("guestIdentifier", appointmentData.guestIdentifier);
-      }
-      router.replace(`/appointments/payment?${params.toString()}`);
+      router.replace(`/appointments/payment?appointmentId=${appointmentId}`);
     } else {
       toast.error(res.message || "保存预约信息失败。");
     }
   };
-
+  //React Hook Form 使用：{...register("reason")}
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="w-full">
       <div className="mb-4">
@@ -184,7 +177,7 @@ export default function PatientDetailsForm({
         </div>
       </div>
 
-      {/* SOMEONE_ELSE 额外字段 */}
+      {/* SOMEONE_ELSE 额外字段  -关系 名字 生日*/}
       {patientType === "SOMEONE_ELSE" && (
         <div className="mb-4 space-y-4">
           {/* 关系 */}
@@ -192,7 +185,7 @@ export default function PatientDetailsForm({
             <label className="mb-2 block text-xs font-semibold text-gray-700">
               {t("relationship")}
             </label>
-            <div className="亲属">
+            <div className="relative">
               <select
                 {...register("relationship")}
                 className={cn(
@@ -282,13 +275,13 @@ export default function PatientDetailsForm({
                 }}
               />
             </div>
-            <p className="mt-1 text-xs text-gray-500">{t("dateOfBirthHelpText")}</p>
+
             <FieldError message={errors.dateOfBirth?.message} />
           </div>
         </div>
       )}
 
-      {/* MYSELF 字段 */}
+      {/* MYSELF 字段 名字 邮箱 手机号 备注和就诊原因*/}
       {patientType === "MYSELF" && (
         <div className="mb-4 space-y-4">
           {/* 全名 */}
@@ -296,35 +289,36 @@ export default function PatientDetailsForm({
             <label className="mb-2 block text-xs font-semibold text-gray-700">
               {t("fullName")}
             </label>
-            <div className="亲属">
+            <div className="mb-4 relative">
               <input
                 {...register("fullName")}
                 className={cn(
-                  "h-10 w-full rounded-md border bg-blue-50 px-3 pr-10 text-sm outline-none",
+                  "h-10 w-full rounded-md border px-3 text-sm outline-none",
+                  isSignedIn ? "bg-blue-50 pr-10" : "bg-white",
                   errors.fullName ? "border-red-500" : "border-gray-200",
                 )}
-                readOnly
+                readOnly={isSignedIn}
+                placeholder={!isSignedIn ? t("enterFullName") : undefined}
               />
-              <button
-                type="button"
-                onClick={() => {
-                  if (!appointmentData.appointmentId) return;
-                  const returnTo = `/appointments/patient-details?appointmentId=${appointmentData.appointmentId}`;
-                  const url = new URLSearchParams({
-                    appointmentId: appointmentData.appointmentId,
-                    returnTo,
-                  });
-                  router.push(`/user/profile?${url.toString()}`);
-                }}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                aria-label="编辑资料"
-              >
-                <Pencil className="h-4 w-4" />
-              </button>
+              {isSignedIn ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (!appointmentData.appointmentId) return;
+                    const returnTo = `/appointments/patient-details?appointmentId=${appointmentData.appointmentId}`;
+                    const url = new URLSearchParams({
+                      appointmentId: appointmentData.appointmentId,
+                      returnTo,
+                    });
+                    router.push(`/user/profile?${url.toString()}`);
+                  }}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 hover:text-gray-600 text-blue-600"
+                  aria-label="编辑资料"
+                >
+                  <Pencil className="h-4 w-4" />
+                </button>
+              ) : null}
             </div>
-            <p className="mt-1 text-xs text-gray-500">
-              {t("toChangeNameEditProfile")}
-            </p>
             <FieldError message={errors.fullName?.message} />
           </div>
         </div>
@@ -352,15 +346,12 @@ export default function PatientDetailsForm({
           {t("primaryPhoneNumber")}
         </label>
 
-        <div className="亲属">
+        <div className="relative">
           <input
             className="h-10 w-full rounded-md border border-gray-200 bg-blue-50 px-3 pr-10 text-sm outline-none"
             value={patientDetails.phoneNumber}
             readOnly
           />
-          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-blue-600">
-            <Phone className="h-4 w-4" />
-          </span>
         </div>
 
         <label className="mt-3 flex items-center gap-2 text-sm text-gray-700">
@@ -450,4 +441,3 @@ export default function PatientDetailsForm({
     </form>
   );
 }
-

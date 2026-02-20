@@ -8,10 +8,15 @@
 //4.获取预约数据->验证输入->检索预约记录->状态冲突检查->过期检查->返回成功负载
 
 import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
 import { fromZonedTime } from "date-fns-tz";
 import prisma from "@/db/prisma";
 import { getAppTimeZone } from "@/lib/config";
 import { auth } from "@/auth";
+import {
+  getGuestReservationCookieMaxAgeSeconds,
+  getGuestReservationCookieName,
+} from "@/lib/appointment/guest-cookie";
 import {
   GuestAppointmentParams,
   GuestAppointmentSuccessData,
@@ -174,20 +179,28 @@ export async function createGuestAppointment({
       },
       select: {
         appointmentId: true,
-        guestIdentifier: true,
       },
     });
 
-    // 6) 重新验证医生页面以刷新排班
+    // 6) 把 guestIdentifier 写入 HttpOnly Cookie，避免出现在 URL 中
+    const cookieStore = await cookies();
+    cookieStore.set(getGuestReservationCookieName(created.appointmentId), guestIdentifier, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/appointments",
+      maxAge: getGuestReservationCookieMaxAgeSeconds(durationMinutes),
+    });
+
+    // 7) 重新验证医生页面以刷新排班
     revalidatePath(`/doctors/${doctorId}`);
 
-    // 7) 返回成功结果
+    // 8) 返回成功结果
     return {
       success: true,
       message: "时段已成功预留。",
       data: {
         appointmentId: created.appointmentId,
-        guestIdentifier: created.guestIdentifier ?? guestIdentifier,
       },
     };
   } catch (err: unknown) {
@@ -731,6 +744,10 @@ export async function processAppointmentBooking(
         reservationExpiresAt: true,
       },
     });
+    const cookieStore = await cookies();
+    const guestIdentifierFromCookie =
+      cookieStore.get(getGuestReservationCookieName(data.appointmentId))?.value ??
+      null;
 
     const dobDate = parseDobDDMMYYYYToDate(data.patientdateofbirth);
     if (data.patientType === "SOMEONE_ELSE" && !dobDate) {
@@ -820,9 +837,10 @@ export async function processAppointmentBooking(
       };
     }
 
-    //如果有用户ID，则保留
+    // 如果有用户ID、访客标识，则保留（访客登录前后的链路需要同一个 guestIdentifier）
     const userIdToUse = existing?.userId ?? null;
-    const guestIdentifierToUse = existing?.guestIdentifier ?? null;
+    const guestIdentifierToUse =
+      existing?.guestIdentifier ?? guestIdentifierFromCookie;
 
     const created = await prisma.appointment.create({
       data: {
@@ -850,6 +868,21 @@ export async function processAppointmentBooking(
       },
       select: { appointmentId: true },
     });
+    if (guestIdentifierToUse) {
+      cookieStore.set(
+        getGuestReservationCookieName(created.appointmentId),
+        guestIdentifierToUse,
+        {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "lax",
+          path: "/appointments",
+          maxAge: getGuestReservationCookieMaxAgeSeconds(
+            reservationDurationMinutes,
+          ),
+        },
+      );
+    }
 
     return {
       success: true,

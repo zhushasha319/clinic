@@ -55,10 +55,6 @@ export default function MenuClient({ session }: MenuClientProps) {
                 {t("home")}
               </Link>
 
-              <Button asChild variant="default" className="w-full">
-                <Link href="/#our-doctors">{t("bookAppointment")}</Link>
-              </Button>
-
               <MobileUserSignOrAvatar session={session} />
             </div>
           </SheetContent>

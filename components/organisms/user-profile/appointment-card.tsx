@@ -122,7 +122,7 @@ export default function AppointmentCard({
             variant="outline"
             className={`capitalize ${getStatusBadgeClasses(status)} border-0`}
           >
-            {status}
+            {t(`status.${status.replace(/ /g, "_")}`)}
           </Badge>
           {renderActionButton()}
         </div>

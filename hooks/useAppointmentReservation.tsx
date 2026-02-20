@@ -63,17 +63,7 @@ export const useAppointmentReservation = ({
             return;
           }
 
-          const params = new URLSearchParams({ appointmentId });
-
-          // 访客预约需要带 guestIdentifier
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const guestIdentifier = (res.data as any)?.guestIdentifier;
-
-          if (!userId && guestIdentifier) {
-            params.set("guestIdentifier", guestIdentifier);
-          }
-
-          router.push(`/appointments/patient-details?${params.toString()}`);
+          router.push(`/appointments/patient-details?appointmentId=${appointmentId}`);
           return;
         }
 
