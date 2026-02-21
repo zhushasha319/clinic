@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import { DepartmentCard } from "@/components/molecules/departmentCard";
 import {
   Dialog,
@@ -29,15 +30,19 @@ interface DepartmentsSectionClientProps {
 
 const normalizeText = (value: string) => value.trim();
 
-const matchesDepartment = (doctor: DoctorSummary, department: DepartmentInfo) => {
+const matchesDepartment = (
+  doctor: DoctorSummary,
+  department: DepartmentInfo,
+) => {
   const specialty = doctor.specialty ? normalizeText(doctor.specialty) : "";
   if (!specialty) return false;
-  const candidates = [
-    department.name,
-    ...(department.aliases ?? []),
-  ].map((item) => normalizeText(item));
+  const candidates = [department.name, ...(department.aliases ?? [])].map(
+    (item) => normalizeText(item),
+  );
 
-  return candidates.some((name) => name === specialty || specialty.includes(name));
+  return candidates.some(
+    (name) => name === specialty || specialty.includes(name),
+  );
 };
 
 const getDisplayRating = (rating: number | null) =>
@@ -54,18 +59,32 @@ export function DepartmentsSectionClient({
   doctors,
   doctorsError,
 }: DepartmentsSectionClientProps) {
+  const searchParams = useSearchParams();
+  const router = useRouter();
   const [activeDepartmentId, setActiveDepartmentId] = useState<string | null>(
-    null
+    null,
   );
+
+  // 监听 URL 参数 ?dept=xxx，自动打开对应科室弹窗（由 AI 助手触发）
+  useEffect(() => {
+    const deptParam = searchParams.get("dept");
+    if (deptParam && departments.some((d) => d.id === deptParam)) {
+      setActiveDepartmentId(deptParam);
+      // 清除 URL 参数，避免刷新后重复弹出
+      router.replace("/", { scroll: false });
+    }
+  }, [searchParams, departments, router]);
 
   const activeDepartment = useMemo(
     () => departments.find((dept) => dept.id === activeDepartmentId) ?? null,
-    [departments, activeDepartmentId]
+    [departments, activeDepartmentId],
   );
 
   const departmentDoctors = useMemo(() => {
     if (!activeDepartment) return [];
-    return doctors.filter((doctor) => matchesDepartment(doctor, activeDepartment));
+    return doctors.filter((doctor) =>
+      matchesDepartment(doctor, activeDepartment),
+    );
   }, [doctors, activeDepartment]);
 
   return (

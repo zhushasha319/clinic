@@ -2,6 +2,7 @@ import { DynamicBanner } from "@/components/organisms/dynamic-banner";
 import { DepartmentsSection } from "@/components/organisms/departments-section";
 import { OurDoctors } from "@/components/organisms/our-doctors";
 import { PatientTestimonials } from "@/components/organisms/patient-testimonials";
+import { AIMedicalAssistant } from "@/components/organisms/ai-medical-assistant";
 import { getTranslations } from "next-intl/server";
 
 export default async function Home() {
@@ -23,6 +24,9 @@ export default async function Home() {
         {showOurDoctorsOnHome ? <OurDoctors></OurDoctors> : null}
         <PatientTestimonials></PatientTestimonials>
       </div>
+
+      {/* AI 医疗助手悬浮按钮 + Dialog */}
+      <AIMedicalAssistant />
     </div>
   );
 }

@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { DepartmentsSectionClient } from "@/components/organisms/departments-section-client";
 import { departmentData } from "@/db/door";
 import { getOurDoctors } from "@/lib/actions/doctor.actions";
@@ -32,12 +33,14 @@ export async function DepartmentsSection({
 
   return (
     <section id={id} className={className}>
-      <DepartmentsSectionClient
-        title={t("ourDepartments")}
-        departments={departmentData}
-        doctors={doctors}
-        doctorsError={doctorsError}
-      />
+      <Suspense fallback={null}>
+        <DepartmentsSectionClient
+          title={t("ourDepartments")}
+          departments={departmentData}
+          doctors={doctors}
+          doctorsError={doctorsError}
+        />
+      </Suspense>
     </section>
   );
 }

@@ -284,5 +284,27 @@
   "Enter your password": "输入您的密码",
   "Sign In with credentials": "使用凭证登录",
   "Don't have an account?": "没有账户？",
-  "Sign Up": "注册"
+  "Sign Up": "注册",
+  "aiAssistant": {
+    "title": "AI 智能导诊",
+    "buttonLabel": "AI 医疗助手",
+    "inputPlaceholder": "请描述您的症状，例如：我咳嗽三天、发烧38.5、喉咙痛...",
+    "submit": "开始分析",
+    "analyzing": "AI 正在分析您的症状...",
+    "resultTitle": "分析结果",
+    "recommendedDepartments": "推荐科室",
+    "selectDepartment": "选择该科室",
+    "confidenceHigh": "高度匹配",
+    "confidenceMedium": "中度匹配",
+    "confidenceLow": "低度匹配",
+    "riskWarnings": "⚠️ 风险提示",
+    "nextSteps": "下一步建议",
+    "suggestedTests": "建议检查",
+    "howToDescribe": "如何向医生描述",
+    "generalAdvice": "一般建议",
+    "disclaimer": "免责声明：本功能由 AI 提供，仅供参考，不构成医疗诊断或治疗建议。如有紧急情况，请立即拨打 120 或前往最近的急诊。",
+    "retry": "重新咨询",
+    "error": "分析失败，请稍后重试",
+    "noDepartmentMatch": "建议到综合门诊就诊"
+  }
 }

@@ -281,5 +281,27 @@
   "Enter your password": "Enter your password",
   "Sign In with credentials": "Sign In with credentials",
   "Don't have an account?": "Don't have an account?",
-  "Sign Up": "Sign Up"
+  "Sign Up": "Sign Up",
+  "aiAssistant": {
+    "title": "AI Medical Triage",
+    "buttonLabel": "AI Medical Assistant",
+    "inputPlaceholder": "Describe your symptoms, e.g.: I've been coughing for 3 days, fever 38.5°C, sore throat...",
+    "submit": "Start Analysis",
+    "analyzing": "AI is analyzing your symptoms...",
+    "resultTitle": "Analysis Result",
+    "recommendedDepartments": "Recommended Departments",
+    "selectDepartment": "Select Department",
+    "confidenceHigh": "High Match",
+    "confidenceMedium": "Medium Match",
+    "confidenceLow": "Low Match",
+    "riskWarnings": "⚠️ Risk Warnings",
+    "nextSteps": "Next Steps",
+    "suggestedTests": "Suggested Tests",
+    "howToDescribe": "How to Describe to Doctor",
+    "generalAdvice": "General Advice",
+    "disclaimer": "Disclaimer: This feature is powered by AI and is for reference only. It does not constitute medical diagnosis or treatment advice. In case of emergency, please call 120 or visit the nearest emergency room.",
+    "retry": "Consult Again",
+    "error": "Analysis failed, please try again later",
+    "noDepartmentMatch": "We recommend visiting a general outpatient clinic"
+  }
 }
